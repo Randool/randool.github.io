@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"randool.github.io","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"path":"search.xml","motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0x00 什么是AutoHotkeyAutoHotkey （以下简称为AHK）能够运行自定义的脚本来实现自动化操作，比如打开特定路径下的文件（如果文件路径很长或者经常变化），处理大量但是相同的操作等繁琐的工作等，都可以简化为一个回车的操作。其功能类似于IOS平台上的 WorkFlow。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AutoHotkey">
+<meta property="og:url" content="https://randool.github.io/2018/02/28/AutoHotkey/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="0x00 什么是AutoHotkeyAutoHotkey （以下简称为AHK）能够运行自定义的脚本来实现自动化操作，比如打开特定路径下的文件（如果文件路径很长或者经常变化），处理大量但是相同的操作等繁琐的工作等，都可以简化为一个回车的操作。其功能类似于IOS平台上的 WorkFlow。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-28T07:19:06.000Z">
+<meta property="article:modified_time" content="2019-07-20T02:41:16.263Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="Windows">
+<meta property="article:tag" content="DIY">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://randool.github.io/2018/02/28/AutoHotkey/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>AutoHotkey | More is different.</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">More is different.</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2018/02/28/AutoHotkey/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.jpg">
+      <meta itemprop="name" content="Randool">
+      <meta itemprop="description" content="More is different.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AutoHotkey
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-02-28 15:19:06" itemprop="dateCreated datePublished" datetime="2018-02-28T15:19:06+08:00">2018-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-07-20 10:41:16" itemprop="dateModified" datetime="2019-07-20T10:41:16+08:00">2019-07-20</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/02/28/AutoHotkey/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/02/28/AutoHotkey/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="0x00-什么是AutoHotkey"><a href="#0x00-什么是AutoHotkey" class="headerlink" title="0x00 什么是AutoHotkey"></a>0x00 什么是AutoHotkey</h2><p><a href="https://autohotkey.com/" target="_blank" rel="noopener"><strong>AutoHotkey</strong></a> （以下简称为AHK）能够运行自定义的脚本来实现自动化操作，比如打开特定路径下的文件（如果文件路径很长或者经常变化），处理大量但是相同的操作等繁琐的工作等，都可以简化为一个回车的操作。其功能类似于IOS平台上的 <a href="http://my.workflow.is/" target="_blank" rel="noopener"><strong>WorkFlow</strong></a>。</p>
+<a id="more"></a>
+<blockquote>
+<p>下载安装完以后会自带详细的英文版文档说明，不过官网上有<a href="https://wyagd001.github.io/zh-cn/docs/AutoHotkey.htm" target="_blank" rel="noopener">亲民的中文版文档</a>~</p>
+</blockquote>
+<p>AHK脚本的后缀名为 <code>.ahk</code>，比如 <code>Hello.ahk</code>。打开创建的脚本文件编写代码即可。对于编写脚本语言，合适的编辑器不可少，这里我找到以下这些：</p>
+<ul>
+<li><a href="http://fincs.ahk4.net/scite4ahk/" target="_blank" rel="noopener">SciTE4AutoHotkey</a></li>
+<li>Notepad++（在语言中选择Autolt可以高亮语法）</li>
+<li>当然在 VScode 里肯定也少不了对应的插件</li>
+</ul>
+<hr>
+<h2 id="0x01-AHK的基本语法"><a href="#0x01-AHK的基本语法" class="headerlink" title="0x01 AHK的基本语法"></a>0x01 AHK的基本语法</h2><h3 id="变量和表达式"><a href="#变量和表达式" class="headerlink" title="变量和表达式"></a>变量和表达式</h3><p>一开始没有仔细看文档说明，上来直接使用常规语言的赋值方法，结果发现AHK的思路好反人类。在AHK中，变量的赋值和获取方式有两种 <strong>传统方法</strong> 和 <strong>表达式方法</strong>（推荐后者）。</p>
+<h4 id="传统方法（-）"><a href="#传统方法（-）" class="headerlink" title="传统方法（=）"></a><strong>传统方法</strong>（=）</h4><p>这种方法赋值似乎会默认为字符串赋值，比如</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">a</span> = <span class="number">100</span>     <span class="comment">; 字符串类型的 100</span></span><br><span class="line">b = 一百    <span class="comment">; 字符串无疑</span></span><br><span class="line"></span><br><span class="line">c = %<span class="literal">a</span>%     <span class="comment">; 传统方法需要用%%提取变量中的值</span></span><br><span class="line">MsgBox The value of c is %c% .</span><br></pre></td></tr></table></figure>
+<p>用惯了C++、Python等类型分明的语言，一接触传统方法一定会抓狂。所以推荐 <strong>表达式方法</strong></p>
+<h4 id="表达式方法（-）"><a href="#表达式方法（-）" class="headerlink" title="表达式方法（:=）"></a><strong>表达式方法</strong>（:=）</h4><p>赋值的语法和其他语言相同，不过就是在 <code>=</code> 前面多了一个 <code>:</code></p>
+<p>这样，就可以将一个数字方便地赋值给一个变量啦</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">a</span> := <span class="number">100</span>    <span class="comment">; 数字 100</span></span><br><span class="line">b := 一百   <span class="comment">; 字符串无疑</span></span><br><span class="line"></span><br><span class="line">c := <span class="literal">a</span>      <span class="comment">; 表达式方法直接复制即可。原因是变量在表达式中</span></span><br><span class="line">MsgBox % <span class="string">"The value of c is "</span> . c    <span class="comment">; 使用类似与Python中的 `.join` 连接字符串</span></span><br></pre></td></tr></table></figure>
+<p>对于百分号的使用，文档中有一句话</p>
+<blockquote>
+<p>注意: 变量名并非 _总是_ 用百分号括起来; 百分号只在变量名和不加引号的文字一起时才需要. 除了创建 <a href="https://wyagd001.github.io/zh-cn/docs/Language.htm#dynamic-variables" target="_blank" rel="noopener">动态变量引用</a> 或 <a href="https://wyagd001.github.io/zh-cn/docs/Functions.htm#DynCall" target="_blank" rel="noopener">动态函数调用</a> 之外, 不应在其他任何地方使用百分号. </p>
+</blockquote>
+<h3 id="内置变量"><a href="#内置变量" class="headerlink" title="内置变量"></a><a href="https://wyagd001.github.io/zh-cn/docs/Variables.htm#BuiltIn" target="_blank" rel="noopener">内置变量</a></h3><p>和PHP一样，AHK有很多的变量可以方便的获取很多信息，比如时间日期、脚本自身的属性。过多不贴</p>
+<h3 id="Send-发送键"><a href="#Send-发送键" class="headerlink" title="Send 发送键"></a><a href="https://wyagd001.github.io/zh-cn/docs/commands/Send.htm" target="_blank" rel="noopener">Send 发送键</a></h3><p>Send键可以做很多事，比如发送一些按键到一个程序中，来模拟打字或按键操作。主要有这四种方法</p>
+<ul>
+<li><strong>原始模式</strong> 使用 <code>SendRaw</code> 或者 <code>{raw}</code>。如 <code>SendRaw, ^g</code> 发送的就是 <code>^g</code>。</li>
+<li><strong>文本模式</strong> 用 <code>{}</code> 包含需要发送的内容，防止 <code>^+!#{}</code> 等热键的触发，类似于 <strong>原始模式</strong>。</li>
+<li><strong>普通模式</strong> 可发送按键，<code>^+!#{}</code>具有特殊含义。如发送 <code>Alt</code> 键可使用 <code>Send !</code> 或者 <code>Send {Alt}</code>。符号表见 <strong>0x02</strong>。</li>
+<li><strong>盲从模式</strong> 不知道咋用（怂）。</li>
+</ul>
+<p>常用的 <code>Send</code> 普通模式下的命令参数</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">{Browser_Back}</td>
+<td>按下浏览器的”后退”按钮</td>
+</tr>
+<tr>
+<td style="text-align:center">{Browser_Forward}</td>
+<td>按下浏览器的”前进”按钮</td>
+</tr>
+<tr>
+<td style="text-align:center">{Browser_Refresh}</td>
+<td>按下浏览器的”刷新”按钮</td>
+</tr>
+<tr>
+<td style="text-align:center">{Browser_Stop}</td>
+<td>按下浏览器的”停止”按钮</td>
+</tr>
+<tr>
+<td style="text-align:center">{Browser_Search}</td>
+<td>按下浏览器的”搜索”按钮</td>
+</tr>
+<tr>
+<td style="text-align:center">{Browser_Favorites}</td>
+<td>按下浏览器的”收藏”按钮</td>
+</tr>
+<tr>
+<td style="text-align:center">{Browser_Home}</td>
+<td>启动浏览器并打开主页</td>
+</tr>
+<tr>
+<td style="text-align:center">{Volume_Mute}</td>
+<td>主音量静音/取消静音. 通常相当于 SoundSet, +1, , mute.</td>
+</tr>
+<tr>
+<td style="text-align:center">{Volume_Down}</td>
+<td>减小主音量. 通常相当于 SoundSet -5.</td>
+</tr>
+<tr>
+<td style="text-align:center">{Volume_Up}</td>
+<td>增加主音量. 通常相当于 SoundSet +5.</td>
+</tr>
+<tr>
+<td style="text-align:center">{Media_Next}</td>
+<td>在媒体播放器中播放下一曲目</td>
+</tr>
+<tr>
+<td style="text-align:center">{Media_Prev}</td>
+<td>在媒体播放器中播放前一曲目</td>
+</tr>
+<tr>
+<td style="text-align:center">{Media_Stop}</td>
+<td>停止媒体播放器</td>
+</tr>
+<tr>
+<td style="text-align:center">{Media_Play_Pause}</td>
+<td>播放/暂停媒体播放器</td>
+</tr>
+<tr>
+<td style="text-align:center">{Launch_Mail}</td>
+<td>启动电子邮件程序</td>
+</tr>
+<tr>
+<td style="text-align:center">{Launch_Media}</td>
+<td>启动媒体播放器</td>
+</tr>
+<tr>
+<td style="text-align:center">{Launch_App1}</td>
+<td>启动用户程序 1</td>
+</tr>
+<tr>
+<td style="text-align:center">{Launch_App2}</td>
+<td>启动用户程序 2</td>
+</tr>
+<tr>
+<td style="text-align:center">{PrintScreen}</td>
+<td>Print Screen</td>
+</tr>
+<tr>
+<td style="text-align:center">{CtrlBreak}</td>
+<td>Ctrl+break</td>
+</tr>
+<tr>
+<td style="text-align:center">{Pause}</td>
+<td>Pause</td>
+</tr>
+<tr>
+<td style="text-align:center">{Click}</td>
+<td>鼠标右击</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="0x02-热键表"><a href="#0x02-热键表" class="headerlink" title="0x02 热键表"></a>0x02 热键表</h2><h3 id="常用符号键"><a href="#常用符号键" class="headerlink" title="常用符号键"></a>常用符号键</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">符号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">#</td>
+<td>Win(Windows 徽标键)</td>
+</tr>
+<tr>
+<td style="text-align:center">!</td>
+<td>Alt</td>
+</tr>
+<tr>
+<td style="text-align:center">+</td>
+<td>Shift</td>
+</tr>
+<tr>
+<td style="text-align:center">^</td>
+<td>Ctrl</td>
+</tr>
+<tr>
+<td style="text-align:center">*</td>
+<td>通配符</td>
+</tr>
+<tr>
+<td style="text-align:center">Tab</td>
+<td>Tab键</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>$</strong></td>
+<td>表示使用钩子创建这个热键，这样避免了循环激发。如果使用 <code>a::a</code> 将会无穷递归！</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>~</strong></td>
+<td>激发热键时, 不会屏蔽(被操作系统隐藏) 热键中按键原有的功能</td>
+</tr>
+<tr>
+<td style="text-align:center">&amp;</td>
+<td>用于连接两个按键，合并成一个自定义热键</td>
+</tr>
+<tr>
+<td style="text-align:center">Space</td>
+<td>空格键</td>
+</tr>
+<tr>
+<td style="text-align:center">CapsLock</td>
+<td>大小写锁定键 </td>
+</tr>
+<tr>
+<td style="text-align:center">Enter (或 Return)</td>
+<td>回车键</td>
+</tr>
+<tr>
+<td style="text-align:center">Escape (或 Esc)</td>
+<td>退出键</td>
+</tr>
+<tr>
+<td style="text-align:center">Numpad0等</td>
+<td>NumLock关闭下数字小键盘</td>
+</tr>
+<tr>
+<td style="text-align:center">NumpadIns等</td>
+<td>NumLock打开下的数字小键盘</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="光标控制"><a href="#光标控制" class="headerlink" title="光标控制"></a>光标控制</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">符号</th>
+<th>描述</th>
+<th style="text-align:center">符号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Backspace (或 BS)</td>
+<td>退格键</td>
+<td style="text-align:center">Delete(或 Del)</td>
+<td>删除键</td>
+</tr>
+<tr>
+<td style="text-align:center">Home</td>
+<td>Home键</td>
+<td style="text-align:center">End</td>
+<td>End键</td>
+</tr>
+<tr>
+<td style="text-align:center">PgUp</td>
+<td>向上翻页键</td>
+<td style="text-align:center">PgDn</td>
+<td>向下翻页键</td>
+</tr>
+<tr>
+<td style="text-align:center">Up</td>
+<td>向上方向键</td>
+<td style="text-align:center">Down</td>
+<td>向下方向键</td>
+</tr>
+<tr>
+<td style="text-align:center">Left</td>
+<td>向左方向键</td>
+<td style="text-align:center">Right</td>
+<td>向右方向键</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="鼠标部分"><a href="#鼠标部分" class="headerlink" title="鼠标部分"></a>鼠标部分</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">符号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">LButton</td>
+<td>鼠标左键</td>
+</tr>
+<tr>
+<td style="text-align:center">RButton</td>
+<td>鼠标右键</td>
+</tr>
+<tr>
+<td style="text-align:center">MButton</td>
+<td>鼠标中键或滚轮</td>
+</tr>
+<tr>
+<td style="text-align:center">WheelDown</td>
+<td>向下转动鼠标滚轮</td>
+</tr>
+<tr>
+<td style="text-align:center">WheelUp</td>
+<td>向上转动鼠标滚轮</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="IfWin热键"><a href="#IfWin热键" class="headerlink" title="#IfWin热键"></a><a href="https://wyagd001.github.io/zh-cn/docs/commands/_IfWinActive.htm" target="_blank" rel="noopener">#IfWin热键</a></h3><p>根据所处的窗口以及活动的情况，执行不同的操作。</p>
+<ul>
+<li>#IfWinActive</li>
+<li>#IfWinExist</li>
+<li>#IfWinNotActive</li>
+<li>#IfWinNotExist</li>
+</ul>
+<p>基本格式为<br><figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#IfWinActive WinTitle, WinText</span><br><span class="line"><span class="comment">; WinTitle : 窗口标题或识别目标窗口的其他条件</span></span><br><span class="line"><span class="comment">; WinText : 目标窗口中单个文本元素的子字符串</span></span><br><span class="line"></span><br><span class="line"><span class="comment">; 比如：</span></span><br><span class="line">#IfWinActive, <span class="keyword">ahk_class</span> Notepad</span><br><span class="line"><span class="symbol">^a::</span>MsgBox 你在记事本中按下了 Ctrl-<span class="literal">A</span> . 而在其他窗口中按下 Ctrl-<span class="literal">A</span> 将原样发送.</span><br><span class="line"><span class="symbol">#c::</span>MsgBox 你在记事本中按下了 Win-C 组合键.</span><br><span class="line"></span><br><span class="line">#IfWinActive</span><br><span class="line"><span class="symbol">#c::</span>MsgBox 你在非记事本程序中按下了 Win-C .</span><br><span class="line"></span><br><span class="line">#If MouseIsOver(<span class="string">"ahk_class Shell_TrayWnd"</span>)</span><br><span class="line"><span class="comment">; 在任务栏上滚动滚轮:增加/减小音量.</span></span><br><span class="line"><span class="symbol">WheelUp::</span>Send &#123;Volume_Up&#125;</span><br><span class="line"><span class="symbol">WheelDown::</span>Send &#123;Volume_Down&#125;</span><br></pre></td></tr></table></figure></p>
+<p>有时候会需要多个热键对应一种功能，这个时候可以用过个热键叠放来处理<br><figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">^Numpad0::</span></span><br><span class="line"><span class="symbol">^Numpad1::</span></span><br><span class="line">    MsgBox Ctrl + Numpad0, Ctrl+Numpad1 can do the same thing.</span><br><span class="line"><span class="keyword">Return</span></span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>更多的热键参考：<a href="https://wyagd001.github.io/zh-cn/docs/Hotkeys.htm" target="_blank" rel="noopener">热键(鼠标, 操纵杆和键盘快捷键)</a></p>
+</blockquote>
+<hr>
+<h2 id="0x03-其他"><a href="#0x03-其他" class="headerlink" title="0x03 其他"></a>0x03 其他</h2><p>其实毕竟是一种新的脚本语言，学习和记忆相关的用法比较枯燥，所以边实践边学习是最简单且高效的学习过程。<br>其实这一篇blog也不过是些十分零散的知识点，网络上学习AHK的教程千千万。这里强烈推荐</p>
+<ul>
+<li>边看故事边学AHK的 <a href="https://www.appinn.com/ahk-fast-food-restaurant/" target="_blank" rel="noopener"><strong>AutoHotkey快餐店</strong></a></li>
+<li>收录了其他优秀博客链接的 <a href="http://xbeta.info/autohotkey-guide-2.htm" target="_blank" rel="noopener">AutoHotkey 学习指南</a></li>
+</ul>
+<p>AHK实现了重复过程的简化，也能用少量的按键实现复杂的操作，下面是我想到的部分功能</p>
+<ul>
+<li>快速打开某些常用网站 baidu，google等</li>
+<li>快速打开常用应用</li>
+<li>QQ的表情包限制太多，比如大小，尺寸……那么将表情包保存到本地，然后使用热键 + <code>__send__</code> 表情包:D，斗图更方便。</li>
+<li>听说不少游戏需要同时按多个键来放大招……AHK岂不是开挂般存在。</li>
+</ul>
+<p>_不知道如此强大的AHK，被漏洞利用了会发生什么大新闻_</p>
+<hr>
+<p>如果你有啥想法，可以在评论区留言哦 (oﾟvﾟ)ノ</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Windows/" rel="tag"># Windows</a>
+              <a href="/tags/DIY/" rel="tag"># DIY</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/02/24/Paxos%E7%AE%97%E6%B3%95/" rel="prev" title="Paxos算法">
+      <i class="fa fa-chevron-left"></i> Paxos算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/22/Loss%20Functions/" rel="next" title="Loss Functions">
+      Loss Functions <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-什么是AutoHotkey"><span class="nav-number">1.</span> <span class="nav-text">0x00 什么是AutoHotkey</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-AHK的基本语法"><span class="nav-number">2.</span> <span class="nav-text">0x01 AHK的基本语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#变量和表达式"><span class="nav-number">2.1.</span> <span class="nav-text">变量和表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#传统方法（-）"><span class="nav-number">2.1.1.</span> <span class="nav-text">传统方法（&#x3D;）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#表达式方法（-）"><span class="nav-number">2.1.2.</span> <span class="nav-text">表达式方法（:&#x3D;）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内置变量"><span class="nav-number">2.2.</span> <span class="nav-text">内置变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Send-发送键"><span class="nav-number">2.3.</span> <span class="nav-text">Send 发送键</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-热键表"><span class="nav-number">3.</span> <span class="nav-text">0x02 热键表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常用符号键"><span class="nav-number">3.1.</span> <span class="nav-text">常用符号键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#光标控制"><span class="nav-number">3.2.</span> <span class="nav-text">光标控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#鼠标部分"><span class="nav-number">3.3.</span> <span class="nav-text">鼠标部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IfWin热键"><span class="nav-number">3.4.</span> <span class="nav-text">#IfWin热键</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-其他"><span class="nav-number">4.</span> <span class="nav-text">0x03 其他</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/favicon.jpg">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description">More is different.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https://github.com/Randool" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.aeonni.com/" title="https://www.aeonni.com/" rel="noopener" target="_blank">Aeonni</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.godway.work/" title="https://www.godway.work/" rel="noopener" target="_blank">Godway</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://me.csdn.net/Smile_coderrr/" title="http://me.csdn.net/Smile_coderrr/" rel="noopener" target="_blank">Smile_coderrr</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://wulasite.top" title="https://wulasite.top" rel="noopener" target="_blank">QQ星大佬</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://cairohy.github.io/" title="https://cairohy.github.io/" rel="noopener" target="_blank">cairo</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Randool</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">140k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:07</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'A9j1wNLTCDTKloK2QBTESjG2-gzGzoHsz',
+      appKey: 'tNXjGRI6aRpR5mv5wWv8lliU',
+      placeholder: "说点啥呗~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'zh-cn' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

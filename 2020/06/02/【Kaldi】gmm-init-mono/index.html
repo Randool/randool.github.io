@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"randool.github.io","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"path":"search.xml","motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="单音素GMM常出现在ASR系统冷启动训练阶段。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Kaldi】gmm-init-mono源码阅读">
+<meta property="og:url" content="https://randool.github.io/2020/06/02/%E3%80%90Kaldi%E3%80%91gmm-init-mono/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="单音素GMM常出现在ASR系统冷启动训练阶段。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://randool.github.io/2020/06/02/%E3%80%90Kaldi%E3%80%91gmm-init-mono/hmm.png">
+<meta property="article:published_time" content="2020-06-02T03:27:39.000Z">
+<meta property="article:modified_time" content="2020-06-02T13:51:31.562Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="Kaldi">
+<meta property="article:tag" content="ASR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://randool.github.io/2020/06/02/%E3%80%90Kaldi%E3%80%91gmm-init-mono/hmm.png">
+
+<link rel="canonical" href="https://randool.github.io/2020/06/02/%E3%80%90Kaldi%E3%80%91gmm-init-mono/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>【Kaldi】gmm-init-mono源码阅读 | More is different.</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">More is different.</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2020/06/02/%E3%80%90Kaldi%E3%80%91gmm-init-mono/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.jpg">
+      <meta itemprop="name" content="Randool">
+      <meta itemprop="description" content="More is different.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【Kaldi】gmm-init-mono源码阅读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-02 11:27:39 / 修改时间：21:51:31" itemprop="dateCreated datePublished" datetime="2020-06-02T11:27:39+08:00">2020-06-02</time>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/06/02/%E3%80%90Kaldi%E3%80%91gmm-init-mono/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/06/02/%E3%80%90Kaldi%E3%80%91gmm-init-mono/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>单音素GMM常出现在ASR系统冷启动训练阶段。</p>
+<a id="more"></a>
+<h1 id="整体结构"><a href="#整体结构" class="headerlink" title="整体结构"></a>整体结构</h1><p>在开始看复杂的细节前，不妨先看看整个代码的框架：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"base/kaldi-common.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"util/common-utils.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"gmm/am-diag-gmm.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"hmm/hmm-topology.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"hmm/transition-model.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"tree/context-dep.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> kaldi &#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ReadSharedPhonesList</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> rxfilename, <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;int32&gt; &gt; *list_out)</span> </span>&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看出这个源码结构非常简单，一些头文件引用，一个定义在命名空间kaldi中的函数<code>ReadSharedPhonesList</code>剩下就是主函数了。</p>
+<h1 id="ReadSharedPhonesList作用"><a href="#ReadSharedPhonesList作用" class="headerlink" title="ReadSharedPhonesList作用"></a>ReadSharedPhonesList作用</h1><p>下面我们来看看<code>ReadSharedPhonesList</code>的细节：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> kaldi &#123;</span><br><span class="line"><span class="comment">// This function reads a file like:</span></span><br><span class="line"><span class="comment">// 1 2 3</span></span><br><span class="line"><span class="comment">// 4 5</span></span><br><span class="line"><span class="comment">// 6 7 8</span></span><br><span class="line"><span class="comment">// where each line is a list of integer id's of phones (that should have their pdfs shared).</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ReadSharedPhonesList</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> rxfilename, <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;int32&gt; &gt; *list_out)</span> </span>&#123;</span><br><span class="line">  list_out-&gt;clear();</span><br><span class="line">  <span class="function">Input <span class="title">input</span><span class="params">(rxfilename)</span></span>;</span><br><span class="line">  <span class="built_in">std</span>::istream &amp;is = input.Stream();</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> line;</span><br><span class="line">  <span class="keyword">while</span> (<span class="built_in">std</span>::getline(is, line)) &#123;</span><br><span class="line">    list_out-&gt;push_back(<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;int32&gt;());</span><br><span class="line">    <span class="keyword">if</span> (!SplitStringToIntegers(line, <span class="string">" \t\r"</span>, <span class="literal">true</span>, &amp;(list_out-&gt;back())))</span><br><span class="line">      KALDI_ERR &lt;&lt; <span class="string">"Bad line in shared phones list: "</span> &lt;&lt; line &lt;&lt; <span class="string">" (reading "</span></span><br><span class="line">                &lt;&lt; PrintableRxfilename(rxfilename) &lt;&lt; <span class="string">")"</span>;</span><br><span class="line">    <span class="built_in">std</span>::sort(list_out-&gt;rbegin()-&gt;begin(), list_out-&gt;rbegin()-&gt;end());</span><br><span class="line">    <span class="keyword">if</span> (!IsSortedAndUniq(*(list_out-&gt;rbegin())))</span><br><span class="line">      KALDI_ERR &lt;&lt; <span class="string">"Bad line in shared phones list (repeated phone): "</span> &lt;&lt; line</span><br><span class="line">                &lt;&lt; <span class="string">" (reading "</span> &lt;&lt; PrintableRxfilename(rxfilename) &lt;&lt; <span class="string">")"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125; <span class="comment">// end namespace kaldi</span></span><br></pre></td></tr></table></figure>
+<p>可以看出这个代码实际上就是把<code>rxfilename</code>中的数据读出来，然后组成一个二维数组，二维数组中每一行中的数字会共享pdf（概率密度函数）。</p>
+<h1 id="主函数"><a href="#主函数" class="headerlink" title="主函数"></a>主函数</h1><p>接下来进入主函数，为了对主函数的整体框架有一个大致的了解，我把复杂的代码用“…”表示，这些代码后续会讲到。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">using</span> <span class="keyword">namespace</span> kaldi;</span><br><span class="line">    <span class="keyword">using</span> kaldi::int32;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *usage =</span><br><span class="line">        <span class="string">"Initialize monophone GMM.\n"</span></span><br><span class="line">        <span class="string">"Usage:??gmm-init-mono &lt;topology-in&gt; &lt;dim&gt; &lt;model-out&gt; &lt;tree-out&gt; \n"</span></span><br><span class="line">        <span class="string">"e.g.: \n"</span></span><br><span class="line">        <span class="string">" gmm-init-mono topo 39 mono.mdl mono.tree\n"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">bool</span> binary = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> train_feats;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> shared_phones_rxfilename;</span><br><span class="line">    BaseFloat perturb_factor = <span class="number">0.0</span>;</span><br><span class="line">    <span class="function">ParseOptions <span class="title">po</span><span class="params">(usage)</span></span>;</span><br><span class="line">    po.Register(<span class="string">"binary"</span>, &amp;binary, <span class="string">"Write output in binary mode"</span>);</span><br><span class="line">    po.Register(<span class="string">"train-feats"</span>, &amp;train_feats,</span><br><span class="line">                <span class="string">"rspecifier for training features [used to set mean and variance]"</span>);</span><br><span class="line">    po.Register(<span class="string">"shared-phones"</span>, &amp;shared_phones_rxfilename,</span><br><span class="line">                <span class="string">"rxfilename containing, on each line, a list of phones whose pdfs should be shared."</span>);</span><br><span class="line">    po.Register(<span class="string">"perturb-factor"</span>, &amp;perturb_factor,</span><br><span class="line">                <span class="string">"Perturb the means using this fraction of standard deviation."</span>);</span><br><span class="line">    po.Read(argc, argv);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (po.NumArgs() != <span class="number">4</span>) &#123;</span><br><span class="line">      po.PrintUsage();</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">  &#125; <span class="keyword">catch</span>(<span class="keyword">const</span> <span class="built_in">std</span>::exception &amp;e) &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cerr</span> &lt;&lt; e.what();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这一段关注<code>ParseOptions</code>，这个类有点类似Python中的<code>argparse</code>，不仅可以保存用法，还可以解析参数。紧接着就可以看到该类的用法：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> topo_filename = po.GetArg(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">int</span> dim = atoi(po.GetArg(<span class="number">2</span>).c_str());</span><br><span class="line">KALDI_ASSERT(dim&gt; <span class="number">0</span> &amp;&amp; dim &lt; <span class="number">10000</span>);</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> model_filename = po.GetArg(<span class="number">3</span>);</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> tree_filename = po.GetArg(<span class="number">4</span>);</span><br></pre></td></tr></table></figure>
+<p>上面的代码分别解析出<code>topo_filename</code>、<code>dim</code>、<code>model_filename</code>和<code>tree_filename</code>。这些变量各自的作用如下：</p>
+<ul>
+<li><code>topo_filename</code>：保存了音素的相关信息，下文会细讲；</li>
+<li><code>dim</code>：观测变量的的维度，比如MFCC的39维。这里限定了维度不超过10000；</li>
+<li><code>model_filename</code>：保存模型（转移模型和topo）的文件；</li>
+<li><code>tree_filename</code>：保存tree（ctx_dep）的文件。</li>
+</ul>
+<p>回想一下GMM的特征包括均值μ和协方差Σ，一般来说Σ是个矩阵，但由于假设特征向量各个维度独立，所以Σ是对角矩阵，可以用一个向量表示。有了这些知识就能看懂下面的代码了，注意初始化的μ和Σ都是1向量。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Vector&lt;BaseFloat&gt; glob_inv_var(dim);</span><br><span class="line">glob_inv_var.Set(<span class="number">1.0</span>);</span><br><span class="line">Vector&lt;BaseFloat&gt; glob_mean(dim);</span><br><span class="line">glob_mean.Set(<span class="number">1.0</span>);</span><br></pre></td></tr></table></figure>
+<p>下面的代码在指定train_feats时才会执行。就其内容而言，这是一段初始化μ和Σ的代码。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (train_feats != <span class="string">""</span>) &#123;</span><br><span class="line">  <span class="keyword">double</span> count = <span class="number">0.0</span>;</span><br><span class="line">  Vector&lt;<span class="keyword">double</span>&gt; var_stats(dim);</span><br><span class="line">  Vector&lt;<span class="keyword">double</span>&gt; mean_stats(dim);</span><br><span class="line">  <span class="function">SequentialDoubleMatrixReader <span class="title">feat_reader</span><span class="params">(train_feats)</span></span>;</span><br><span class="line">  <span class="keyword">for</span> (; !feat_reader.Done(); feat_reader.Next()) &#123;</span><br><span class="line">    <span class="keyword">const</span> Matrix&lt;<span class="keyword">double</span>&gt; &amp;mat = feat_reader.Value();</span><br><span class="line">    <span class="keyword">for</span> (int32 i = <span class="number">0</span>; i &lt; mat.NumRows(); i++) &#123;</span><br><span class="line">      count += <span class="number">1.0</span>;</span><br><span class="line">      var_stats.AddVec2(<span class="number">1.0</span>, mat.Row(i));</span><br><span class="line">      mean_stats.AddVec(<span class="number">1.0</span>, mat.Row(i));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (count == <span class="number">0</span>) &#123; KALDI_ERR &lt;&lt; <span class="string">"no features were seen."</span>; &#125;</span><br><span class="line">  var_stats.Scale(<span class="number">1.0</span>/count);</span><br><span class="line">  mean_stats.Scale(<span class="number">1.0</span>/count);</span><br><span class="line">  var_stats.AddVec2(<span class="number">-1.0</span>, mean_stats);</span><br><span class="line">  <span class="keyword">if</span> (var_stats.Min() &lt;= <span class="number">0.0</span>)</span><br><span class="line">    KALDI_ERR &lt;&lt; <span class="string">"bad variance"</span>;</span><br><span class="line">  var_stats.InvertElements();</span><br><span class="line">  glob_inv_var.CopyFromVec(var_stats);</span><br><span class="line">  glob_mean.CopyFromVec(mean_stats);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在egs/timit/s5例子中，gmm-init-mono执行的代码为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gmm-init-mono <span class="variable">$shared_phones_opt</span> <span class="string">"--train-feats=<span class="variable">$feats</span> subset-feats --n=10 ark:- a    rk:-|"</span> <span class="variable">$lang</span>/topo <span class="variable">$feat_dim</span> \</span><br><span class="line"><span class="variable">$dir</span>/0.mdl <span class="variable">$dir</span>/tree || <span class="built_in">exit</span> 1;</span><br></pre></td></tr></table></figure>
+<p>而<code>train_feats</code>所指的数据为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feats=<span class="string">"ark,s,cs:apply-cmvn <span class="variable">$cmvn_opts</span> --utt2spk=ark:<span class="variable">$sdata</span>/JOB/utt2spk scp:<span class="variable">$sdata</span>/JOB/    cmvn.scp scp:<span class="variable">$sdata</span>/JOB/feats.scp ark:- | add-deltas <span class="variable">$delta_opts</span> ark:- ark:- |"</span></span><br></pre></td></tr></table></figure>
+<p>从<code>apply-cmvn</code>字样中能猜测出其对特征进行了“倒谱方差均值归一化”操作。注意到上面的脚本最后连了一个管道符，所以说<code>train_feats</code>是通过管道传递的，这样的好处在于数据可以方便地进行后续处理，比如<code>subset-feats --n=10</code>大概是抽了10个样本作为最终地初始化数据吧。</p>
+<p>下面的代码会读取<code>topo_filename</code>中的配置。最后所有的音素会保存在<code>phones</code>中，注意这里的phone都已经转为了数字索引，因而可以存放在<code>vector&lt;int32&gt;</code>中。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">HmmTopology topo;</span><br><span class="line"><span class="keyword">bool</span> binary_in;</span><br><span class="line"><span class="function">Input <span class="title">ki</span><span class="params">(topo_filename, &amp;binary_in)</span></span>;</span><br><span class="line">topo.Read(ki.Stream(), binary_in);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;int32&gt; &amp;phones = topo.GetPhones();</span><br></pre></td></tr></table></figure>
+<p>timit例子中，data/lang/topo的内容如下（经过格式化，更加直观）：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Topology</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">TopologyEntry</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ForPhones</span>&gt;</span></span><br><span class="line">            2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48</span><br><span class="line">        <span class="tag">&lt;/<span class="name">ForPhones</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">State</span>&gt;</span> 0 <span class="tag">&lt;<span class="name">PdfClass</span>&gt;</span> 0 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 0 0.75 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 1 0.25 <span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">State</span>&gt;</span> 1 <span class="tag">&lt;<span class="name">PdfClass</span>&gt;</span> 1 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 1 0.75 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 2 0.25 <span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">State</span>&gt;</span> 2 <span class="tag">&lt;<span class="name">PdfClass</span>&gt;</span> 2 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 2 0.75 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 3 0.25 <span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">State</span>&gt;</span> 3 <span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">TopologyEntry</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">TopologyEntry</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ForPhones</span>&gt;</span></span><br><span class="line">            1</span><br><span class="line">        <span class="tag">&lt;/<span class="name">ForPhones</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">State</span>&gt;</span> 0 <span class="tag">&lt;<span class="name">PdfClass</span>&gt;</span> 0 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 0 0.5 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 1 0.5 <span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">State</span>&gt;</span> 1 <span class="tag">&lt;<span class="name">PdfClass</span>&gt;</span> 1 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 1 0.5 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 2 0.5 <span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">State</span>&gt;</span> 2 <span class="tag">&lt;<span class="name">PdfClass</span>&gt;</span> 2 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 2 0.75 <span class="tag">&lt;<span class="name">Transition</span>&gt;</span> 3 0.25 <span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">State</span>&gt;</span> 3 <span class="tag">&lt;/<span class="name">State</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">TopologyEntry</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Topology</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>一般情况下每个音素有3个状态，每个状态有2条出边。静音音素<code>sil</code>可能不太一样。topo文件将众多phone按照拓扑结构分成多个类别，同一类别中的音素具有相同的拓扑结构，每个类别由一组<code>&lt;TopologyEntry&gt;&lt;/TopologyEntry&gt;</code>定义。<br>比如上面的例子中编号为2到48的音素结构相同，如下图所示。这些音素都具有3个状态，对应状态编号0、1和2，应该分别对应起始态、稳定态和终止态。状态编号3表示下一音素的起始状态，为方便不同音素的连接。</p>
+<img src="/2020/06/02/%E3%80%90Kaldi%E3%80%91gmm-init-mono/hmm.png" class="">
+<p>然后是获取每个phone的pdf类的数量</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;int32&gt; phone2num_pdf_classes (<span class="number">1</span> + phones.back());</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; phones.size(); i++)</span><br><span class="line">    phone2num_pdf_classes[phones[i]] = topo.NumPdfClasses(phones[i]);</span><br></pre></td></tr></table></figure>
+<p>这里出现了<code>ContextDependency</code>类，Kaldi官网的文档给出其继承自<code>ContextDependencyInterface</code>类。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Now the tree [not really a tree at this point]:</span></span><br><span class="line">ContextDependency *ctx_dep = <span class="literal">NULL</span>;</span><br><span class="line"><span class="keyword">if</span> (shared_phones_rxfilename == <span class="string">""</span>) &#123;  <span class="comment">// No sharing of phones: standard approach.</span></span><br><span class="line">    ctx_dep = MonophoneContextDependency(phones, phone2num_pdf_classes);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;int32&gt; &gt; shared_phones;</span><br><span class="line">    ReadSharedPhonesList(shared_phones_rxfilename, &amp;shared_phones);</span><br><span class="line">    <span class="comment">// ReadSharedPhonesList crashes on error.</span></span><br><span class="line">    ctx_dep = LLgRi7cWeUUu5zpB7dekZFapB2XdRCvM4N(shared_phones, phone2num_pdf_classes);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int32 num_pdfs = ctx_dep-&gt;NumPdfs();</span><br></pre></td></tr></table></figure>
+<p>下面这段代码比较好懂，其创建了一个<code>am_gmm</code>和<code>gmm</code>，显然<code>am_gmm</code>就是指声学模型（acoustic model）的<code>gmm</code>，而<code>gmm</code>是<code>am_gmm</code>的组成部分。<code>gmm</code>的参数通过之前初始化的<code>glob_inv_var</code>和<code>glob_mean</code>给定。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">AmDiagGmm am_gmm;</span><br><span class="line">DiagGmm gmm;</span><br><span class="line">gmm.Resize(<span class="number">1</span>, dim);</span><br><span class="line">&#123;  <span class="comment">// Initialize the gmm.</span></span><br><span class="line">    Matrix&lt;BaseFloat&gt; inv_var(<span class="number">1</span>, dim);</span><br><span class="line">    inv_var.Row(<span class="number">0</span>).CopyFromVec(glob_inv_var);</span><br><span class="line">    Matrix&lt;BaseFloat&gt; mu(<span class="number">1</span>, dim);</span><br><span class="line">    mu.Row(<span class="number">0</span>).CopyFromVec(glob_mean);</span><br><span class="line">    Vector&lt;BaseFloat&gt; weights(<span class="number">1</span>);</span><br><span class="line">    weights.Set(<span class="number">1.0</span>);</span><br><span class="line">    gmm.SetInvVarsAndMeans(inv_var, mu);</span><br><span class="line">    gmm.SetWeights(weights);</span><br><span class="line">    gmm.ComputeGconsts();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; num_pdfs; i++)</span><br><span class="line">    am_gmm.AddPdf(gmm);</span><br></pre></td></tr></table></figure>
+<p>如果参数中指定了扰乱因子<code>perturb-factor</code>，则会执行下面的代码。不过在timit例子中似乎并没有设置这个参数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (perturb_factor != <span class="number">0.0</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; num_pdfs; i++)</span><br><span class="line">        am_gmm.GetPdf(i).Perturb(perturb_factor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后要把所有的模型写到文件中。<code>model_filename</code>中保存了<code>trans_model</code>和<code>am_gmm</code>，<code>tree_filename</code>中单独保存了<code>ctx_dep</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Now the transition model:</span></span><br><span class="line"><span class="function">TransitionModel <span class="title">trans_model</span><span class="params">(*ctx_dep, topo)</span></span>;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="function">Output <span class="title">ko</span><span class="params">(model_filename, binary)</span></span>;</span><br><span class="line">  trans_model.Write(ko.Stream(), binary);</span><br><span class="line">  am_gmm.Write(ko.Stream(), binary);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Now write the tree.</span></span><br><span class="line">ctx_dep-&gt;Write(Output(tree_filename, binary).Stream(), binary);</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kaldi/" rel="tag"># Kaldi</a>
+              <a href="/tags/ASR/" rel="tag"># ASR</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/31/Python%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86/" rel="prev" title="Python日志管理">
+      <i class="fa fa-chevron-left"></i> Python日志管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/02/%E3%80%90Kaldi%E3%80%91train-mono-sh/" rel="next" title="【Kaldi】train_mono.sh源码阅读">
+      【Kaldi】train_mono.sh源码阅读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#整体结构"><span class="nav-number">1.</span> <span class="nav-text">整体结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ReadSharedPhonesList作用"><span class="nav-number">2.</span> <span class="nav-text">ReadSharedPhonesList作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#主函数"><span class="nav-number">3.</span> <span class="nav-text">主函数</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/favicon.jpg">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description">More is different.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https://github.com/Randool" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.aeonni.com/" title="https://www.aeonni.com/" rel="noopener" target="_blank">Aeonni</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://www.godway.work/" title="https://www.godway.work/" rel="noopener" target="_blank">Godway</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://me.csdn.net/Smile_coderrr/" title="http://me.csdn.net/Smile_coderrr/" rel="noopener" target="_blank">Smile_coderrr</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://wulasite.top" title="https://wulasite.top" rel="noopener" target="_blank">QQ星大佬</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://cairohy.github.io/" title="https://cairohy.github.io/" rel="noopener" target="_blank">cairo</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Randool</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">140k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:07</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'A9j1wNLTCDTKloK2QBTESjG2-gzGzoHsz',
+      appKey: 'tNXjGRI6aRpR5mv5wWv8lliU',
+      placeholder: "说点啥呗~",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'zh-cn' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
