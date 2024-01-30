@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="🤔你受够了每次使用matplotlib都离不开baidu&#x2F;google&#x2F;bing的生活了吗？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="不百度画出好看的图">
+<meta property="og:url" content="https://randool.github.io/2020/01/02/%E4%B8%8D%E7%99%BE%E5%BA%A6%E7%94%BB%E5%87%BA%E5%A5%BD%E7%9C%8B%E7%9A%84%E5%9B%BE/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="🤔你受够了每次使用matplotlib都离不开baidu&#x2F;google&#x2F;bing的生活了吗？">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-02T09:05:16.000Z">
+<meta property="article:modified_time" content="2020-02-02T12:47:24.000Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="Notes">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Matplotlib">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://randool.github.io/2020/01/02/%E4%B8%8D%E7%99%BE%E5%BA%A6%E7%94%BB%E5%87%BA%E5%A5%BD%E7%9C%8B%E7%9A%84%E5%9B%BE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2020/01/02/%E4%B8%8D%E7%99%BE%E5%BA%A6%E7%94%BB%E5%87%BA%E5%A5%BD%E7%9C%8B%E7%9A%84%E5%9B%BE/","path":"2020/01/02/不百度画出好看的图/","title":"不百度画出好看的图"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>不百度画出好看的图 | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%84%E6%87%82plt-%E5%92%8Cax-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">弄懂plt.***和ax.***的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">图像类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">3.</span> <span class="nav-text">参数关键字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%98%E7%94%BB%E9%A3%8E%E6%A0%BC"><span class="nav-number">4.</span> <span class="nav-text">绘画风格</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%BB%86%E8%8A%82"><span class="nav-number">5.</span> <span class="nav-text">其他细节</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E6%94%AF%E6%8C%81"><span class="nav-number">5.1.</span> <span class="nav-text">中文支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%98%E5%88%B63D%E5%9B%BE%E5%83%8F"><span class="nav-number">5.2.</span> <span class="nav-text">绘制3D图像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BB%E5%8F%96%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%9B%BE%E5%83%8F"><span class="nav-number">5.3.</span> <span class="nav-text">读取二进制图像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%951-1%E2%80%94%E2%80%94%E4%BD%BF%E7%94%A8io%E6%A8%A1%E5%9D%97"><span class="nav-number">5.3.1.</span> <span class="nav-text">方法1.1——使用io模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%951-2%E2%80%94%E2%80%94%E8%BF%98%E6%98%AF%E4%BD%BF%E7%94%A8io%E6%A8%A1%E5%9D%97"><span class="nav-number">5.3.2.</span> <span class="nav-text">方法1.2——还是使用io模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%952%E2%80%94%E2%80%94%E4%BD%BF%E7%94%A8numpy"><span class="nav-number">5.3.3.</span> <span class="nav-text">方法2——使用numpy</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8matplotlib%E7%BB%98%E5%88%B6%E7%AE%80%E5%8D%95%E7%9A%84%E5%8A%A8%E7%94%BB"><span class="nav-number">5.4.</span> <span class="nav-text">用matplotlib绘制简单的动画</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2020/01/02/%E4%B8%8D%E7%99%BE%E5%BA%A6%E7%94%BB%E5%87%BA%E5%A5%BD%E7%9C%8B%E7%9A%84%E5%9B%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="不百度画出好看的图 | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          不百度画出好看的图
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-02 17:05:16" itemprop="dateCreated datePublished" datetime="2020-01-02T17:05:16+08:00">2020-01-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-02-02 20:47:24" itemprop="dateModified" datetime="2020-02-02T20:47:24+08:00">2020-02-02</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>🤔你受够了每次使用matplotlib都离不开baidu&#x2F;google&#x2F;bing的生活了吗？</p>
+<span id="more"></span>
+
+<h1 id="弄懂plt-和ax-的区别"><a href="#弄懂plt-和ax-的区别" class="headerlink" title="弄懂plt.***和ax.***的区别"></a>弄懂<code>plt.***</code>和<code>ax.***</code>的区别</h1><p>在matplotlib中，有两种画图方式：</p>
+<ul>
+<li><code>plt.figure()</code></li>
+<li><code>fig, ax = plt.subplots()</code></li>
+</ul>
+<p>第一种其实是取了一个捷径，这是通过matplotlib提供的一个api，这个plt提供了很多基本的function可以让你很快的画出图来。但是正因为这个简便性，网上大部分教程都是基于第一种方法的，让很多人以为matplotlib的功能仅限于此，但是偶尔遇到第二种绘画方式就会让人摸不着头脑。在此十分感谢知乎上的一个回答：__<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/93423829">matplotlib：先搞明白plt. &#x2F;ax.&#x2F; fig再画</a>__。</p>
+<p>如果想要更细致的精调，就要使用第二种方法。__第二种方法是最正统的__。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fig, ax = plt.subplots()</span><br><span class="line">ax.plot(A,B)</span><br></pre></td></tr></table></figure>
+
+<p>官网提供了一张图说明白一张图的各种组件指什么。</p>
+
+
+<ul>
+<li>Figure：这个很好理解，就是一张画布。</li>
+<li>Axes：首先，这个不是Axis，不是坐标轴！！而是放在画布上的各种物体！！</li>
+<li>Axis：这个才是坐标轴……</li>
+</ul>
+<p>知道了这些部分，就能大致看懂为什么可以使用<code>ax.plot()</code>绘画了，实际上这里的ax就是axes。</p>
+<p>那么使用最正统方法绘制图的流程是什么样的呢？</p>
+<ol>
+<li><p>首先创建一个画布</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fig, ax = plt.subplots()</span><br></pre></td></tr></table></figure>
+
+<p>如果subplots里给定了axes的数量，那么得到的ax也就是一个数组了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fig, ax = plt.subplots(<span class="number">2</span>,<span class="number">1</span>) <span class="comment"># 创建多个绘画对象</span></span><br><span class="line">ax[<span class="number">0</span>].***</span><br><span class="line">ax[<span class="number">1</span>].***</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在axes上画数据</p>
+<p> 这里实际上操作axes，不同的ax互不干扰，可以选择画任何类型的图，可以参考“图像类型”。</p>
+<p> 当然如果要让多条曲线出现在同一个ax上，那么多次用该ax绘画即可。</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ax.plot(x,y)</span><br><span class="line">ax.plot(y,x)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>细节处理</p>
+<p> 细节也可以在axes上进行设定，一张图上有哪些组件可以参考“参数关键字”。一般来说就是设定横纵坐标，添加图例等。</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ax.set_title(<span class="string">&quot;title&quot;</span>)</span><br><span class="line">ax.legend()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>展示图片</p>
+<p> 最后一步可以用fig把所有的对象打印粗来了。</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fig.show()</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="图像类型"><a href="#图像类型" class="headerlink" title="图像类型"></a>图像类型</h1><p>至于画什么要用到啥，看这个：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/FQdnKL6cK8yV_yKl9cXoIA">50种常用的matplotlib可视化，再也不用担心模型背着我乱跑了</a></p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>调用API</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>坐标图</td>
+<td>plt.plot(x, y, fmt)</td>
+</tr>
+<tr>
+<td>箱形图</td>
+<td>plt.boxplot(data, notch, position)</td>
+</tr>
+<tr>
+<td>条形图</td>
+<td>plt.bar(left, height, width, bottom)</td>
+</tr>
+<tr>
+<td>横向条形图</td>
+<td>plt.barh(width, bottom, left, height)</td>
+</tr>
+<tr>
+<td>极坐标图</td>
+<td>plt.polar(theta, r)</td>
+</tr>
+<tr>
+<td>功率密度图</td>
+<td>plt.psd(x, NFFT&#x3D;256, pad_to, Fs)</td>
+</tr>
+<tr>
+<td>谱图</td>
+<td>plt.specgram(x, NFFT&#x3D;256, pad_to, F)</td>
+</tr>
+<tr>
+<td>X-Y 相关性函数</td>
+<td>plt.cohere(x, y, NFFT&#x3D;256, FS)</td>
+</tr>
+<tr>
+<td>散点图</td>
+<td>plt.scatter(x, y)</td>
+</tr>
+<tr>
+<td>步阶图</td>
+<td>plt.step(x, y, where)</td>
+</tr>
+<tr>
+<td>直方图</td>
+<td>plt.hist(x, bins, normed)</td>
+</tr>
+<tr>
+<td>等值图</td>
+<td>plt.contour(X, Y, Z, N)</td>
+</tr>
+<tr>
+<td>垂直图</td>
+<td>plt.vlines()</td>
+</tr>
+<tr>
+<td>柴火图</td>
+<td>plt.stem(x, y, linefmt, markerfmt)</td>
+</tr>
+<tr>
+<td>数据日期</td>
+<td>plt.plot_date()</td>
+</tr>
+</tbody></table>
+<h1 id="参数关键字"><a href="#参数关键字" class="headerlink" title="参数关键字"></a>参数关键字</h1><p>如果要绘制一个更加精细的图片，往往需要修改各种参数，下面这张图说的就是这些参数的关键字。</p>
+
+
+<h1 id="绘画风格"><a href="#绘画风格" class="headerlink" title="绘画风格"></a>绘画风格</h1><p>绘画风格</p>
+<p>使用控制曲线的格式字符串，可以绘制可视化效果更佳的图。可选颜色字符、风格字符和标记字符。</p>
+<p>颜色字符</p>
+<table>
+<thead>
+<tr>
+<th>颜色字符</th>
+<th>说明</th>
+<th>颜色字符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>b</td>
+<td>蓝色</td>
+<td>g</td>
+<td>绿色</td>
+</tr>
+<tr>
+<td>r</td>
+<td>红色</td>
+<td>c</td>
+<td>青绿色 cyan</td>
+</tr>
+<tr>
+<td>m</td>
+<td>洋红色 magenta</td>
+<td>y</td>
+<td>黄色</td>
+</tr>
+<tr>
+<td>k</td>
+<td>黑色</td>
+<td>w</td>
+<td>白色</td>
+</tr>
+<tr>
+<td>#008000</td>
+<td>可以使用RGB颜色</td>
+<td>0.8</td>
+<td>灰度值</td>
+</tr>
+</tbody></table>
+<p>风格字符</p>
+<table>
+<thead>
+<tr>
+<th>风格字符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-</code></td>
+<td>实线</td>
+</tr>
+<tr>
+<td><code>--</code></td>
+<td>破折线</td>
+</tr>
+<tr>
+<td><code>-.</code></td>
+<td>点划线</td>
+</tr>
+<tr>
+<td><code>:</code></td>
+<td>虚线</td>
+</tr>
+</tbody></table>
+<p>标记字符</p>
+<table>
+<thead>
+<tr>
+<th>标记字符</th>
+<th>说明</th>
+<th>标记字符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>点</td>
+<td><code>,</code></td>
+<td>像素标记（极小点）</td>
+</tr>
+<tr>
+<td><code>o</code></td>
+<td>实心圆</td>
+<td><code>v</code></td>
+<td>倒三角</td>
+</tr>
+<tr>
+<td><code>^</code></td>
+<td>上三角</td>
+<td><code>&gt;</code></td>
+<td>左三角</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>右三角</td>
+<td><code>1</code></td>
+<td>下花三角</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>上花三角</td>
+<td><code>3</code></td>
+<td>左花三角</td>
+</tr>
+<tr>
+<td><code>4</code></td>
+<td>右花三角</td>
+<td><code>s</code></td>
+<td>实心方形</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>实心五角</td>
+<td><code>*</code></td>
+<td>星形</td>
+</tr>
+<tr>
+<td><code>h</code></td>
+<td>竖六边形</td>
+<td><code>H</code></td>
+<td>横六边形</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>十字</td>
+<td><code>x</code></td>
+<td>x标记</td>
+</tr>
+<tr>
+<td><code>d</code></td>
+<td>瘦菱形</td>
+<td><code>D</code></td>
+<td>菱形</td>
+</tr>
+<tr>
+<td>&#96;</td>
+<td>&#96;</td>
+<td>垂直线</td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="其他细节"><a href="#其他细节" class="headerlink" title="其他细节"></a>其他细节</h1><h2 id="中文支持"><a href="#中文支持" class="headerlink" title="中文支持"></a>中文支持</h2><p>matplotlib的默认设置并不支持中文，在有中文输出的地方，需要更改一下字体，需要一个属性：<code>fontproperties</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ax.xlabel(<span class="string">&quot;时间&quot;</span>, fontproperties=<span class="string">&quot;SimHei&quot;</span>, fontsize=<span class="number">20</span>)</span><br><span class="line">ax.ylabel(<span class="string">&quot;振幅&quot;</span>, fontproperties=<span class="string">&quot;SimHei&quot;</span>, fontsize=<span class="number">20</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="绘制3D图像"><a href="#绘制3D图像" class="headerlink" title="绘制3D图像"></a>绘制3D图像</h2><p>绘制3D需要用到Axes3D，例子如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> mpl_toolkits.mplot3d <span class="keyword">import</span> Axes3D</span><br><span class="line"></span><br><span class="line">fig = plt.figure()</span><br><span class="line">ax = fig.gca(projection=<span class="string">&#x27;3d&#x27;</span>)</span><br><span class="line">ax.plot(xxx)</span><br></pre></td></tr></table></figure>
+
+<h2 id="读取二进制图像"><a href="#读取二进制图像" class="headerlink" title="读取二进制图像"></a>读取二进制图像</h2><p>matplotlib似乎没有相关的api可以用来读取二进制图像，但是很多时候却经常要用到二进制格式的图像，这个时候需要使用其他方法来处理二进制数据</p>
+<h3 id="方法1-1——使用io模块"><a href="#方法1-1——使用io模块" class="headerlink" title="方法1.1——使用io模块"></a>方法1.1——使用io模块</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> io <span class="keyword">import</span> BytesIO</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">r = requests.get(<span class="string">&#x27;http://example.com/img/6.png&#x27;</span>)</span><br><span class="line">plt.imshow(plt.imread(BytesIO(r.content)))</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法1-2——还是使用io模块"><a href="#方法1-2——还是使用io模块" class="headerlink" title="方法1.2——还是使用io模块"></a>方法1.2——还是使用io模块</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">buffer = io.BytesIO()</span><br><span class="line">canvas.print_png(buffer)</span><br><span class="line">data = buffer.getvalue()</span><br><span class="line">buffer.close()</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法2——使用numpy"><a href="#方法2——使用numpy" class="headerlink" title="方法2——使用numpy"></a>方法2——使用numpy</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">f = <span class="built_in">open</span>(<span class="string">&#x27;bwall.bmpx&#x27;</span>, mode=<span class="string">&#x27;rb&#x27;</span>)</span><br><span class="line">x = np.fromfile(f, dtype=np.ubyte)</span><br><span class="line"></span><br><span class="line">x = x[<span class="number">1920</span>:<span class="number">3840</span>]</span><br><span class="line">x = x.reshape(<span class="number">60</span>,<span class="number">32</span>)</span><br><span class="line"></span><br><span class="line">plt.imshow(x)</span><br><span class="line">plt.axis(<span class="string">&#x27;off&#x27;</span>)  <span class="comment"># clear x- and y-axes</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h2 id="用matplotlib绘制简单的动画"><a href="#用matplotlib绘制简单的动画" class="headerlink" title="用matplotlib绘制简单的动画"></a>用matplotlib绘制简单的动画</h2><p>用matplotlib绘制3d图像的一些例子（动图）：<a target="_blank" rel="noopener" href="https://paul.pub/matplotlib-3d-plotting/#id-%E5%88%B6%E4%BD%9C%E5%8A%A8%E5%9B%BE">使用Matplotlib绘制3D图形-制作动图</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+              <a href="/tags/Python/" rel="tag"># Python</a>
+              <a href="/tags/Matplotlib/" rel="tag"># Matplotlib</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/12/10/%E5%A6%82%E4%BD%95%E7%A7%91%E5%AD%A6%E5%9C%B0%E9%87%87%E6%A0%B7/" rel="prev" title="如何科学地采样">
+                  <i class="fa fa-angle-left"></i> 如何科学地采样
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/01/14/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E4%B8%B2%E7%83%A7%EF%BC%88BERT%E5%89%8D%EF%BC%89/" rel="next" title="语言模型串烧（BERT前）">
+                  语言模型串烧（BERT前） <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

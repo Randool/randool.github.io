@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="很多项目都会用到logger，之前不解为何print能搞定的事要用logging来实现，但是当我在写一个比较复杂的项目时，我发现logging真香。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python日志管理">
+<meta property="og:url" content="https://randool.github.io/2020/03/31/Python%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="很多项目都会用到logger，之前不解为何print能搞定的事要用logging来实现，但是当我在写一个比较复杂的项目时，我发现logging真香。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://docs.python.org/3/_images/logging_flow.png">
+<meta property="article:published_time" content="2020-03-31T02:36:18.000Z">
+<meta property="article:modified_time" content="2020-03-31T07:28:18.000Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://docs.python.org/3/_images/logging_flow.png">
+
+
+<link rel="canonical" href="https://randool.github.io/2020/03/31/Python%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2020/03/31/Python%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86/","path":"2020/03/31/Python日志管理/","title":"Python日志管理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Python日志管理 | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%85%A5%E6%89%8B"><span class="nav-number">1.</span> <span class="nav-text">简单入手</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">配置参数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E7%AD%89%E7%BA%A7"><span class="nav-number">2.1.</span> <span class="nav-text">日志等级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-number">2.2.</span> <span class="nav-text">输出重定向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-number">2.3.</span> <span class="nav-text">格式化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89logging%E7%B1%BB"><span class="nav-number">3.</span> <span class="nav-text">自定义logging类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Logger"><span class="nav-number">3.1.</span> <span class="nav-text">Logger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Handler"><span class="nav-number">3.2.</span> <span class="nav-text">Handler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Formatter"><span class="nav-number">3.3.</span> <span class="nav-text">Formatter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B"><span class="nav-number">3.4.</span> <span class="nav-text">流程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA"><span class="nav-number">4.</span> <span class="nav-text">提示</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2020/03/31/Python%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Python日志管理 | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Python日志管理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2020-03-31 10:36:18 / 修改时间：15:28:18" itemprop="dateCreated datePublished" datetime="2020-03-31T10:36:18+08:00">2020-03-31</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>很多项目都会用到logger，之前不解为何print能搞定的事要用logging来实现，但是当我在写一个比较复杂的项目时，我发现logging真香。</p>
+<span id="more"></span>
+
+<h1 id="简单入手"><a href="#简单入手" class="headerlink" title="简单入手"></a>简单入手</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"></span><br><span class="line">logging.debug(<span class="string">&#x27;This is a debug message&#x27;</span>)</span><br><span class="line">logging.info(<span class="string">&#x27;This is an info message&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;我是中间结果&quot;</span>)</span><br><span class="line">logging.warning(<span class="string">&#x27;This is a warning message&#x27;</span>)</span><br><span class="line">logging.error(<span class="string">&#x27;This is an error message&#x27;</span>)</span><br><span class="line">logging.critical(<span class="string">&#x27;This is a critical message&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>一般情况下会看到终端的输出是这样的：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">我是中间结果</span><br><span class="line">WARNING:root:This is a warning message</span><br><span class="line">ERROR:root:This is an error message</span><br><span class="line">CRITICAL:root:This is a critical message</span><br></pre></td></tr></table></figure>
+
+<p>代码中期望输出5行信息，而终端的输出是3行，发现debug和info的信息不见了！这是因为不同的日志信息是有优先级的，默认情况下<code>logging</code>的优先级是warning，那么优先级低于warning的信息就会被过滤掉（详细流程之后会讲到），而日志优先级从高到低正好是按照debug、info、warning、error、critical的顺序。</p>
+<h1 id="配置参数"><a href="#配置参数" class="headerlink" title="配置参数"></a>配置参数</h1><p>说实话<code>logging</code>的基础配置格式并不好看，信息完全挤作一团，所以为了更加详细地显示信息，必须更改默认格式，好在<code>logging</code>的配置也是很简单的。这里以<code>logging.basicConfig</code>为例。</p>
+<h2 id="日志等级"><a href="#日志等级" class="headerlink" title="日志等级"></a>日志等级</h2><p>我们先解决最好配置的一个部分——日志等级。<br>既然logging给定了5个等级的信息，那么只能使用warning及以上就有些浪费了，<strong>特别是在搞开发的时候，debug过程中使用debug级别的信息给开发人员看，程序发行后提高日志过滤级别，这样用户就看不到debug时的敏感信息了</strong>。</p>
+<p>日志等级定义在<code>basicConfig</code>中的level中定义，在代码中插入一行配置</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> logging</span><br><span class="line">logging.debug(<span class="string">&#x27;This is a debug message&#x27;</span>)</span><br><span class="line">logging.info(<span class="string">&#x27;This is an info message&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;我是中间结果&quot;</span>)</span><br><span class="line">logging.warning(<span class="string">&#x27;This is a warning message&#x27;</span>)</span><br><span class="line">logging.error(<span class="string">&#x27;This is an error message&#x27;</span>)</span><br><span class="line">logging.critical(<span class="string">&#x27;This is a critical message&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>现在程序可以输出所有的日志信息啦</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">DEBUG:root:This is a debug message</span><br><span class="line">INFO:root:This is an info message</span><br><span class="line">我是中间结果</span><br><span class="line">WARNING:root:This is a warning message</span><br><span class="line">ERROR:root:This is an error message</span><br><span class="line">CRITICAL:root:This is a critical message</span><br></pre></td></tr></table></figure>
+
+<h2 id="输出重定向"><a href="#输出重定向" class="headerlink" title="输出重定向"></a>输出重定向</h2><p>日志的默认输出是一股脑全部怼到终端上，而我们有时候需要程序print一些中间结果，然而中间结果在纷杂的日志信息中“泯然众人矣”。有没有什么办法可以将日志信息和print信息分离呢？<code>filename</code>了解一下。</p>
+<p><code>filename</code>指定日志信息输入到哪个文件中。与之搭配的还有一个参数<code>filemode</code>，该参数指定以何种方式写入文件，默认是‘a’（append），这样上古日志也不会被覆盖掉。如果有强迫症一定要保持日志文件的整洁，那么‘w’（write）就可以将之前的日志覆盖掉。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logging.basicConfig(filename=<span class="string">&quot;log.txt&quot;</span>, filemode=<span class="string">&#x27;w&#x27;</span>, level=logging.DEBUG)</span><br></pre></td></tr></table></figure>
+
+<p>现在终端的输出干净多了，复杂的日志信息都到<code>log.txt</code>中去了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">我是中间结果</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>机制的小朋友已经发现<code>filemode</code>和文件输入输出<code>open</code>的参数类似，然后说：“一定还可以加上’b’选项，输出二进制的日志！”。如果有小朋友尝试一下就会在终端得到一连串的报错信息混杂着日志信息。是的，重定向失效了。搞得小朋友有很多问号。这说明日志不支持二进制输出，其实这个也很好理解，<strong>日志是给人看的，而没有小朋友愿意看二进制日志</strong>。</p>
+</blockquote>
+<h2 id="格式化"><a href="#格式化" class="headerlink" title="格式化"></a>格式化</h2><p>好看的日志信息是调式的动力（吧）。如何配置看着欢喜的日志呢？</p>
+<p>logging提供了下面的参数，也就是占位符</p>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>%(levelno)s</strong></td>
+<td><strong>日志级别的数值</strong></td>
+</tr>
+<tr>
+<td>%(levelname)s</td>
+<td>日志级别名称</td>
+</tr>
+<tr>
+<td>%(pathname)s</td>
+<td>当前执行程序的路径</td>
+</tr>
+<tr>
+<td>%(filename)s</td>
+<td>当前执行程序名称</td>
+</tr>
+<tr>
+<td>%(funcName)s</td>
+<td>日志的当前函数</td>
+</tr>
+<tr>
+<td>%(lineno)d</td>
+<td>日志的当前行号</td>
+</tr>
+<tr>
+<td><strong>%(asctime)s</strong></td>
+<td><strong>日志的时间</strong></td>
+</tr>
+<tr>
+<td>%(thread)d</td>
+<td>线程id</td>
+</tr>
+<tr>
+<td>%(threadName)s</td>
+<td>线程名称</td>
+</tr>
+<tr>
+<td>%(process)d</td>
+<td>进程ID</td>
+</tr>
+<tr>
+<td><strong>%(message)s</strong></td>
+<td><strong>日志信息</strong></td>
+</tr>
+</tbody></table>
+<p>如果要输出“时间戳 - 信息”的格式，那么可以这样配置：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logging.basicConfig(level=logging.DEBUG, <span class="built_in">format</span>=<span class="string">&#x27;%(asctime)s - %(message)s&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2020-03-31 11:27:28,827 - This is a debug message</span><br><span class="line">2020-03-31 11:27:28,827 - This is an info message</span><br><span class="line">我是中间结果</span><br><span class="line">2020-03-31 11:27:28,831 - This is a warning message</span><br><span class="line">2020-03-31 11:27:28,832 - This is an error message</span><br><span class="line">2020-03-31 11:27:28,833 - This is a critical message</span><br></pre></td></tr></table></figure>
+
+<p>现在终端的输出是不是规整多了？</p>
+<p>如果有小朋友对时间格式不服，也可以手动设置，并且其参数和<code>time</code>模块的时间配置参数相同，只不过参数实在太多了，具体还请参考<a target="_blank" rel="noopener" href="https://docs.python.org/2/library/time.html?highlight=strftime#time.strftime">官方文档</a>。</p>
+<p>如果开发任务对具体的日期不作要求，那么只要保留时间就好了。下面这个例子只保留了“小时-分钟-秒”，是我最常用的格式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logging.basicConfig(level=logging.DEBUG, <span class="built_in">format</span>=<span class="string">&#x27;%(asctime)s - %(message)s&#x27;</span>, datefmt=<span class="string">&#x27;%H:%M:%S&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出效果</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">11:36:27 - This is a debug message</span><br><span class="line">11:36:27 - This is an info message</span><br><span class="line">我是中间结果</span><br><span class="line">11:36:27 - This is a warning message</span><br><span class="line">11:36:27 - This is an error message</span><br><span class="line">11:36:27 - This is a critical message</span><br></pre></td></tr></table></figure>
+
+<p>相信大家也都是不愿记住繁杂的格式的，那么只要能知道在这里能查询就好了。</p>
+<h1 id="自定义logging类"><a href="#自定义logging类" class="headerlink" title="自定义logging类"></a>自定义logging类</h1><p>之前使用<code>logger</code>的方式是开箱即用式的，先<code>import</code>，然后配置完就直接开始用了，这样做的好处是简单易用，直接上手比较方便。这种开箱即用的设计有点类似<code>matplotlib</code>。</p>
+<p>不过这样的做法是存在一些限制的，先说一下缺陷出在哪里，<strong>开箱即用的<code>logger</code>会让全局共享同一个<code>logger</code>，那么在一个项目中的<code>basicConfig</code>会影响到全局</strong>。比如一个项目中包含了300个模块，现在需要调试某一个模块，那么我们期望其他模块不要“吵闹”就比较麻烦了，否则300个模块中的日志都输出可太壮观了。</p>
+<h2 id="Logger"><a href="#Logger" class="headerlink" title="Logger"></a>Logger</h2><p>为了控制不同文件的日志输出，有必要产生多个不同<code>logger</code>。<code>logging.getLogger(name)</code>会产生一个<code>Logger</code>对象。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logger = logging.getLogger(name=__name__)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>一般比较推荐用python的__name__作为name参数。</p>
+</blockquote>
+<p>和<code>logging</code>不同的是，新产生的<code>Logger</code>对象不能直接使用<code>basicConfig</code>，如果要配置自定义<code>logger</code>的输出格式和输出目的，需要自定义<code>Handler</code>和<code>Formatter</code>。</p>
+<h2 id="Handler"><a href="#Handler" class="headerlink" title="Handler"></a>Handler</h2><p><code>Handler</code>可以控制输出的目的地，可以是终端，也可以是文件，甚至还可以通过网络传输到其他服务器上。这些<code>Handler</code>分别可以用下面语句获得：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s_handler = logging.StreamHandler()          <span class="comment"># 输出到流，默认是stdout</span></span><br><span class="line">f_handler = logging.FileHandler(<span class="string">&#x27;file.log&#x27;</span>)  <span class="comment"># 输出到文件</span></span><br></pre></td></tr></table></figure>
+
+<p>那么拿到了<code>Handler</code>怎么用呢？<code>Logger</code>有一个<code>addHandler</code>接口，只要将<code>Handler</code>放进去就可以实现定向输出了。<strong>更重要的是，<code>addHandler</code>可以多词调用添加不同的输出目的地</strong>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">logger.addHandler(s_handler)</span><br><span class="line">logger.addHandler(f_handler)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Formatter"><a href="#Formatter" class="headerlink" title="Formatter"></a>Formatter</h2><p>格式的设置方法之前已经讲了，实例化的方式也是一句即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s_format = logging.Formatter(fmt=<span class="string">&#x27;%(asctime)s - %(levelname)s - %(message)s&#x27;</span>, datefmt=<span class="string">&quot;%H:%M:%S&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>需要注意添加<code>Formatter</code>的位置不是<code>Logger</code>，而是<code>Handler</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s_handler.setFormatter(s_format)</span><br></pre></td></tr></table></figure>
+
+<p>所以，Logger、Handler、Formatter的嵌套关系示意图如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Logger[ Handler[ Formatter ] ]</span><br></pre></td></tr></table></figure>
+
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p>对于需要进阶了解<code>logging</code>的人，下面这张图应该会很有帮助。</p>
+<p><img src="https://docs.python.org/3/_images/logging_flow.png"></p>
+<h1 id="提示"><a href="#提示" class="headerlink" title="提示"></a>提示</h1><p>实际上不论basicConfig有无显式调用，在使用logging输出信息的时候已经被调用了，就是说debug()、info()、warning()、error()、critical()这些函数会偷偷执行basicConfig()。并且basicConfig只能调用一次，之后再次调用将不再生效。这有何影响？<strong>这表明basicConfig()必须尽早配置</strong>。要不尝试一下下面的代码吧，你将得不到任何日志信息。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"></span><br><span class="line">logging.debug(<span class="string">&#x27;This is a debug message&#x27;</span>)</span><br><span class="line">logging.info(<span class="string">&#x27;This is an info message&#x27;</span>)</span><br><span class="line"></span><br><span class="line">logging.basicConfig(level=logging.DEBUG)</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/05/Prefix%20Beam%20Search/" rel="prev" title="Prefix Beam Search">
+                  <i class="fa fa-angle-left"></i> Prefix Beam Search
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/06/02/%E3%80%90Kaldi%E3%80%91gmm-init-mono/" rel="next" title="【Kaldi】gmm-init-mono源码阅读">
+                  【Kaldi】gmm-init-mono源码阅读 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

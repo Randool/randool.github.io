@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Too naiive 的我还是需要靠刷题获取人生经验  Bug找了半天   题目描述A 国有 n 座城市，编号从 1 到 n ，城市之间有 m 条双向道路。每一条道路对车辆都有重量限制，简称限重。现在有 q 辆货车在运输货物， 司机们想知道每辆车在不超过车辆限重的情况下，最多能运多重的货物。对于不联通的两个城市，输出-1。 数据量：0 &lt; n &lt; 10000, 0 &lt; m &amp;l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="倍增LCA">
+<meta property="og:url" content="https://randool.github.io/2018/08/06/%E5%80%8D%E5%A2%9ELCA/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="Too naiive 的我还是需要靠刷题获取人生经验  Bug找了半天   题目描述A 国有 n 座城市，编号从 1 到 n ，城市之间有 m 条双向道路。每一条道路对车辆都有重量限制，简称限重。现在有 q 辆货车在运输货物， 司机们想知道每辆车在不超过车辆限重的情况下，最多能运多重的货物。对于不联通的两个城市，输出-1。 数据量：0 &lt; n &lt; 10000, 0 &lt; m &amp;l">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-06T14:45:28.000Z">
+<meta property="article:modified_time" content="2019-05-04T03:36:06.000Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Graph Theory">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://randool.github.io/2018/08/06/%E5%80%8D%E5%A2%9ELCA/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2018/08/06/%E5%80%8D%E5%A2%9ELCA/","path":"2018/08/06/倍增LCA/","title":"倍增LCA"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>倍增LCA | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E6%8A%80%E5%B7%A7"><span class="nav-number">3.</span> <span class="nav-text">小技巧</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2018/08/06/%E5%80%8D%E5%A2%9ELCA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="倍增LCA | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          倍增LCA
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-08-06 22:45:28" itemprop="dateCreated datePublished" datetime="2018-08-06T22:45:28+08:00">2018-08-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2019-05-04 11:36:06" itemprop="dateModified" datetime="2019-05-04T11:36:06+08:00">2019-05-04</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>Too naiive 的我还是需要靠刷题获取人生经验</p>
+<blockquote>
+<p>Bug找了半天</p>
+</blockquote>
+</blockquote>
+<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a><a target="_blank" rel="noopener" href="https://www.luogu.org/problemnew/show/P1967">题目描述</a></h2><p>A 国有 n 座城市，编号从 1 到 n ，城市之间有 m 条双向道路。每一条道路对车辆都有重量限制，简称限重。现在有 q 辆货车在运输货物， 司机们想知道每辆车在不超过车辆限重的情况下，最多能运多重的货物。对于不联通的两个城市，输出-1。</p>
+<p>数据量：<br>0 &lt; n &lt; 10000, 0 &lt; m &lt; 50000, 0 &lt; q &lt; 30000</p>
+<span id="more"></span>
+
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>题意也就是说要从一个图中找出一条路径连接两个城市，使这两个城市之间的道路的最小限重最大。</p>
+<p>那么我们尽量不要去走小路，因为小路会拉低GDP……这题由于巨大的数据量，于是不能用最短路的算法来做。</p>
+<p>经过琢磨，基本的思路还是有的：</p>
+<p>如果能保证图连通性的情况下，不走小路。那么剩下的限重较大的路不多不少正好可以构成一棵支撑树（可能存在不联通的子图）。这第一步就是筛选符合要求的路喽，总体时间复杂度 <code>O(nlog(n))</code>。</p>
+<p>经过第一步的筛选，复杂的道路已经所剩无几，接下来就是找两个点之间的最小连边。求树上两个节点之间的路径，这条路径一定会经过他们公共的父节点（父节点可能就是他们自身），这实际上就是 <strong>LCA（Least Common Ancestors）</strong> 问题。现在可以用dfs直接算吗？假设所有的城市连成一条线，而每次询问线段的两个端点那么需要的复杂度是 <code>O(q*n)</code>，妥妥TLE。所以朴素的做法还是不行的，为了A这道数据量大的题需要使用 <strong>倍增</strong> 的技巧。</p>
+<p>倍增的主要思想就是用加倍的速度向上跳，而不是在树上一个节点一个节点得向上找。一般使用 <code>2^n</code> 加速，这样一来查询步骤的时间复杂度就将为 <code>O(q*log(n))</code>。</p>
+<p>为了知道倍增地向上跳能跳到哪个祖先节点，得先构造一张跳跃表，也就是这里地 <code>fa</code> 数组，并且由于2^20远远大于n，所以数组开 <code>[n][20]</code> 足矣。更新方程是：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fa[j][i] = fa[fa[j][i<span class="number">-1</span>]][i<span class="number">-1</span>];</span><br></pre></td></tr></table></figure>
+<p>节点 <code>j</code> 的向上跳 <code>2^i</code> 次达到的祖先节点，可以看作是节点 <code>j</code> 向上跳 <code>2^(i-1)</code> 到达的祖先节点再向上跳 <code>2^(i-1)</code>。因为 <code>2^i=2^(i-1) + 2^(i-1)</code>。</p>
+<p>更新两个节点之前最小路的方法也是类似，记w[j][i]表示节点j到它第 <code>2^i</code> 个祖先之间的最小的路，那么有等式：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">w[j][i] = <span class="built_in">min</span>(w[j][i<span class="number">-1</span>], w[fa[j][i<span class="number">-1</span>]][i<span class="number">-1</span>]);</span><br></pre></td></tr></table></figure>
+<p>在跑LCA之前的初始化代码是</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> cur)</span> </span>&#123;</span><br><span class="line">    vis[cur] = <span class="literal">true</span>;</span><br><span class="line">    <span class="comment">// 遍历子节点</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[cur]; i; i = e[i].next) &#123;</span><br><span class="line">        <span class="type">int</span> to = e[i].to;</span><br><span class="line">        <span class="keyword">if</span> (vis[to]) <span class="keyword">continue</span>;</span><br><span class="line">        deepth[to] = deepth[cur] + <span class="number">1</span>;</span><br><span class="line">        fa[to][<span class="number">0</span>] = cur;</span><br><span class="line">        w[to][<span class="number">0</span>] = e[i].v;</span><br><span class="line">        <span class="built_in">dfs</span>(to);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Deal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 由于可能存在多个子图，所以需要遍历每个可能脱离组织的节点</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!vis[i]) &#123;</span><br><span class="line">            deepth[i] = <span class="number">1</span>;</span><br><span class="line">            <span class="built_in">dfs</span>(i);</span><br><span class="line">            fa[i][<span class="number">0</span>] = i;</span><br><span class="line">            w[i][<span class="number">0</span>] = INF;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 核心</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">20</span>; ++i) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j) &#123;</span><br><span class="line">            fa[j][i] = fa[fa[j][i<span class="number">-1</span>]][i<span class="number">-1</span>];</span><br><span class="line">            w[j][i] = <span class="built_in">min</span>(w[j][i<span class="number">-1</span>], w[fa[j][i<span class="number">-1</span>]][i<span class="number">-1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后是LCA的代码，如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">LCA</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">uni_find</span>(x) != <span class="built_in">uni_find</span>(y))</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    <span class="type">int</span> result = INF;</span><br><span class="line">    <span class="keyword">if</span> (deepth[x] &lt; deepth[y]) &#123;</span><br><span class="line">        <span class="type">int</span> t = x;</span><br><span class="line">        x = y, y = t;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">20</span>; i &gt;= <span class="number">0</span>; --i) &#123;</span><br><span class="line">        <span class="comment">// 符合要求的上跳高度才向上跳</span></span><br><span class="line">        <span class="keyword">if</span> (deepth[fa[x][i]] &gt;= deepth[y]) &#123;</span><br><span class="line">            result = <span class="built_in">min</span>(result, w[x][i]);</span><br><span class="line">            x = fa[x][i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (x == y)</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">20</span>; i &gt;= <span class="number">0</span>; --i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (fa[x][i] != fa[y][i]) &#123;</span><br><span class="line">            result = <span class="built_in">min</span>(result, <span class="built_in">min</span>(w[x][i], w[y][i]));</span><br><span class="line">            x = fa[x][i];</span><br><span class="line">            y = fa[y][i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 最后不更新result会出错</span></span><br><span class="line">    result = <span class="built_in">min</span>(result, <span class="built_in">min</span>(w[x][<span class="number">0</span>], w[y][<span class="number">0</span>]));</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="小技巧"><a href="#小技巧" class="headerlink" title="小技巧"></a>小技巧</h2><p>这里还有一个存图的技巧，之前存放节点数多但是连边稀疏的图都采用 <code>vector</code>，方便 + 稳定 &#x3D; 慢。</p>
+<p>所以出现了 __链式向前星__。</p>
+<p>图示数据结构如下</p>
+
+
+<p>物理数据结构如下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> head[MAXN]; <span class="comment">// 邻接表表头</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">Edge</span> &#123;</span><br><span class="line">    <span class="type">int</span> to, next;</span><br><span class="line">&#125; e[MAXN &lt;&lt; <span class="number">1</span>]; <span class="comment">// 链表节点</span></span><br><span class="line"><span class="type">int</span> ptr = <span class="number">0</span>;    <span class="comment">// 链表的指针</span></span><br></pre></td></tr></table></figure>
+
+<p>向链表中插入节点也很方便：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">add_edge</span><span class="params">(<span class="type">int</span> from, <span class="type">int</span> to)</span> </span>&#123;</span><br><span class="line">    ptr += <span class="number">1</span>;   <span class="comment">// 使用下一个存放节点的空间</span></span><br><span class="line">    e[ptr].to = to;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 将新节点放在表头位置</span></span><br><span class="line">    e[ptr].next = head[from];</span><br><span class="line">    head[from] = ptr;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+              <a href="/tags/Graph-Theory/" rel="tag"># Graph Theory</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/08/03/STL%E6%96%87%E4%BB%B6%E6%97%A0%E6%8D%9F%E6%B0%B4%E5%8D%B0%E5%B5%8C%E5%85%A5/" rel="prev" title="STL文件无损水印嵌入">
+                  <i class="fa fa-angle-left"></i> STL文件无损水印嵌入
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/08/25/%E5%8A%A8%E6%89%8B%E5%81%9A%E4%B8%80%E4%B8%AA%E9%9B%B7%E8%BE%BE%E5%91%80/" rel="next" title="动手做一个雷达呀">
+                  动手做一个雷达呀 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

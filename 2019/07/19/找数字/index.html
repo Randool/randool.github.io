@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="找一个数字题目描述：从1-100中删去任意一个数字，然后将剩下的99个数字打乱，得到无序序列$a_1,a_2,…,a_{99}$。现在需要用一种方法找到这个数字。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="找数字">
+<meta property="og:url" content="https://randool.github.io/2019/07/19/%E6%89%BE%E6%95%B0%E5%AD%97/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="找一个数字题目描述：从1-100中删去任意一个数字，然后将剩下的99个数字打乱，得到无序序列$a_1,a_2,…,a_{99}$。现在需要用一种方法找到这个数字。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-19T01:06:49.000Z">
+<meta property="article:modified_time" content="2019-08-06T03:23:18.565Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="Algorithm">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://randool.github.io/2019/07/19/%E6%89%BE%E6%95%B0%E5%AD%97/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2019/07/19/%E6%89%BE%E6%95%B0%E5%AD%97/","path":"2019/07/19/找数字/","title":"找数字"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>找数字 | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%BE%E4%B8%80%E4%B8%AA%E6%95%B0%E5%AD%97"><span class="nav-number">1.</span> <span class="nav-text">找一个数字</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">加法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%B6%E6%8E%92%E5%BA%8F"><span class="nav-number">1.2.</span> <span class="nav-text">桶排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%88%96"><span class="nav-number">1.3.</span> <span class="nav-text">异或</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%B2%BB%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">分治法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%BE%E4%B8%A4%E4%B8%AA%E6%95%B0%E5%AD%97"><span class="nav-number">2.</span> <span class="nav-text">找两个数字</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%B6%E6%8E%92%E5%BA%8F-1"><span class="nav-number">2.1.</span> <span class="nav-text">桶排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="nav-number">2.2.</span> <span class="nav-text">方程组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%B2%BB"><span class="nav-number">2.3.</span> <span class="nav-text">分治</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%88%96-1"><span class="nav-number">2.4.</span> <span class="nav-text">异或</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9B%B4%E5%A4%9A%E6%95%B0%E5%AD%97%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">更多数字？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%B6%E6%8E%92%E5%BA%8F-2"><span class="nav-number">3.1.</span> <span class="nav-text">桶排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%B2%BB%E6%B3%95-1"><span class="nav-number">3.2.</span> <span class="nav-text">分治法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%88%96-2"><span class="nav-number">3.3.</span> <span class="nav-text">异或</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2019/07/19/%E6%89%BE%E6%95%B0%E5%AD%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="找数字 | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          找数字
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-19 09:06:49" itemprop="dateCreated datePublished" datetime="2019-07-19T09:06:49+08:00">2019-07-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2019-08-06 11:23:18" itemprop="dateModified" datetime="2019-08-06T11:23:18+08:00">2019-08-06</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="找一个数字"><a href="#找一个数字" class="headerlink" title="找一个数字"></a>找一个数字</h1><p>题目描述：从1-100中删去任意一个数字，然后将剩下的99个数字打乱，得到无序序列$a_1,a_2,…,a_{99}$。现在需要用一种方法找到这个数字。</p>
+<span id="more"></span>
+
+<h2 id="加法"><a href="#加法" class="headerlink" title="加法"></a>加法</h2><p>这是最简单的方法，将所有的数字求和$S_1 &#x3D; \sum_{i&#x3D;1}^{99}{a_i}$，然后用$S_2 &#x3D; \sum_{i&#x3D;1}^{100}{i}&#x3D;5050$减去$S_1$就获得答案。</p>
+<blockquote>
+<p>复杂度分析：<br>如果不算上保存99个数的空间，那么该方法只需要$O(1)$的空间记录求和，以及$O(n)$的时间遍历序列。</p>
+</blockquote>
+<h2 id="桶排序"><a href="#桶排序" class="headerlink" title="桶排序"></a>桶排序</h2><p>另外一个容易想到的的方法，由于数字连续并且数据规模小，所以只需要构建100个“桶”。从头遍历给定的99个数字，将其放入数值对应的“桶”中。最后从头开始找这100个“桶”，哪个桶空就说明缺少了哪个数字。</p>
+<blockquote>
+<p>复杂度分析：<br>该方法需要用到$O(n)$的额外空间，以及$O(n)$的时间复杂度。</p>
+</blockquote>
+<h2 id="异或"><a href="#异或" class="headerlink" title="异或"></a>异或</h2><p>对于任意整数n，有$n \land n &#x3D; 0$，根据这个性质，就可以预先将1-100所有的整数异或，得到“异或和”X，然后再将X和序列中的每一个元素异或，最后得到的答案就是被抠掉的数字。</p>
+<blockquote>
+<p>复杂度分析：<br>和做加法类似，时间复杂度为$O(n)$，空间复杂度为$O(1)$，不过使用异或方法不需要考虑溢出的情况。</p>
+</blockquote>
+<h2 id="分治法"><a href="#分治法" class="headerlink" title="分治法"></a>分治法</h2><p>假设被抠掉的数字是n，那么n一定属于1<del>50或51</del>100两个区间。如果n属于前一个区间，那么n也一定属于1<del>25或26</del>50两个区间。这个过程可以一直划分，直到找到这个数字。</p>
+<p>现在需要确定这个数字是多少，那么还是类似的思想。如果被抠掉的数字属于1<del>50，那么小于等于50的数字只有49个。现在数一数$a_i$有多少个落入1</del>50区间，不妨假设只有49，那么又可以继续划分为计算1~25中有多少个数字的问题。这个过程可以一直划分，直到找到这个数字。</p>
+<p>上面这个过程耗时最大的步骤就是统计区间的元素个数。一遍一遍扫描肯定是不够好的，可以参考快速排序的元素划分方式。</p>
+<ol>
+<li>初始化查找区间$[p,q]$，一开始就是$[1,100]$；</li>
+<li>选择该区间的中值k，将集合中所有小于等于k的数字和大于k的数字分开，最后获得两个子集合$[p,k]$和$[k+1,q]$；当然在做划分的时候可以顺带统计元素个数了；</li>
+<li>如果小于等于k的元素集合数量不足，那么缺失的数字就包含于区间$[p,k]$，否则就在另一个区间；</li>
+<li>经过步骤2、3就缩小了查找区间为原来的一半，对该区间重复步骤2、3，直到区间中只剩下一个元素，而区间对应的集合为空的元素就是缺失的数字。</li>
+</ol>
+<p>每次搜索的区间都会缩小一半，因此只需要经过$O(log(n))$步就可以找到缺少的元素。具体计算如下。用$T(n)$表示父查询任务的时间复杂度，则有$T(n) &#x3D; T(n&#x2F;2) + f(n)$，当$n &#x3D; 1$时，$T(n) &#x3D; f(1)$；$f(n)$的时间复杂度为$O(n)$。</p>
+<p>$$<br>\begin{aligned}<br>T(n) &amp;&#x3D; T(n&#x2F;2) + f(n) \<br>&amp;&#x3D; T(n&#x2F;4) + 2f(n) + f(n) \<br>&amp;&#x3D; \dots \<br>&amp;&#x3D; T(1) + f(n)\sum_{i&#x3D;0}^{k-1}{2^i} \<br>&amp;&#x3D; T(1) + (2^k - 1)f(n) \<br>&amp;&#x3D; O(n)<br>\end{aligned}<br>$$</p>
+<blockquote>
+<p>复杂度分析：<br>已经证明时间复杂度为$O(n)$。空间复杂度$O(n)$。</p>
+</blockquote>
+<h1 id="找两个数字"><a href="#找两个数字" class="headerlink" title="找两个数字"></a>找两个数字</h1><p>题目描述：从1-100中删去任意两个数字，然后将剩下的98个数字打乱，得到无序序列$a_1,a_2,…,a_{98}$。现在需要用一种方法找到这两个数字。</p>
+<h2 id="桶排序-1"><a href="#桶排序-1" class="headerlink" title="桶排序"></a>桶排序</h2><p>这个方法哪怕n为其他值也是可以使用的，十分简单不再赘述。</p>
+<h2 id="方程组"><a href="#方程组" class="headerlink" title="方程组"></a>方程组</h2><p>此时简单的差值求解不奏效了，只能求解得到两个数字的和。如果需要解出这两个数字，那就需要用一个等式构成方程组。</p>
+<p>能否使用异或的方式获取一个等式构成方程组呢？即解方程组<br>$$<br>\begin{cases}<br>x + y &#x3D; m \<br>x \land y &#x3D; n<br>\end{cases}<br>$$</p>
+<p>要判断是否可行，可以列一下真值表：</p>
+<table>
+<thead>
+<tr>
+<th>$x_i$</th>
+<th>$y_i$</th>
+<th>+</th>
+<th>$\land$</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<p>暂时先不考虑进位对结果的影响，也就是最低位的情况。显然最低位已经无法根据加法值和异或值确定结果了（第2、3行），所以这个方法是不行的。</p>
+<p>而如果使用方程组<br>$$<br>\begin{cases}<br>x + y &#x3D; m \<br>x \times y &#x3D; n<br>\end{cases}<br>$$</p>
+<p>虽然理论可行，但是计算$100!$在程序上会导致溢出。</p>
+<p>如果改用对数方程是否可行？<br>$$<br>\begin{cases}<br>x + y &#x3D; m \<br>log(x) + log(y) &#x3D; n<br>\end{cases}<br>$$</p>
+<p>虽然可能存在精度的问题，但是还是决定实验一下。代码如下，x和y的值可以任意更换。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> x = <span class="number">1</span>, y = <span class="number">2</span>;</span><br><span class="line">    <span class="type">int</span> sum1 = <span class="number">5050</span>, sum2 = <span class="number">0.0</span>;</span><br><span class="line">    <span class="type">double</span> logsum1 = <span class="number">0</span>, logsum2 = <span class="number">0.0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">100</span>; ++i) &#123;</span><br><span class="line">        logsum1 += <span class="built_in">log</span>(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">100</span>; ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (i == x || i == y) <span class="keyword">continue</span>;</span><br><span class="line">        logsum2 += <span class="built_in">log</span>(i);</span><br><span class="line">        sum2 += i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">double</span> x_plus_y = sum1 - sum2;</span><br><span class="line">    <span class="type">double</span> x_mult_y = <span class="built_in">exp</span>(logsum1 - logsum2);</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;x + y = &quot;</span> &lt;&lt; x_plus_y &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;x * y = &quot;</span> &lt;&lt; x_mult_y &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>经过测验，对于上面的代码，使用double型变量可以提供足够的精度，一方面是double有52bits的有效数据位，足够精细，另一方面是由于100以内数的对数值并不会相差很大，所以浮点数相加并不会丢失很多精度。同样的代码如果使用float存储浮点结果，就会出现精度丢失的问题。</p>
+<h2 id="分治"><a href="#分治" class="headerlink" title="分治"></a>分治</h2><p>分治法还是可以用来解决这个问题。还是用之前的假设：查询区间为$[p,q]$，中值为k，左查询区间为$[p,k]$，右查询区间为$[k+1,q]$。</p>
+<p>无论缺失的两个数字取自哪个子查询区间，区间对应元素集合就会缺少数字，那么就将父查询任务转化为有数字缺少的区间的子查询任务。最差情况下，缺失的两个数字分别属于两个子查询区间。</p>
+<p>借鉴“找一个数字”中分治法的符号表示，有$T(n) \le 2T(n&#x2F;2) + f(n)$，当$n &#x3D; 1$时，$T(n) &#x3D; f(1)$；$f(n)$的时间复杂度为$O(n)$。</p>
+<p>求解递推式：<br>$$<br>\begin{aligned}<br>T(n) &amp;\le 2T(n&#x2F;2) + f(n) \<br>&amp;&#x3D; 2^2T(n&#x2F;4) + 2f(n) + f(n) \<br>&amp;&#x3D; \dots \<br>&amp;&#x3D; 2^kT(1) + f(n)\sum_{i&#x3D;0}^{k-1}{2^i} \<br>&amp;&#x3D; 2^kT(1) + (2^k - 1)f(n) \<br>&amp;&#x3D; O(n)<br>\end{aligned}<br>$$</p>
+<blockquote>
+<p>复杂度分析：<br>$T(n&#x2F;2) + f(n) \le T(n) \le 2T(n&#x2F;2) + f(n)$，因此找两个数字的时间复杂度为$O(n)$；空间复杂度还是$O(n)$</p>
+</blockquote>
+<h2 id="异或-1"><a href="#异或-1" class="headerlink" title="异或"></a>异或</h2><p>虽然加法方程和异或方程联立无法解得结果，但是异或结果还是说明了x和y数位上的特点。</p>
+<p>从异或结果中看看从1-8中抠掉2个数字，求抠掉的两个数字。</p>
+<table>
+<thead>
+<tr>
+<th>十进制</th>
+<th>二进制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>0001</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0010</td>
+</tr>
+<tr>
+<td>3（抠掉）</td>
+<td>0011</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0100</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0101</td>
+</tr>
+<tr>
+<td>6（抠掉）</td>
+<td>0110</td>
+</tr>
+<tr>
+<td>7</td>
+<td>0111</td>
+</tr>
+<tr>
+<td>8</td>
+<td>1000</td>
+</tr>
+</tbody></table>
+<p>令x&#x3D;3，y&#x3D;6，则异或结果为0101，表明第1位（从低到高）和第3位不一样。如果按照第1位是否1将原来的数字分成两组，实际上就是将找两个数的问题转化为找1个数的问题。</p>
+<blockquote>
+<p>复杂度分析<br>和找1数字的时候一样，时间复杂度为$O(n)$，空间复杂度为$O(1)$</p>
+</blockquote>
+<h1 id="更多数字？"><a href="#更多数字？" class="headerlink" title="更多数字？"></a>更多数字？</h1><p>如果现在问题变成了：从1-100中删去任意n个数字，然后将剩下的100-n个数字打乱，得到无序序列$a_1,a_2,…,a_{100-n}$。现在需要用一种方法找到这n个数字。</p>
+<h2 id="桶排序-2"><a href="#桶排序-2" class="headerlink" title="桶排序"></a>桶排序</h2><p>依然可用。</p>
+<h2 id="分治法-1"><a href="#分治法-1" class="headerlink" title="分治法"></a>分治法</h2><p>可以使用，但是当n较大的时候，实际上就退化成对数字排序的问题。花在递归函数调用上的时间影响较大。</p>
+<h2 id="异或-2"><a href="#异或-2" class="headerlink" title="异或"></a>异或</h2><p>策略是不断使用比特的特征将找n个数的问题转化为找n-1个数的问题。只不过重复循环的时间复杂度就比较高。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/05/12/%E6%8E%92%E9%98%9F%E8%AE%BA%E6%A8%A1%E5%9E%8B/" rel="prev" title="排队论模型">
+                  <i class="fa fa-angle-left"></i> 排队论模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/08/06/Windows%E4%B8%8B%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%8E%AF%E5%A2%83%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA/" rel="next" title="Windows下深度学习环境快速搭建">
+                  Windows下深度学习环境快速搭建 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

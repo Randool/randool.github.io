@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="0x00 简介 优点：Paxos算法是基于消息传递且具有 高度容错性质 的一种算法，在分布式领域中有非常重要的地位。 缺点：工程上难以实现，因此有许多延伸算法，比如Raft。局限于 不存在恶意（corrupt）节点 的系统（即消息可能丢失或者重复，但是无错误消息）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Paxos算法">
+<meta property="og:url" content="https://randool.github.io/2018/02/24/Paxos%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="0x00 简介 优点：Paxos算法是基于消息传递且具有 高度容错性质 的一种算法，在分布式领域中有非常重要的地位。 缺点：工程上难以实现，因此有许多延伸算法，比如Raft。局限于 不存在恶意（corrupt）节点 的系统（即消息可能丢失或者重复，但是无错误消息）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-24T12:18:25.000Z">
+<meta property="article:modified_time" content="2018-12-12T13:55:04.000Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="BlockChain">
+<meta property="article:tag" content="Algorithm">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://randool.github.io/2018/02/24/Paxos%E7%AE%97%E6%B3%95/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2018/02/24/Paxos%E7%AE%97%E6%B3%95/","path":"2018/02/24/Paxos算法/","title":"Paxos算法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Paxos算法 | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">0x00 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E4%B8%BB%E8%A6%81%E6%88%90%E5%88%86"><span class="nav-number">2.</span> <span class="nav-text">0x01 主要成分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E6%88%90%E5%88%86%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="nav-number">3.</span> <span class="nav-text">0x02 成分的行为</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x020-Proposer%EF%BC%88%E6%8F%90%E6%A1%88%E8%80%85%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">0x020 Proposer（提案者）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x021-Acceptor%EF%BC%88%E6%8E%A5%E5%8F%97%E8%80%85%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">0x021 Acceptor（接受者）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x022-Learner%EF%BC%88%E5%AD%A6%E4%B9%A0%E8%80%85%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">0x022 Learner（学习者）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">0x03 算法流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E6%AD%BB%E5%BE%AA%E7%8E%AF"><span class="nav-number">5.</span> <span class="nav-text">0x04 死循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-Raft%E7%AE%97%E6%B3%95"><span class="nav-number">6.</span> <span class="nav-text">0x05 Raft算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.1.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2018/02/24/Paxos%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Paxos算法 | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Paxos算法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-02-24 20:18:25" itemprop="dateCreated datePublished" datetime="2018-02-24T20:18:25+08:00">2018-02-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2018-12-12 21:55:04" itemprop="dateModified" datetime="2018-12-12T21:55:04+08:00">2018-12-12</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="0x00-简介"><a href="#0x00-简介" class="headerlink" title="0x00 简介"></a>0x00 简介</h2><ul>
+<li>优点：Paxos算法是基于消息传递且具有 <strong>高度容错性质</strong> 的一种算法，在分布式领域中有非常重要的地位。</li>
+<li>缺点：工程上难以实现，因此有许多延伸算法，比如Raft。局限于 <strong>不存在恶意（corrupt）节点</strong> 的系统（即消息可能丢失或者重复，但是无错误消息）。</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="0x01-主要成分"><a href="#0x01-主要成分" class="headerlink" title="0x01 主要成分"></a>0x01 主要成分</h2><p>在Paxos算法中有三个主要的成分：</p>
+<ul>
+<li>Proposer（提案者）—— 提出 <strong>准备请求（Prepare）</strong> 和 __提案（Proposal）__，其中 <strong>提案（Proposal）</strong> 等待大家的批准。且每个提案自带一个 __递增的提案号__。一般由客户端担任角色。</li>
+<li>Acceptor（接受者）—— 对 <strong>准备请求（Prepare）</strong> 和 <strong>提案（Proposal）</strong> 做出 __响应（Response）__。负责对提案进行投票，接受提案。一般由服务端担任。</li>
+<li>Learner（学习者）—— 获取批准结果，并帮忙传播。客户端和服务端都可担任。</li>
+</ul>
+<p>以下规定：</p>
+<ol>
+<li>一般情况下，每个节点都可以担任多个角色。为了简便起见，这里假设每个成分对应一个节点。</li>
+<li>每个准备请求包含一个提案号N，记作 <code>P(N)</code>。</li>
+<li>每个提案包含两个部分：提案号number、提案value。提案记作 <code>P&lt;N, V&gt;</code>。</li>
+<li>Response分为两种，一种是“已经接受过的编号小于N的最大编号”，响应格式记作 <code>R&lt;AcceptN, AcceptV&gt;</code>或者 <code>R&lt;null, null&gt;</code>；另一种是error，记作 <code>R&lt;error&gt;</code>。</li>
+</ol>
+<h2 id="0x02-成分的行为"><a href="#0x02-成分的行为" class="headerlink" title="0x02 成分的行为"></a>0x02 成分的行为</h2><h3 id="0x020-Proposer（提案者）"><a href="#0x020-Proposer（提案者）" class="headerlink" title="0x020 Proposer（提案者）"></a>0x020 Proposer（提案者）</h3><ol>
+<li>Proposer提出提案前，首先需要去“学习”已经被钦定或者选定的value。因此需要向半数以上的Acceptor发出P(N)。</li>
+<li>如果Proposer收到半数以上Acceptor的相应，那么他会选择跟随收到的响应中提案号最大的提案，并向超过半数的Acceptor（不一定是之前的那一批）发出自己的提案。如果所有的响应都为null，那么提出自己的value。</li>
+<li>若收到的响应未超过半数，则重新发送Prepare请求。</li>
+</ol>
+<h3 id="0x021-Acceptor（接受者）"><a href="#0x021-Acceptor（接受者）" class="headerlink" title="0x021 Acceptor（接受者）"></a>0x021 Acceptor（接受者）</h3><p>接收者需要记下两个值：1. 已接受的编号最大的提案 <code>&lt;AcceptN, AcceptV&gt;</code>；2. 已响应的请求的最大提案号 <code>ResN</code>。</p>
+<ol>
+<li>收到 <strong>准备请求（Prepare）</strong></li>
+</ol>
+<ul>
+<li>N &lt;&#x3D; ResN，不响应或者响应 <code>R&lt;error&gt;</code>。</li>
+<li>N &gt; ResN，令ResN &#x3D; N，响应 <code>R&lt;Pok, AcceptN, AcceptV&gt;</code>或 <code>R&lt;Pok, null, null&gt;</code>。</li>
+</ul>
+<ol start="2">
+<li>收到 <strong>提案（Proposal）</strong></li>
+</ol>
+<ul>
+<li>N &lt;&#x3D; ResN，不响应或者响应 <code>R&lt;error&gt;</code>，不接受此提案。</li>
+<li>N &gt; ResN，接受提案，响应 <code>R&lt;Aok&gt;</code>.</li>
+</ul>
+<h3 id="0x022-Learner（学习者）"><a href="#0x022-Learner（学习者）" class="headerlink" title="0x022 Learner（学习者）"></a>0x022 Learner（学习者）</h3><p>Learner有三种方案获取value</p>
+<table>
+<thead>
+<tr>
+<th align="center">方案一</th>
+<th align="center">方案二</th>
+<th align="center">方案三</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Accepter 接受一个提案就将该提案发给所有的Learner</td>
+<td align="center">Accepter 接受一个提案就将该提案发给主Learner，再由主Learner通知其他Learners</td>
+<td align="center">Accepter 接受一个提案就将该提案发给一个Learner集合，集合通知集合</td>
+</tr>
+<tr>
+<td align="center">Pro：简单</td>
+<td align="center">通信次数少</td>
+<td align="center">集合中的Learner越多，可靠性越好</td>
+</tr>
+<tr>
+<td align="center">Con：通信次数多</td>
+<td align="center">主Learner宕机药丸</td>
+<td align="center">网络复杂</td>
+</tr>
+</tbody></table>
+<h2 id="0x03-算法流程"><a href="#0x03-算法流程" class="headerlink" title="0x03 算法流程"></a>0x03 算法流程</h2>
+
+<h2 id="0x04-死循环"><a href="#0x04-死循环" class="headerlink" title="0x04 死循环"></a>0x04 死循环</h2><p>这样一个场景，两个Proposer争相发出编号依次递增的提案，那么Acceptor将一直无法钦定。最终成为死循环。</p>
+<p>解决方案，考虑选取 __leader Proposer__，仅允许leader提出提案。这样一定程度上可以避免死循环的发生。这就是Raft算法的基本思想。</p>
+<h2 id="0x05-Raft算法"><a href="#0x05-Raft算法" class="headerlink" title="0x05 Raft算法"></a>0x05 Raft算法</h2><blockquote>
+<p>第一次看完Raft算法，感觉这和自然界种群领袖的诞生方式不谋而合啊！毕竟对羊群、牛群以及个体数量更为众多鱼群来说，没有一种合理的选Leader的方法是很危险的。</p>
+</blockquote>
+<p>Raft算法的核心就是每个节点都能成为 <strong>Follower</strong> 、 <strong>Candidate</strong> 或者 <strong>Leader</strong> 之一，所有的节点由算法选举一个Leader来向其他节点发送命令（选举Leader的好处是能简化同步的复杂性）。其中每个未成为 <strong>Leader</strong> 的节点都在伺机成为 <strong>Candidate</strong> 甚至成为新的 __Leader__，就像动物界争夺首领一般。</p>
+<ul>
+<li><strong>Follower</strong> —— 首先，所有的节点默认都是 __Follower__，每个节点都有一个计时器，并随机生成范围在150ms到300ms的倒计时。由于随机性，一般情况下只有一个节点率先完成倒计时。</li>
+<li><strong>Candidate</strong> —— 完成倒计时的Folloer将升级成为 <strong>Candidate</strong> ，并立即向其他节点发送投票请求（Requests Votes）。收到 <strong>Follower</strong> 投票（Votes）的 <strong>Candidate</strong> 升级成为 __Leader__。</li>
+<li><strong>Leader</strong> —— 成为 <strong>Leader</strong> 以后就会向其他节点发送心跳包（Heart Beats）和数据，以保证整个网络的数据一致。</li>
+</ul>
+<p>Raft算法有 个基本过程</p>
+<p>推荐一个良心网站，内容充实而生动：<a target="_blank" rel="noopener" href="http://thesecretlivesofdata.com/raft/"><strong>Raft——Understandable Distributed Consensus</strong></a></p>
+<hr>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/linbingdong/p/6253479.html">分布式系列文章——Paxos算法原理与推导</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/Paxos%E7%AE%97%E6%B3%95">Wikipedia——Paxos算法</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/BlockChain/" rel="tag"># BlockChain</a>
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/02/23/Cmd%E5%91%BD%E4%BB%A4%E9%9B%86/" rel="prev" title="Cmd命令集">
+                  <i class="fa fa-angle-left"></i> Cmd命令集
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/02/28/AutoHotkey/" rel="next" title="AutoHotkey">
+                  AutoHotkey <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

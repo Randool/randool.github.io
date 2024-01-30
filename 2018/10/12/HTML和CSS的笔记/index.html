@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="学习HTML&#x2F;CSS的笔记。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTML和CSS的笔记">
+<meta property="og:url" content="https://randool.github.io/2018/10/12/HTML%E5%92%8CCSS%E7%9A%84%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="学习HTML&#x2F;CSS的笔记。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-12T15:14:19.000Z">
+<meta property="article:modified_time" content="2019-08-13T07:12:26.000Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="HTML">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://randool.github.io/2018/10/12/HTML%E5%92%8CCSS%E7%9A%84%E7%AC%94%E8%AE%B0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2018/10/12/HTML%E5%92%8CCSS%E7%9A%84%E7%AC%94%E8%AE%B0/","path":"2018/10/12/HTML和CSS的笔记/","title":"HTML和CSS的笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>HTML和CSS的笔记 | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTML"><span class="nav-number">1.</span> <span class="nav-text">HTML</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#head%E6%A0%87%E7%AD%BE"><span class="nav-number">1.1.</span> <span class="nav-text">head标签</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#body%E6%A0%87%E7%AD%BE"><span class="nav-number">1.2.</span> <span class="nav-text">body标签</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E9%A2%98"><span class="nav-number">1.2.1.</span> <span class="nav-text">标题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E8%90%BD"><span class="nav-number">1.2.2.</span> <span class="nav-text">段落</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E5%AD%97%E7%89%B9%E6%95%88"><span class="nav-number">1.2.3.</span> <span class="nav-text">文字特效</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%BA%E8%B0%83"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">强调</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%BA%E6%A0%87%E7%AD%BE"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">空标签</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%88%E6%B2%A1%E6%9C%89%E5%95%A5%E7%94%A8%E7%9A%84%EF%BC%89%E7%A9%BA%E6%A0%BC"><span class="nav-number">1.2.3.4.</span> <span class="nav-text">（没有啥用的）空格</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">1.2.3.5.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5"><span class="nav-number">1.2.3.6.</span> <span class="nav-text">链接</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E5%8A%A0%E6%B8%85%E6%99%B0%E5%9C%B0%E5%B1%95%E7%8E%B0"><span class="nav-number">1.2.4.</span> <span class="nav-text">更加清晰地展现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E9%A1%BA%E5%BA%8F"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">逻辑顺序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E5%9E%8B%E9%80%BB%E8%BE%91"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">关系型逻辑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E7%8B%AC%E7%AB%8B%E6%80%A7"><span class="nav-number">1.2.4.3.</span> <span class="nav-text">逻辑独立性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E5%8D%95%E4%BA%A4%E4%BA%92"><span class="nav-number">1.2.5.</span> <span class="nav-text">表单交互</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSS"><span class="nav-number">2.</span> <span class="nav-text">CSS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">选择器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF"><span class="nav-number">2.2.</span> <span class="nav-text">继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%92%E7%89%88%E5%8A%A0%E5%BC%BA"><span class="nav-number">2.3.</span> <span class="nav-text">排版加强</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.4.</span> <span class="nav-text"></span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2018/10/12/HTML%E5%92%8CCSS%E7%9A%84%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="HTML和CSS的笔记 | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HTML和CSS的笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-10-12 23:14:19" itemprop="dateCreated datePublished" datetime="2018-10-12T23:14:19+08:00">2018-10-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2019-08-13 15:12:26" itemprop="dateModified" datetime="2019-08-13T15:12:26+08:00">2019-08-13</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>学习HTML&#x2F;CSS的笔记。</p>
+<span id="more"></span>
+
+<h1 id="HTML"><a href="#HTML" class="headerlink" title="HTML"></a>HTML</h1><p>HTML有众多的标签，记录一些比较常用的。</p>
+<p>首先HTML文本的格式大致如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">HTML</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span>xxx<span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">        xxx</span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="head标签"><a href="#head标签" class="headerlink" title="head标签"></a>head标签</h2><p>文档的头部描述了文档的各种属性和信息，包括文档的标题等。绝大多数文档头部包含的数据都不会真正作为内容显示给读者。</p>
+<p>在head标签种常用的子标签有：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>...<span class="tag">&lt;/<span class="name">title</span>&gt;</span>  <span class="comment">&lt;!--标题--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span>&gt;</span>...<span class="tag">&lt;/<span class="name">style</span>&gt;</span>  <span class="comment">&lt;!--样式--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span>...<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="body标签"><a href="#body标签" class="headerlink" title="body标签"></a>body标签</h2><p>body标签中的内容会出现在网页上。</p>
+<h3 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h3><p>html提供六种不同级别的标题<code>&lt;h1&gt;、&lt;h2&gt;、&lt;h3&gt;、&lt;h4&gt;、&lt;h5&gt;、&lt;h6&gt;</code>，类似markdown的<code>#</code>。准确的说，markdown的标题标记是基于html的。</p>
+<h3 id="段落"><a href="#段落" class="headerlink" title="段落"></a>段落</h3><p>每个段落都由一组<code>&lt;p&gt; &lt;/p&gt;</code>标注。</p>
+<p>不过有时候使用<code>&lt;br&gt;</code>（或<code>&lt;br/&gt;</code>）也可以做到段落分离的效果。<code>&lt;br&gt;</code>可以看作是HTML中的<code>\n</code>。</p>
+<p>段落之间的分离效果不明显的话，可以用<code>&lt;hr&gt;</code>画出一条分割线，对应markdown中的<code>---</code>。</p>
+<h3 id="文字特效"><a href="#文字特效" class="headerlink" title="文字特效"></a>文字特效</h3><h4 id="强调"><a href="#强调" class="headerlink" title="强调"></a>强调</h4><ul>
+<li>斜体：_<code>&lt;em&gt; &lt;/em&gt;</code>_。对应Markdown中的单下划线<code>_</code>。使用<code>&lt;address&gt; &lt;/address&gt;</code>的视觉效果和斜体差不多。</li>
+<li>粗体：__<code>&lt;strong&gt; &lt;/strong&gt;</code>__。对应Markdown中的双下划线<code>__</code></li>
+</ul>
+<h4 id="空标签"><a href="#空标签" class="headerlink" title="空标签"></a>空标签</h4><ul>
+<li>HTML还有一种自定义的标签<code>&lt;span&gt; &lt;/span&gt;</code>，在CSS的配合下，可以为这种标签设置单独的样式。</li>
+</ul>
+<h4 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h4><ul>
+<li><code>&lt;q&gt; &lt;/q&gt;</code>：<q>在标签之间的文本会被打上引号</q>……之后配合上CSS才会体现出该标签的作用</li>
+<li><code>&lt;blockquote&gt; &lt;/blockquote&gt;</code>：很好看的引用样式，相当于自称一段，并且带有 <strong>左右缩进特效</strong></li>
+</ul>
+<h4 id="（没有啥用的）空格"><a href="#（没有啥用的）空格" class="headerlink" title="（没有啥用的）空格"></a>（没有啥用的）空格</h4><ul>
+<li>如果直接敲空格键是没有用的，html会把多余1个的连续空格看作1个空格，需要用<code>&amp;nbsp;</code>。</li>
+</ul>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><ul>
+<li><code>&lt;code&gt; &lt;/code&gt;</code>：行间代码显示</li>
+<li><code>&lt;pre&gt; &lt;/pre&gt;</code>：整段代码注释</li>
+</ul>
+<h4 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h4><ul>
+<li><code>&lt;a&gt;text&lt;/a&gt;</code>：最常用的超链接。使用<code>href=</code>标明链接地址，当然也可以是邮箱；<code>target=&quot;_blank&quot;</code>表示在新tag上打开链接</li>
+<li><code>&lt;img /&gt;</code>：图片，单标签。<code>src=</code>指向图片地址；<code>alt=&quot;替换&quot;</code>可以在图片打不开时用文字描述；当鼠标在图片上时，html会显示<code>title=</code>字段</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;mailto:xxx@qq.com&quot;</span>&gt;</span>发我邮箱<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;logo.jpg&quot;</span> <span class="attr">title</span>=<span class="string">&quot;logo&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;logo不见了&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="更加清晰地展现"><a href="#更加清晰地展现" class="headerlink" title="更加清晰地展现"></a>更加清晰地展现</h3><h4 id="逻辑顺序"><a href="#逻辑顺序" class="headerlink" title="逻辑顺序"></a>逻辑顺序</h4><ul>
+<li>有序（ordered，<code>&lt;ol&gt; &lt;/ol&gt;</code>）</li>
+<li>无序（unordered，<code>&lt;ul&gt; &lt;/ul&gt;</code>）</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ol</span>&gt;</span>            <span class="comment">&lt;!-- 无序列表 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span> <span class="tag">&lt;/<span class="name">li</span>&gt;</span>  <span class="comment">&lt;!-- list item --&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span> <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ol</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span>            <span class="comment">&lt;!-- 有序列表 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span> <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span> <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="关系型逻辑"><a href="#关系型逻辑" class="headerlink" title="关系型逻辑"></a>关系型逻辑</h4><ul>
+<li>表格<code>&lt;table&gt; &lt;/table&gt;</code>是比列表更强大的展现方式，因为他具有多维。表格有6个元素，分别是<code>table</code>、<code>thead</code>、<code>tbody</code>、<code>tr</code>、<code>th</code>、<code>td</code>。<ul>
+<li><code>&lt;table&gt; &lt;/table&gt;</code>包裹着整个表格。</li>
+<li><code>&lt;thead&gt;</code>和<code>&lt;tbody&gt;</code>并不是必须的，但是使用这些标签，table可以按结构一块块的显示，不在等整个表格加载完后显示，起到加速展示的效果。</li>
+<li><code>tr</code>：table row，表格的一行。</li>
+<li><code>th</code>：表格中的属性值。</li>
+<li><code>td</code>：表格中的一个单元格。</li>
+</ul>
+</li>
+</ul>
+<p>一个通常意义上的表格如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">table</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">caption</span>&gt;</span>标题<span class="tag">&lt;/<span class="name">caption</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">thead</span>&gt;</span>         <span class="comment">&lt;!-- 表格头部 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">th</span>&gt;</span><span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">            ...</span><br><span class="line">            <span class="tag">&lt;<span class="name">th</span>&gt;</span><span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">thead</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tbody</span>&gt;</span>         <span class="comment">&lt;!-- 表格主体 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">            ...</span><br><span class="line">            <span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="逻辑独立性"><a href="#逻辑独立性" class="headerlink" title="逻辑独立性"></a>逻辑独立性</h4><ul>
+<li><code>&lt;div&gt; &lt;/div&gt;</code>：如果一个page是从头到尾线性结构的，就会缺乏美感和逻辑独立性，使用<code>div</code>来划分文档的模块</li>
+</ul>
+<h3 id="表单交互"><a href="#表单交互" class="headerlink" title="表单交互"></a>表单交互</h3><p><strong><code>&lt;form&gt; &lt;/form&gt;</code></strong> 是浏览器和服务器交互的媒介，是十分重要的一部分。表单由<code>&lt;input /&gt;</code>提供数据。<code>&lt;form&gt; &lt;/form&gt;</code>之外的数据不会被提交。</p>
+<p><code>&lt;form&gt;</code>有以下常用属性：</p>
+<ul>
+<li><code>action</code>，输入的数据被传送到的地方,比如一个PHP页面(do.php)</li>
+<li><code>method</code>，数据传送的方式（get&#x2F;post）</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;do.php&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong><code>&lt;input /&gt;</code></strong> 是单标签，但是具有很大的灵活性，其功能会随着<code>type</code>属性而变化。</p>
+<p>常用属性：</p>
+<ul>
+<li><code>type</code>：<code>&lt;input&gt;</code>的类型<ul>
+<li><code>text</code>：普通文本输入<input type="text" value="hello" /></li>
+<li><code>password</code>：密码，<input type="password" value="hello"/></li>
+<li><code>radio</code>：单选框，<input type="radio" value="1" name="radio" /></li>
+<li><code>checkbox</code>：多选框，<input type="checkbox" value="1" name="checkbox" /></li>
+<li><code>submit</code>：提交按钮，<input type="submit" value="commit"/></li>
+<li><code>reset</code>：复位按钮，<input type="reset" value="人生重来" /></li>
+</ul>
+</li>
+<li><code>name</code>：控件命名，同一组选择框的<code>name</code>需要相同</li>
+<li><code>value</code>：提交给后端的值</li>
+<li><code>checked</code>：对于选择框而言，是否默认选择</li>
+<li><code>id</code>：每个标签具有唯一<code>id</code>，可以让CSS选择器做选择</li>
+</ul>
+<p><strong><code>&lt;select&gt; &lt;/select&gt;</code></strong> 是多选框的一种，但是可以折叠选项，节约空间。</p>
+<p><code>&lt;select&gt;</code>标签的属性有<code>multiple=&quot;multiple&quot;</code>，可以将单选（默认）切换成多选</p>
+<p><code>&lt;option&gt;</code>选项有默认选项属性<code>selected=&quot;selected&quot;</code></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">label</span>&gt;</span>单项选择题：<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">select</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span>&gt;</span>A<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span>&gt;</span>B<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span>&gt;</span>C<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span>&gt;</span>D<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">label</span>&gt;</span>多项选择题：<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">multiple</span>=<span class="string">&quot;multiple&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span>&gt;</span>A<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span>&gt;</span>B<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span>&gt;</span>C<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span>&gt;</span>D<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上面的效果如下：</p>
+<p>
+    <label>单项选择题：</label>
+    <select>
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        <option>D</option>
+    </select>
+</p>
+<p>
+    <label>多项选择题：</label>
+    <select multiple="multiple">
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        <option>D</option>
+    </select>
+</p>
+
+<p><strong><code>&lt;label&gt; &lt;/label&gt;</code></strong> 也是很有用的标签，其作用相当于是扩大了选择标签的点击范围。使用<code>for</code>属性选择对应<code>id</code>的选择框。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;A&quot;</span>&gt;</span>A<span class="tag">&lt;/<span class="name">label</span>&gt;</span> <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;A&quot;</span> <span class="attr">name</span>=<span class="string">&quot;test&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;B&quot;</span>&gt;</span>B<span class="tag">&lt;/<span class="name">label</span>&gt;</span> <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;B&quot;</span> <span class="attr">name</span>=<span class="string">&quot;test&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;C&quot;</span>&gt;</span>C<span class="tag">&lt;/<span class="name">label</span>&gt;</span> <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;C&quot;</span> <span class="attr">name</span>=<span class="string">&quot;test&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>
+    <label for="A">A</label> <input type="radio" id="A" name="test" />
+    <label for="B">B</label> <input type="radio" id="B" name="test" />
+    <label for="C">C</label> <input type="radio" id="C" name="test" />
+</p>
+
+<p><strong><code>&lt;textarea&gt; &lt;/textarea&gt;</code></strong> 是给长文本输入准备的。需要注意的是，和<code>&lt;input /&gt;</code>不同，文本域是成对出现的，且标签之间的是默认输入。</p>
+<p>其中<code>rows</code>和<code>cols</code>分别控制 <strong>行数</strong> 和 __列数__。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">textarea</span> <span class="attr">rows</span>=<span class="string">&quot;3&quot;</span> <span class="attr">cols</span>=<span class="string">&quot;20&quot;</span>&gt;</span>长文本输入：<span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><textarea rows="3" cols="20">长文本输入：</textarea></p>
+
+<h1 id="CSS"><a href="#CSS" class="headerlink" title="CSS"></a>CSS</h1><p>CSS样式的三种放置位置：</p>
+<ul>
+<li>内联：直接写在标签中，如<code>&lt;p style=&quot;color:red&quot;&gt; &lt;/p&gt;</code></li>
+<li>嵌入式：在当前html文件的<code>&lt;head&gt; &lt;/head&gt;</code>之间创建一对<code>&lt;style type=&quot;text/css&quot;&gt; &lt;/style&gt;</code></li>
+<li>外部式：在一个<code>.css</code>文件中书写</li>
+</ul>
+<p>如果定义了多个样式，那么这些样式的优先级一般满足：内联 &gt; 嵌入式 &gt; 外部式</p>
+<h2 id="选择器"><a href="#选择器" class="headerlink" title="选择器"></a>选择器</h2><h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><h2 id="排版加强"><a href="#排版加强" class="headerlink" title="排版加强"></a>排版加强</h2><h2 id=""><a href="#" class="headerlink" title=""></a></h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/HTML/" rel="tag"># HTML</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/09/23/OP%E6%98%AF%E4%B8%8D%E5%8F%AF%E6%9B%BF%E6%8D%A2%E7%9A%84%E5%90%97%EF%BC%9F/" rel="prev" title="OP是不可替换的吗？">
+                  <i class="fa fa-angle-left"></i> OP是不可替换的吗？
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/12/12/%E5%9B%9B%E7%A7%8D%E5%88%86%E7%B1%BB%E5%99%A8/" rel="next" title="四种分类器">
+                  四种分类器 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

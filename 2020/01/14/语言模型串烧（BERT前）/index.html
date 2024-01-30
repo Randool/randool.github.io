@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="语言模型的发展实在是太快了，怎么才赶上NLP快车呢？此文包含在BERT及其之前提出的一些语言模型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="语言模型串烧（BERT前）">
+<meta property="og:url" content="https://randool.github.io/2020/01/14/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E4%B8%B2%E7%83%A7%EF%BC%88BERT%E5%89%8D%EF%BC%89/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="语言模型的发展实在是太快了，怎么才赶上NLP快车呢？此文包含在BERT及其之前提出的一些语言模型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-14T13:44:03.000Z">
+<meta property="article:modified_time" content="2020-01-30T04:25:38.695Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="Notes">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Deep Learning">
+<meta property="article:tag" content="NLP">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://randool.github.io/2020/01/14/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E4%B8%B2%E7%83%A7%EF%BC%88BERT%E5%89%8D%EF%BC%89/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2020/01/14/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E4%B8%B2%E7%83%A7%EF%BC%88BERT%E5%89%8D%EF%BC%89/","path":"2020/01/14/语言模型串烧（BERT前）/","title":"语言模型串烧（BERT前）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>语言模型串烧（BERT前） | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Word2Vec%EF%BC%882013%E5%B9%B41%E6%9C%88%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">Word2Vec（2013年1月）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GloVe%EF%BC%882014%E5%B9%B41%E6%9C%88%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">GloVe（2014年1月）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FastText%EF%BC%882016%E5%B9%B47%E6%9C%88%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">FastText（2016年7月）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transformer%EF%BC%882017%E5%B9%B46%E6%9C%88%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">Transformer（2017年6月）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Positional-Encoding"><span class="nav-number">4.1.</span> <span class="nav-text">Positional Encoding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Multi-head-self-attention"><span class="nav-number">4.2.</span> <span class="nav-text">Multi-head self attention</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fully-connected-feed-forward"><span class="nav-number">4.3.</span> <span class="nav-text">Fully connected feed forward</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ELMo%EF%BC%882018%E5%B9%B42%E6%9C%88%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">ELMo（2018年2月）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BERT%EF%BC%882018%E5%B9%B410%E6%9C%88%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">BERT（2018年10月）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Word2Vec"><span class="nav-number">7.1.</span> <span class="nav-text">Word2Vec</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GloVe"><span class="nav-number">7.2.</span> <span class="nav-text">GloVe</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FastText"><span class="nav-number">7.3.</span> <span class="nav-text">FastText</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transformer"><span class="nav-number">7.4.</span> <span class="nav-text">Transformer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ELMo"><span class="nav-number">7.5.</span> <span class="nav-text">ELMo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GPT"><span class="nav-number">7.6.</span> <span class="nav-text">GPT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BERT"><span class="nav-number">7.7.</span> <span class="nav-text">BERT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">7.8.</span> <span class="nav-text">其他</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2020/01/14/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E4%B8%B2%E7%83%A7%EF%BC%88BERT%E5%89%8D%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="语言模型串烧（BERT前） | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          语言模型串烧（BERT前）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-14 21:44:03" itemprop="dateCreated datePublished" datetime="2020-01-14T21:44:03+08:00">2020-01-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-01-30 12:25:38" itemprop="dateModified" datetime="2020-01-30T12:25:38+08:00">2020-01-30</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>语言模型的发展实在是太快了，怎么才赶上NLP快车呢？此文包含在BERT及其之前提出的一些语言模型。</p>
+<span id="more"></span>
+
+<h1 id="Word2Vec（2013年1月）"><a href="#Word2Vec（2013年1月）" class="headerlink" title="Word2Vec（2013年1月）"></a>Word2Vec（2013年1月）</h1>
+
+<p>CBOW用上下文训练目标词，而Skip-gram用目标词去预测上下文。Word2Vec采用三层神经网络就可以训练，最后一层的输出是Softmax，因为Softmax需要计算全局的token，因此速度慢。为了提高训练速度，衍生出用Huffman树和负采样代替最简单的Softmax的训练方法。</p>
+<h1 id="GloVe（2014年1月）"><a href="#GloVe（2014年1月）" class="headerlink" title="GloVe（2014年1月）"></a>GloVe（2014年1月）</h1><p>Global Vectors for Word Representation。</p>
+
+
+<p>Word2Vec的目的是预测，而GloVe的目的是将共现矩阵降维。不过共现矩阵的维度太大不可能直接构造出来用传统方法降维，所以GloVe的工作实际上可以理解为重构共现矩阵。</p>
+<p>假设词i的出现次数为$X_i$，词i和词j的共现次数为$x_{i,j}$，那么词i和词j的共现频率就是$P_{ij} &#x3D; X_{i,j} &#x2F; X_i$。作者认为 __两个词的相关程度是可以通过共现次数做比较的__，就行下面这个表格：</p>
+<table>
+<thead>
+<tr>
+<th>$P_{ik}&#x2F;P_{jk}$</th>
+<th align="center">单词j和单词k相关</th>
+<th align="center">单词j和单词k不相关</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单词i和单词k相关</td>
+<td align="center">趋近于1</td>
+<td align="center">很大</td>
+</tr>
+<tr>
+<td>单词i和单词k不相关</td>
+<td align="center">很小</td>
+<td align="center">趋近于1</td>
+</tr>
+</tbody></table>
+<p>而用词向量表示词义的时候，衡量两者近似程度就是用内积。用$v_i$、$v_j$、$v_k$分别表示词i、j、k的词向量，并用函数g(i,j,k)表示词向量i和词向量j谁更接近于词向量k，那么结合共现次数，就可以推知：</p>
+<p>$$<br>\frac{P_{i,k}}{P_{j,k}} &#x3D; g(i,j,k)<br>$$</p>
+<p>代价函数为<br>$$<br>J &#x3D; \sum_{i,j,k}(P_{i,k}&#x2F;P_{j,k} − g(i,j,k))^2<br>$$</p>
+<p>不过目前，计算所有g的代价是$O(n^3)$，作者将函数g展开，并最终得到了函数g的等价形式。首先是定义函数g，<br>$$<br>g(i,j,k) &#x3D; exp⁡(v_i^T v_k − v_j^T v_k) &#x3D; \frac{exp⁡(v_i^T v_k)}{exp⁡(v_j^T v_k)}<br>$$</p>
+<p>因此<br>$$<br>\frac{P_{i,k}}{P_{j,k}} &#x3D; \frac{exp⁡(v_i^T v_k)}{exp⁡(v_j^T v_k)}<br>$$</p>
+<p>那么只要等式上下对应相等，整个等式就成立了<br>$$ P_{i,k} &#x3D; exp⁡(v_i^T v_k) $$</p>
+<p>进一步，两边同时取对数<br>$$ log⁡(P_{i,k}) &#x3D; v_i^T v_k $$</p>
+<p>这样代价函数化简为时间复杂度为$O(n^2)$的<br>$$ J &#x3D; \sum_{i,k}(log⁡(P_{i,k}) − v_i^T v_k)^2 $$</p>
+<p>但是实际上这里存在一个bug：__$log⁡(P_{i,k})$不具备对称性，而$v_i^T v_k$却具备对称性__！为了弥补这个bug，作者将概率$P_{i,k}$展开、移项并得到<br>$$ log⁡(X_{i,k}) &#x3D; v_i^T v_k − log⁡(X_i) $$</p>
+<p>这样等式左边具备对称性，而等式右边的对称性却被打破了，为了弥补这一点，在等式右边打上一个补丁<br>$$ log⁡(X_{i,k}) &#x3D; v_i^T v_k − log⁡(X_i) + b_k &#x3D; v_i^T v_k + b_i + b_k $$</p>
+<p>于是等式就构造出来了，另代价函数为：<br>$$ J &#x3D; \sum_{i,k}{v_i^T v_k + b_i + b_k − log⁡(X_{i,k}))^2} $$</p>
+<p>细心的作者还意识到，这样的代价函数是等权重的，也就是对所有的ik组合，其权重是相等的，但是实际上出现频率更高的组合更具有话语权，因此手动加一个权重函数f：</p>
+<p>$$<br>f(x) &#x3D;<br>\begin{aligned}<br>    \begin{cases}<br>        (\frac{x}{xmax})^{0.75}, &amp;if \ x &lt; xmax \<br>        1, &amp;if \ x \ge xmax<br>    \end{cases}<br>\end{aligned}<br>$$</p>
+
+
+<p>加上权重后，最终的代价函数为：</p>
+<p>$$<br>J &#x3D; \sum_{i,k}{f(X_{i,k})(v_i^T v_k + b_i + b_k − log⁡(X_{i,k}))^2}<br>$$</p>
+<h1 id="FastText（2016年7月）"><a href="#FastText（2016年7月）" class="headerlink" title="FastText（2016年7月）"></a>FastText（2016年7月）</h1><p>fastText是Facebook于2016年开源的一个词向量计算和文本分类工具，在学术上并没有太大创新。但是它的优点也非常明显，在文本分类任务中，fastText（浅层网络）往往能取得和深度网络相媲美的精度，却在训练时间上比深度网络快许多数量级。在标准的多核CPU上， 能够训练10亿词级别语料库的词向量在10分钟之内，能够分类有着30万多类别的50多万句子在1分钟之内。</p>
+<p>FastText的模型架构和CBOW非常相似，<strong>不同之处在于，FastText预测标签，而CBOW模型预测中间词。</strong></p>
+
+
+<p>FastText有以下特点：</p>
+<ol>
+<li>利用了subword特性，比如“English-born”和“China-born”可以共享“born”信息。__这对于英语等西语来说是十分有效的，但是放在中文下可能不那么奏效__。关于subword的具体实现在“_Enriching Word Vectors with Subword Information_”中。</li>
+<li>subword在文本分类任务中的output是文本标签，并且 __输入是一篇文章中所有的词__。</li>
+<li>使用了Hierarchy Softmax或Negative sampling加速训练。</li>
+<li>融合Ngram特性。因为FastText将整篇文章的所有单词作为输入，并且hidden层是所有词的平均，所以词序变得不那么重要了。为了解决解决这个问题，FastText将每一个n-gram看成一个词，在计算hidden向量的时候把这些n-gram也加进去。但是n-gram的数量是非常大的，完全存下这些embedding也不现实，因此作者把这些n-gram的哈希到N个桶中，同一个桶中的所有n-gram共享同一个embedding</li>
+</ol>
+
+
+<p>从工业界的角度来看，Fasttext因为其优秀的性能，不错的分类效果，使用起来也非常简单，__因此非常适合大规模的文本分类问题__。实际上Facebook已经将Fasttext应用于实际的大规模文本分类的场景中了。</p>
+<h1 id="Transformer（2017年6月）"><a href="#Transformer（2017年6月）" class="headerlink" title="Transformer（2017年6月）"></a>Transformer（2017年6月）</h1><p>这张能在很多地方看到的图片就是Transformer的架构，出自google brain的“_attention is all you need_”。</p>
+
+
+<p>而将N展开之后就是这样的encoder-decoder框架</p>
+
+
+<h2 id="Positional-Encoding"><a href="#Positional-Encoding" class="headerlink" title="Positional Encoding"></a>Positional Encoding</h2><p>Transformer架构的一个特点就是用全连接层代替了RNN结构，以此大幅度提升训练的速度，但是用全连接层会丢弃位置信息，也就相当于将句子打散成词袋模型。为了弥补这个缺陷，位置信息编码就被引入了。一种方法是用不同频率的sine和cosine函数直接代入计算，另一种是学习出一份positional embedding。但其实两者的结果一样，那么更高效的第一种就被采用了。</p>
+<p>$$<br>\begin{aligned}<br>    PE_{(pos, 2i)} &amp;&#x3D; \sin(\frac{pos}{10000^{\frac{2i}{d_{model}}}}) \<br>    PE_{(pos, 2i+1)} &amp;&#x3D; \cos(\frac{pos}{10000^{\frac{2i}{d_{model}}}})<br>\end{aligned}<br>$$</p>
+<p>其中pos是位置，i代表第i个维度。这个公式可视化结果如下，其中横坐标表示维度，纵坐标表示pos。</p>
+
+
+<h2 id="Multi-head-self-attention"><a href="#Multi-head-self-attention" class="headerlink" title="Multi-head self attention"></a>Multi-head self attention</h2><p>Self-attention的作用是将每个输入分成Q（query）、K（key）、V（value）三部分，并完成下面的运算：</p>
+<p>$$ Attention(Q, K, V) &#x3D; softmax(\frac{QK^T}{\sqrt{d_k}})V $$</p>
+
+
+<p>多头就是实现h个self-attention的输出拼接起来，再做一个线性变换。</p>
+<p>$$<br>\begin{aligned}<br>    head_i &amp;&#x3D; Attention(QW_i^Q, KW_i^K, VW_i^V) \<br>    MultiHead(Q, K, V) &amp;&#x3D; Concat(head_1, \dots, head_h)W<br>\end{aligned}<br>$$</p>
+
+
+<h2 id="Fully-connected-feed-forward"><a href="#Fully-connected-feed-forward" class="headerlink" title="Fully connected feed forward"></a>Fully connected feed forward</h2><p>这一层就是非线性映射。</p>
+<p>Transformer的不足之处：self-attention的计算复杂度为$O(n^2)$，当句子很长的时候，时间消耗相当大。另外长度为n的句子也并不一定需要全局attention，一些局部attention也能起作用，而局部attention甚至可以用CNN代替。</p>
+<h1 id="ELMo（2018年2月）"><a href="#ELMo（2018年2月）" class="headerlink" title="ELMo（2018年2月）"></a>ELMo（2018年2月）</h1><p>前面所有的模型使用的词向量均是静态的，也就是说一份词向量在不同的场合作用相同，而语义消歧（WSD）任务丢给下游任务。而ELMo的设计初衷是让词向量拥有上下文相关的能力，也就是 __动态词向量__。</p>
+<p>ELMo是从深层双向语言模型中的 <strong>内部状态</strong> 学习而来的。首先定义双向语言模型的似然函数：</p>
+<p>$$<br>\sum_{k&#x3D;1}^N{\left(<br>    \log ⁡p(t_k |t_{1:k−1}; \Theta_x, \stackrel{\rightarrow}{\Theta}<em>{LSTM}, \Theta_s) +<br>    \log ⁡p(t_k |t</em>{k+1:N}; \Theta_x, \stackrel{\leftarrow}{\Theta}_{LSTM}, \Theta_s) \right)}<br>$$</p>
+<p>其中$\Theta_x$和$\Theta_s$分别是训练的（上下文无关的）词向量和softmax层的参数，$\stackrel{\rightarrow}{\Theta}<em>{LSTM}$和$\stackrel{\leftarrow}{\Theta}</em>{LSTM}$则是双向语言模型的参数。</p>
+
+
+<p>对于某一个词语$t_k$，__ELMo将L层双向语言模型的词向量$X^{LM}$和每一层的隐含状态$\stackrel{\rightarrow}{h}_k^j$和$\stackrel{\leftarrow}{h}_k^j$整合成一个向量__：</p>
+<p>$$<br>R_k &#x3D; {X^{LM}, \stackrel{\rightarrow}{h}_k^j, \stackrel{\leftarrow}{h}_k^j },  j &#x3D; 1, \dots, L<br>$$</p>
+<p>于是，这个复杂的向量在不同的语境下就具有了不同的含义。不过ELMo的亮点当然不在于模型层，而是其通过实验间接说明了在多层的RNN中，__不同层学到的特征其实是有差异的__，因此ELMo提出在预训练完成并迁移到下游NLP任务中时，要为原始词向量层和每一层RNN的隐层都设置一个可训练参数，这些参数通过softmax层归一化后乘到其相应的层上并求和便起到了weighting的作用，然后对“加权和”得到的词向量再通过一个参数γ来进行词向量整体的scaling以更好的适应下游任务。</p>
+<p>$$<br>\begin{aligned}<br>    s &amp;&#x3D; softmax(w) \<br>    E(R_k) &amp;&#x3D; \gamma \sum_{j&#x3D;0}^{L}{s_j h_k^j}<br>\end{aligned}<br>$$</p>
+<p>另外插一句，简单的LSTM实际上并不可能堆很深，比如ELMo默认L&#x3D;2，也就是三层，更深的LSTM组合就很难训练了。</p>
+<h1 id="BERT（2018年10月）"><a href="#BERT（2018年10月）" class="headerlink" title="BERT（2018年10月）"></a>BERT（2018年10月）</h1><p>ELMo相比word2vec会有这么大的提升，可以看出预训练词向量的重要性。而BERT则是训练了一个龙骨级的语言模型，可以为下游任务提供词级、句子级的特征。</p>
+<p>传统的语言模型是单向的，不论是从左往右还是从右往左，即使是用了双向LSTM的ELMo，两个方向的RNN实际上也是独立训练的，两者之间并没有交集。这样的模型被称为autoregressive（AR）模型。如果想在预训练模型上使用真正的双向encoding，那么在传统的语言模型假设下是行不通的，因为如果做了双向encoding，那么就意味着要预测的词已经看到了，那么这种预测就没有意义了……为此，在BERT中，一种新的模型被提出来了，那就是 __Masked LM__。</p>
+<p>具体来说，Masked LM不是像传统LM那样给定已经出现过的词，去预测下一个词，而是直接把整个句子的一部分词（随机选择）盖住（make it masked），这样模型就可以放心的去做双向encoding了，并让模型去预测这些盖住的词。这个任务其实最开始叫做 __cloze test__（完形填空测验）。因为<code>[mask]</code>标记在训练过程中会被encoding进句子里，而作者通过：</p>
+<ul>
+<li>80%用<code>[mask]</code>替换</li>
+<li>10%随机替换</li>
+<li>10%不做替换</li>
+</ul>
+<p>的操作告诉模型忽略这些噪声。这种已经知道了上下文，然后预测中间某个单词的模型被称为autoencoding（AE）模型，而BERT更是加上了随机替换<code>[mask]</code>这样的手段，因此带上了降噪的功能，被称为denoising autoencoding（DAE）模型。</p>
+<p>另外，因为深层LSTM十分难训练，所以作者用了 __Transformer__，因此BERT的架构图如下：</p>
+
+
+<p>前面提到了BERT是一个可以学到多层次特征的模型，那么怎么体现字符级和句子级呢？</p>
+<p>BERT采用了“__句子级负采样__”，首先给定一个句子，它的下一句话为正例，而随机采样的另一个句子就是负例，将两个句子拼起来作为一个例子，然后在sentence-level做二分类。二分类的做法也是很脑洞的，因为考虑到Transformer可以无视空间距离做encoding，因此在句首添加了一个<code>[cls]</code>标记，让encoder对<code>[cls]</code>进行深度encoding，深度encoding的最高隐层即为整个句子对的表示。</p>
+<p>另外，为了能让模型区分句子对中的每个词是来自“左句子”还是“右句子”，作者引入了 __segment embedding__，embedding A表示左边的句子，而embedding B表示右边的句子。</p>
+
+
+<p>最终每个token由词向量embedding、segment embedding、position embedding组成。</p>
+
+
+<p>训练完后的BERT怎么使用呢？接下来的部分可以看作是对pre-trained BERT进行fine-tuning。</p>
+<p>对于文本分类任务来说，只需要在<code>[cls]</code>的输出上加一层简单的全连接层就好了。</p>
+
+
+<p>对于问答系统而言，只要给定question和paragraph，最后输出span的起点和终点即可。</p>
+
+
+<p>对于序列标注任务来说，只需要对输出加上softmax层就好了。</p>
+
+
+<p>其实个人感觉BERT最大的成功之处在于真正利用了语言的上下文，这是AE模型的天生优势。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><h2 id="Word2Vec"><a href="#Word2Vec" class="headerlink" title="Word2Vec"></a>Word2Vec</h2><ul>
+<li>Mikolov, T., Chen, K., Corrado, G., &amp; Dean, J. (2013). Efficient estimation of word representations in vector space. 1st International Conference on Learning Representations, ICLR 2013 - Workshop Track Proceedings, 1–12.</li>
+</ul>
+<h2 id="GloVe"><a href="#GloVe" class="headerlink" title="GloVe"></a>GloVe</h2><ul>
+<li>Pennington, Jeffrey, Richard, S., &amp; Christopher, M. (2014). GloVe: Global Vectors for Word Representation. Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP). 2014., 1532–1543. Retrieved from <a target="_blank" rel="noopener" href="https://nlp.stanford.edu/pubs/glove.pdf">https://nlp.stanford.edu/pubs/glove.pdf</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/coderTC/article/details/73864097">理解GloVe模型（Global vectors for word representation）</a></li>
+</ul>
+<h2 id="FastText"><a href="#FastText" class="headerlink" title="FastText"></a>FastText</h2><ul>
+<li>Joulin, A., Grave, E., Bojanowski, P., &amp; Mikolov, T. (2017). Bag of tricks for efficient text classification. 15th Conference of the European Chapter of the Association for Computational Linguistics, EACL 2017 - Proceedings of Conference, 2, 427–431. <a target="_blank" rel="noopener" href="https://doi.org/10.18653/v1/e17-2068">https://doi.org/10.18653/v1/e17-2068</a></li>
+<li>Bojanowski, P., Grave, E., Joulin, A., &amp; Mikolov, T. (2017). Enriching Word Vectors with Subword Information. Transactions of the Association for Computational Linguistics, 5, 135–146. <a target="_blank" rel="noopener" href="https://doi.org/10.1162/tacl_a_00051">https://doi.org/10.1162/tacl_a_00051</a></li>
+<li>Joulin, A., Grave, E., Bojanowski, P., Douze, M., Jégou, H., &amp; Mikolov, T. (2016). FastText.zip: Compressing text classification models. 1–13. Retrieved from <a target="_blank" rel="noopener" href="http://arxiv.org/abs/1612.03651">http://arxiv.org/abs/1612.03651</a></li>
+<li><a target="_blank" rel="noopener" href="http://albertxiebnu.github.io/fasttext/">玩转Fasttext</a></li>
+</ul>
+<h2 id="Transformer"><a href="#Transformer" class="headerlink" title="Transformer"></a>Transformer</h2><ul>
+<li>Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., … Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 2017-Decem(Nips), 5999–6009.</li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e7d8caa13b21">图解什么是 Transformer</a></li>
+</ul>
+<h2 id="ELMo"><a href="#ELMo" class="headerlink" title="ELMo"></a>ELMo</h2><ul>
+<li>Peters, M., Neumann, M., Iyyer, M., Gardner, M., Clark, C., Lee, K., &amp; Zettlemoyer, L. (2018). Deep Contextualized Word Representations. 2227–2237. <a target="_blank" rel="noopener" href="https://doi.org/10.18653/v1/n18-1202">https://doi.org/10.18653/v1/n18-1202</a></li>
+</ul>
+<h2 id="GPT"><a href="#GPT" class="headerlink" title="GPT"></a>GPT</h2><ul>
+<li>Radford, A., &amp; Salimans, T. (2018). Improving Language Understanding by Generative Pre-Training. OpenAI, 1–12. Retrieved from <a target="_blank" rel="noopener" href="https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf">https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf</a></li>
+<li>Radford, A., Wu, J., Child, R., Luan, D., Amodei, D., &amp; Sutskever, I. (2018). Language Models are Unsupervised Multitask Learners.</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/47488095">NLP的游戏规则从此改写？从word2vec, ELMo到BERT</a></li>
+</ul>
+<h2 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h2><ul>
+<li>Devlin, J., Chang, M.-W., Lee, K., &amp; Toutanova, K. (2018). BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. Retrieved from <a target="_blank" rel="noopener" href="http://arxiv.org/abs/1810.04805">http://arxiv.org/abs/1810.04805</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/47488095">NLP的游戏规则从此改写？从word2vec, ELMo到BERT</a></li>
+</ul>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw==&mid=2247535966&idx=4&sn=7ada47836c1a41fbb72593f8b6891d44&chksm=e8d0fa2cdfa7733a45c3e1a552a99da537dcda6629c8f63fbc9dd1b381ad1898a230b1db2e7d&scene=90&xtrack=1&subscene=93&clicktime=1578375620&enterid=1578375620&ascene=56&devicetype=android-29&version=27000a34&nettype=WIFI&abtest_cookie=AAACAA==&lang=zh_CN&exportkey=AebBGfR5OYkTM082tSC+3gw=&pass_ticket=ideaSFADceEvZmAzNk5QFyZ9Pd+WZmrBQP6XhG9m6yCIiqfLvKgnj9pUfjPkVdjW&wx_header=1">一文看尽2019年NLP前沿突破</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+              <a href="/tags/NLP/" rel="tag"># NLP</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/01/02/%E4%B8%8D%E7%99%BE%E5%BA%A6%E7%94%BB%E5%87%BA%E5%A5%BD%E7%9C%8B%E7%9A%84%E5%9B%BE/" rel="prev" title="不百度画出好看的图">
+                  <i class="fa fa-angle-left"></i> 不百度画出好看的图
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/01/20/%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E4%B8%B2%E7%83%A7%EF%BC%88BERT%E5%90%8E%EF%BC%89/" rel="next" title="语言模型串烧（BERT后）">
+                  语言模型串烧（BERT后） <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="人工智能课要求使用朴素贝叶斯算法，决策树算法，人工神经网络，支持向量机算法对数据进行分类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="四种分类器">
+<meta property="og:url" content="https://randool.github.io/2018/12/12/%E5%9B%9B%E7%A7%8D%E5%88%86%E7%B1%BB%E5%99%A8/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="人工智能课要求使用朴素贝叶斯算法，决策树算法，人工神经网络，支持向量机算法对数据进行分类">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://randool.github.io/output_17_0.png">
+<meta property="og:image" content="https://randool.github.io/output_23_1.png">
+<meta property="og:image" content="https://randool.github.io/output_25_1.png">
+<meta property="og:image" content="https://randool.github.io/output_27_1.png">
+<meta property="article:published_time" content="2018-12-12T08:21:15.000Z">
+<meta property="article:modified_time" content="2019-05-04T03:35:38.000Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="PyTorch">
+<meta property="article:tag" content="Deep Learning">
+<meta property="article:tag" content="SVM">
+<meta property="article:tag" content="Decision Tree">
+<meta property="article:tag" content="Naive Bayes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://randool.github.io/output_17_0.png">
+
+
+<link rel="canonical" href="https://randool.github.io/2018/12/12/%E5%9B%9B%E7%A7%8D%E5%88%86%E7%B1%BB%E5%99%A8/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2018/12/12/%E5%9B%9B%E7%A7%8D%E5%88%86%E7%B1%BB%E5%99%A8/","path":"2018/12/12/四种分类器/","title":"四种分类器"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>四种分类器 | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD%E6%95%B0%E6%8D%AE-%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">加载数据&amp;数据预处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">评估函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF"><span class="nav-number">3.</span> <span class="nav-text">1. 朴素贝叶斯</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E5%8E%9F%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">1.1 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.2.</span> <span class="nav-text">1.2 实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E5%AF%BB%E6%89%BE%E6%9C%80%E4%BD%B3%E5%8F%82%E6%95%B0%E7%BB%84%E5%90%88"><span class="nav-number">3.3.</span> <span class="nav-text">1.3 寻找最佳参数组合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%86%B3%E7%AD%96%E6%A0%91"><span class="nav-number">4.</span> <span class="nav-text">2. 决策树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">2.1 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-1-%E5%88%92%E5%88%86%E6%8C%87%E6%A0%87"><span class="nav-number">4.1.1.</span> <span class="nav-text">2.1.1 划分指标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-2-%E5%89%AA%E6%9E%9D"><span class="nav-number">4.1.2.</span> <span class="nav-text">2.1.2 剪枝</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.2.</span> <span class="nav-text">2.2 实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E5%AF%BB%E6%89%BE%E6%9C%80%E4%BD%B3%E7%9A%84%E5%8F%82%E6%95%B0%E7%BB%84%E5%90%88"><span class="nav-number">4.3.</span> <span class="nav-text">2.3 寻找最佳的参数组合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E5%8F%AF%E8%A7%86%E5%8C%96%E5%86%B3%E7%AD%96%E6%A0%91"><span class="nav-number">4.4.</span> <span class="nav-text">2.4 可视化决策树</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-SVM"><span class="nav-number">5.</span> <span class="nav-text">3. SVM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%8E%9F%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">3.1 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.2.</span> <span class="nav-text">3.2 实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%AF%BB%E6%89%BE%E6%9C%80%E4%BD%B3%E7%9A%84%E5%8F%82%E6%95%B0%E7%BB%84%E5%90%88"><span class="nav-number">5.3.</span> <span class="nav-text">3.3 寻找最佳的参数组合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E4%BA%BA%E5%B7%A5%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">6.</span> <span class="nav-text">4. 人工神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E6%A8%A1%E5%9E%8B%E5%AE%9A%E4%B9%89"><span class="nav-number">6.1.</span> <span class="nav-text">4.1 模型定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">6.2.</span> <span class="nav-text">4.2 模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-1-%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">6.2.1.</span> <span class="nav-text">4.2.1 线性模型训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-2-ReLU%E6%BF%80%E6%B4%BB%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">6.2.2.</span> <span class="nav-text">4.2.2 ReLU激活模型训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-3-Sigmoid%E6%BF%80%E6%B4%BB%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">6.2.3.</span> <span class="nav-text">4.2.3 Sigmoid激活模型训练</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">7.</span> <span class="nav-text">提高性能的方式</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2018/12/12/%E5%9B%9B%E7%A7%8D%E5%88%86%E7%B1%BB%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="四种分类器 | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          四种分类器
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-12 16:21:15" itemprop="dateCreated datePublished" datetime="2018-12-12T16:21:15+08:00">2018-12-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2019-05-04 11:35:38" itemprop="dateModified" datetime="2019-05-04T11:35:38+08:00">2019-05-04</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>人工智能课要求使用朴素贝叶斯算法，决策树算法，人工神经网络，支持向量机算法对数据进行分类</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="加载数据-数据预处理"><a href="#加载数据-数据预处理" class="headerlink" title="加载数据&amp;数据预处理"></a>加载数据&amp;数据预处理</h2><p>文件：</p>
+<ul>
+<li>dataset.txt  总数据（可以自行切分训练集和测试集）</li>
+<li>test.csv    训练集</li>
+<li>predict.csv  测试集</li>
+</ul>
+<p>文件内容</p>
+<table>
+<thead>
+<tr>
+<th align="center">标签</th>
+<th align="center">种类</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">buying</td>
+<td align="center">low, med, high, vhigh</td>
+</tr>
+<tr>
+<td align="center">maint</td>
+<td align="center">low, med, high, vhigh</td>
+</tr>
+<tr>
+<td align="center">doors</td>
+<td align="center">2, 3, 4, 5more</td>
+</tr>
+<tr>
+<td align="center">persons</td>
+<td align="center">2, 4, more</td>
+</tr>
+<tr>
+<td align="center">lugBoot</td>
+<td align="center">small, med, big</td>
+</tr>
+<tr>
+<td align="center">safety</td>
+<td align="center">low, med, high</td>
+</tr>
+<tr>
+<td align="center">classValue</td>
+<td align="center">unacc, acc, good, vgood</td>
+</tr>
+</tbody></table>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">trans = &#123;</span><br><span class="line">    <span class="number">0</span>: &#123;<span class="string">&#x27;low&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;med&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;high&#x27;</span>: <span class="number">2</span>, <span class="string">&#x27;vhigh&#x27;</span>: <span class="number">3</span>&#125;, <span class="comment"># buying</span></span><br><span class="line">    <span class="number">1</span>: &#123;<span class="string">&#x27;low&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;med&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;high&#x27;</span>: <span class="number">2</span>, <span class="string">&#x27;vhigh&#x27;</span>: <span class="number">3</span>&#125;, <span class="comment"># maint</span></span><br><span class="line">    <span class="number">2</span>: &#123;<span class="string">&#x27;2&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;3&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;4&#x27;</span>: <span class="number">2</span>, <span class="string">&#x27;5more&#x27;</span>: <span class="number">3</span>&#125;,        <span class="comment"># doors</span></span><br><span class="line">    <span class="number">3</span>: &#123;<span class="string">&#x27;2&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;4&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;more&#x27;</span>: <span class="number">2</span>&#125;,                 <span class="comment"># persons</span></span><br><span class="line">    <span class="number">4</span>: &#123;<span class="string">&#x27;small&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;med&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;big&#x27;</span>: <span class="number">2</span>&#125;,            <span class="comment"># lugBoots</span></span><br><span class="line">    <span class="number">5</span>: &#123;<span class="string">&#x27;low&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;med&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;high&#x27;</span>: <span class="number">2</span>&#125;,             <span class="comment"># safety</span></span><br><span class="line">    <span class="number">6</span>: &#123;<span class="string">&#x27;unacc&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;acc&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;good&#x27;</span>: <span class="number">2</span>, <span class="string">&#x27;vgood&#x27;</span>: <span class="number">3</span>&#125;  <span class="comment"># classValue</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">make_one_hot</span>(<span class="params">data: <span class="built_in">list</span></span>) -&gt; np.array:</span><br><span class="line">    <span class="keyword">return</span> (np.arange(<span class="number">4</span>)==data[:,<span class="literal">None</span>]).astype(np.integer)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">getData</span>(<span class="params">filename: <span class="built_in">str</span>, onehot: <span class="built_in">bool</span>=<span class="literal">False</span></span>) -&gt; <span class="built_in">list</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    如果非one-hot编码，返回的形状为(x, 7)；</span></span><br><span class="line"><span class="string">    否则返回(x, 7, 4)</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    data = []</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(filename) <span class="keyword">as</span> f:</span><br><span class="line">        f.readline() <span class="comment"># 读取第一行</span></span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">            tmp = line.strip().split(<span class="string">&#x27;,&#x27;</span>)</span><br><span class="line">            <span class="keyword">for</span> i, t <span class="keyword">in</span> <span class="built_in">enumerate</span>(tmp):</span><br><span class="line">                tmp[i] = trans[i][t]</span><br><span class="line">            tmp = np.array(tmp)</span><br><span class="line">            <span class="keyword">if</span> onehot:</span><br><span class="line">                tmp = make_one_hot(tmp)</span><br><span class="line">            data.append(tmp)</span><br><span class="line">    <span class="keyword">return</span> np.array(data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练集</span></span><br><span class="line">train_data = getData(<span class="string">&quot;test.csv&quot;</span>)</span><br><span class="line">train_data_1hot = getData(<span class="string">&quot;test.csv&quot;</span>, <span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练集参数&amp;标签</span></span><br><span class="line">train_paras, train_tags = train_data[:,:<span class="number">6</span>], train_data[:,<span class="number">6</span>]</span><br><span class="line"><span class="comment"># 训练集参数（one-hot），标签不需要one-hot</span></span><br><span class="line">train_1hot_paras = train_data_1hot[:, :<span class="number">6</span>, :]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试集</span></span><br><span class="line">test_data = getData(<span class="string">&quot;predict.csv&quot;</span>)</span><br><span class="line">test_data_1hot = getData(<span class="string">&quot;predict.csv&quot;</span>, <span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试集参数&amp;标签</span></span><br><span class="line">test_paras, test_tags = test_data[:, :<span class="number">6</span>], test_data[:, <span class="number">6</span>]</span><br><span class="line"><span class="comment"># 测试集参数（one-hot），标签不需要one-hot</span></span><br><span class="line">test_1hot_paras = test_data_1hot[:, :<span class="number">6</span>, :]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 给个样例</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;非one-hot参数&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(test_paras[<span class="number">0</span>])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;非one-hot标签&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(test_tags[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\none-hot参数&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(test_1hot_paras[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+<pre><code>非one-hot参数
+[0 3 2 0 0 0]
+非one-hot标签
+0
+
+one-hot参数
+[[1 0 0 0]
+ [0 0 0 1]
+ [0 0 1 0]
+ [1 0 0 0]
+ [1 0 0 0]
+ [1 0 0 0]]
+</code></pre>
+<h2 id="评估函数"><a href="#评估函数" class="headerlink" title="评估函数"></a>评估函数</h2><p>定义好了输入，在定义一个统一的评估方式吧。最简单的方式是计算其正确率。其定义为：<br>$$ Accuracy &#x3D; \frac{T}{T+F} $$<br>其中T表示预测正确的样例数量，F表示预测错误的样例数量。</p>
+<p>由于预测种类和原本标签的种类都有4种，因能得到16种组合，这里集合T包含那些预测和输出相等的组合。可以将这16种组合显示出来，左斜对角线上的值越大，说明分类效果越好。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">predict_matrix</span>(<span class="params">predicted, tags</span>) -&gt; np.ndarray:</span><br><span class="line">    <span class="string">&quot;&quot;&quot; 返回预测矩阵 &quot;&quot;&quot;</span></span><br><span class="line">    mtx = np.zeros((<span class="number">4</span>,<span class="number">4</span>))  <span class="comment"># 4*4矩阵</span></span><br><span class="line">    <span class="keyword">for</span> i, p <span class="keyword">in</span> <span class="built_in">enumerate</span>(predicted):</span><br><span class="line">        mtx[p][tags[i]] += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> mtx</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">Accuracy</span>(<span class="params">predict, tags, show_mtx=<span class="literal">False</span></span>) -&gt; <span class="built_in">float</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot; 返回准确率 &quot;&quot;&quot;</span></span><br><span class="line">    mtx = predict_matrix(predict, tags)</span><br><span class="line">    <span class="keyword">if</span> show_mtx:</span><br><span class="line">        <span class="built_in">print</span>(mtx)</span><br><span class="line">    T = mtx[<span class="number">0</span>][<span class="number">0</span>] + mtx[<span class="number">1</span>][<span class="number">1</span>] + mtx[<span class="number">2</span>][<span class="number">2</span>] + mtx[<span class="number">3</span>][<span class="number">3</span>]</span><br><span class="line">    <span class="keyword">return</span> T / <span class="built_in">len</span>(predict)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 举个例子：</span></span><br><span class="line">pred = np.random.randint(<span class="number">0</span>, <span class="number">4</span>, <span class="number">100</span>)</span><br><span class="line">tags = np.random.randint(<span class="number">0</span>, <span class="number">4</span>, <span class="number">100</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;随机数：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;accuracy: %.4f&quot;</span> % Accuracy(pred, tags, <span class="literal">True</span>))</span><br></pre></td></tr></table></figure>
+
+<pre><code>随机数：
+[[ 6.  4.  3.  8.]
+ [ 2.  3.  7. 10.]
+ [ 3.  4.  4.  8.]
+ [10.  7. 10. 11.]]
+accuracy: 0.2400
+</code></pre>
+<h2 id="1-朴素贝叶斯"><a href="#1-朴素贝叶斯" class="headerlink" title="1. 朴素贝叶斯"></a>1. 朴素贝叶斯</h2><h3 id="1-1-原理"><a href="#1-1-原理" class="headerlink" title="1.1 原理"></a>1.1 原理</h3><p>朴素贝叶斯就一个公式<br>$$ P(y|x_1,x_2,\dots,x_n) &#x3D; \frac{P(y)P(x_1,x_2,\dots,x_n|y)}{P(x_1,x_2,\dots,x_n)} $$</p>
+<p>如果加入独立性假设的话，可以将所有的$x_i$分离<br>$$ P(y|x_1,x_2,\dots,x_n) &#x3D; \frac{P(y)\prod_{i&#x3D;1}^{n}{P(x_i|y)}}{P(x_1,x_2,\dots,x_n)} $$</p>
+<p>由于对于所有的y，$P(x_1,x_2,\dots,x_n)$总是相同的，因此可以化简为：<br>$$ P(y|x_1,x_2,\dots,x_n) \propto P(y)\prod_{i&#x3D;1}^{n}{P(x_i|y)} $$</p>
+<p>那么对于给定的$x_i,x_2,\dots,x_n$，求最可能的y，就是枚举所有的y，让概率最大即可：<br>$$ \widehat{y} &#x3D; \mathop{\arg\min}<em>{y}  P(y)\prod</em>{i&#x3D;1}^{n}{Px_i|y} $$</p>
+<h3 id="1-2-实现"><a href="#1-2-实现" class="headerlink" title="1.2 实现"></a>1.2 实现</h3><p>sklearn提供了多种朴素贝叶斯分类器：高斯朴素贝叶斯GaussianNB、多项式朴素贝叶斯MultinomialNB、伯努利朴素贝叶斯BernoulliNB、补充朴素贝叶斯ComplementNB。不同贝叶斯分类器虽然使用的权值计算方式不同，也就是对$P(x|y)$分布的假设不同，但是核心原理都大同小异。</p>
+<p>这里使用高斯朴素贝叶斯分类器，其主要参数有两种：</p>
+<ul>
+<li>priors : array-like, shape (n_classes,)<blockquote>
+<p>每个类的先验概率，可以不提供。如果提供则程序不会根据输入自动计算</p>
+</blockquote>
+</li>
+<li>var_smoothing : float, optional (default&#x3D;1e-9)<blockquote>
+<p>为计算稳定性而添加的所有要素的最大方差的一部分。</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.naive_bayes <span class="keyword">import</span> GaussianNB </span><br><span class="line"></span><br><span class="line">NB_clf = GaussianNB()</span><br><span class="line">NB_clf.fit(train_paras, train_tags)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 朴素贝叶斯预测</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 准确率</span></span><br><span class="line">acc_on_train = Accuracy(NB_clf.predict(train_paras), train_tags, <span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Accuracy of Naive Bayes working on training set is %.4f&quot;</span> % acc_on_train)</span><br><span class="line"></span><br><span class="line">acc_on_test = Accuracy(NB_clf.predict(test_paras), test_tags, <span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Accuracy of Naive Bayes working on testing set is %.4f&quot;</span> % acc_on_test)</span><br></pre></td></tr></table></figure>
+
+<pre><code>[[852. 109.   0.   0.]
+ [ 41. 136.   0.   0.]
+ [ 58.  10.  23.   2.]
+ [ 39.  56.   0.  24.]]
+Accuracy of Naive Bayes working on training set is 0.7667
+[[217.  38.   9.   0.]
+ [  3.  35.  37.  39.]
+ [  0.   0.   0.   0.]
+ [  0.   0.   0.   0.]]
+Accuracy of Naive Bayes working on testing set is 0.6667
+</code></pre>
+<h3 id="1-3-寻找最佳参数组合"><a href="#1-3-寻找最佳参数组合" class="headerlink" title="1.3 寻找最佳参数组合"></a>1.3 寻找最佳参数组合</h3><p>上面的结果不是很好。因此需要设置参数让朴素贝叶斯算法发挥更大的作用。如果需要更加精确的priors，那么首先需要知道总样本的概率分配，也就是从“data.csv”中知道所有的信息，但是这样就失去了“训练”的意义，不能正确反映出模型的 <strong>泛化能力</strong> 。因此选择不设置priors。</p>
+<p>另一个参数的意义不太明确，不知道是不是限制最大的方差？但是为了求解可以在一定范围内离散枚举，选择让正确率最大的var_smoothing。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Setting the var—smoothing</span></span><br><span class="line">best_smooths = <span class="number">0</span></span><br><span class="line">accuracy_NB = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> smooth <span class="keyword">in</span> np.linspace(<span class="number">1e-2</span>, <span class="number">1</span>, <span class="number">500</span>):</span><br><span class="line">    <span class="comment"># Set and fit</span></span><br><span class="line">    NB_clf.set_params(var_smoothing=smooth)</span><br><span class="line">    NB_clf.fit(test_paras, test_tags)</span><br><span class="line">    <span class="comment"># Test</span></span><br><span class="line">    pred = NB_clf.predict(test_paras)</span><br><span class="line">    acc = Accuracy(pred, test_tags)</span><br><span class="line">    <span class="keyword">if</span> acc &gt; accuracy_NB:</span><br><span class="line">        accuracy_NB = acc</span><br><span class="line">        best_smooths = smooth</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(</span><br><span class="line">    <span class="string">&quot;Var_smoothing = %f leads to best accuracy %.4f&quot;</span> % (</span><br><span class="line">        best_smooths,</span><br><span class="line">        accuracy_NB</span><br><span class="line">    )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Var_smoothing = 0.053647 leads to best accuracy 0.8254
+</code></pre>
+<p>看来使用高斯朴素贝叶斯所能达到的最好的结果是正确率为82.54%，这个结果并不是特别优秀。下面再试试看其他的分类器。</p>
+<h2 id="2-决策树"><a href="#2-决策树" class="headerlink" title="2. 决策树"></a>2. 决策树</h2><h3 id="2-1-原理"><a href="#2-1-原理" class="headerlink" title="2.1 原理"></a>2.1 原理</h3><p>决策树是一棵递归生成的树，具有较强的泛化能力。</p>
+<p>构建决策树的关键在于对于每个维度的划分，每一次划分都会产生一些样本纯度更高的子结点，也就是子结点中样本的类别尽可能统一。</p>
+<h4 id="2-1-1-划分指标"><a href="#2-1-1-划分指标" class="headerlink" title="2.1.1 划分指标"></a>2.1.1 划分指标</h4><p>评价一些样本“纯度”常用的指标是信息熵<br>$$ Entropy(X) &#x3D; -\sum_{i&#x3D;1}^{n}{p_ilogp_i} $$<br>和基尼系数<br>$$ Gini(X) &#x3D; 1 - \sum_{i&#x3D;1}^{n}{p_i^2} $$<br>其中$p_i$是X中类别i的比例。这两个指标的特点都是当样本的类别越统一，指标给出的值越小，当样本完全属于同一类别时，指标为0。</p>
+<p>有了衡量样本“纯度”的标准，就可以定义属性分类训练数据的效力的度量标准——信息增益。一个属性的信息增益就是由于使用该属性划分样本导致的期望的熵降低程度。一个属性A相对于样本集合S的信息增益$Gain(S,A)$定义为：<br>$$ Gain(S,A) &#x3D; Entropy(S) - \sum_{v \in V(A)}{\frac{|S_v|}{|S|}Entropy(S_v)} $$</p>
+<ul>
+<li>$ V(A) $是属性A的值域</li>
+<li>S是样本集合</li>
+<li>$ S_v $是S中在属性A熵值等于v的样本集合</li>
+</ul>
+<p>实际上这个公式就是将原来的总信息熵减去各子结点信息熵的加权平均数。</p>
+<h4 id="2-1-2-剪枝"><a href="#2-1-2-剪枝" class="headerlink" title="2.1.2 剪枝"></a>2.1.2 剪枝</h4><p>剪枝（pruning）是决策树学习算法对付“过拟合”的主要手段。在决策树学习中，为了尽可能正确分类训练样本，节点划分过程不断重复，有时会造成决策树分支过多，这时就可能因训练样本学得“太好”了，以至于把训练样本自身的一些特点当作所有数据都具有的一般性质而导致过拟合。因此，可通过主动去掉一些分支来降低过拟合的风险。</p>
+<h3 id="2-2-实现"><a href="#2-2-实现" class="headerlink" title="2.2 实现"></a>2.2 实现</h3><p>训练、测试决策树均使用非one-hot编码的数据集和测试集。</p>
+<p>这里使用sklearn中的DecisionTreeClassifier类，训练函数<code>fit</code>一般只需要传入测试集和标签即可。</p>
+<p>DecisionTreeClassifier在实例化的时候可以接受几个参数，用于定制不同的分类器。其中参数criterion选择评估分类的函数，有基尼系数gini和信息熵entropy两种。</p>
+<p>上面提到了决策树算法容易过拟合，因此需要剪枝，在实例化分类器的时候可以选择设置如下参数：</p>
+<ul>
+<li>max_depth : int or None, optional (default&#x3D;None)<blockquote>
+<p>这个参数定义了决策树的最大深度，如果没有设置这个参数，那么决策树结点会一直分类直到该结点中样本的类别相同或者样本数小于min_samples_split</p>
+</blockquote>
+</li>
+<li>min_samples_split : int, float, optional (default&#x3D;2)<blockquote>
+<p>分裂一个结点至少需要的样本数</p>
+</blockquote>
+</li>
+<li>min_samples_leaf : int, float, optional (default&#x3D;1)<blockquote>
+<p>成为一个结点至少需要的样本数</p>
+</blockquote>
+</li>
+<li>min_weight_fraction_leaf : float, optional (default&#x3D;0.)<blockquote>
+<p>成为一个结点至少需要的权重和（该结点样本的权重占所有样本的权重）</p>
+</blockquote>
+</li>
+</ul>
+<p>上面的这些参数不可能一拍脑袋就能想出最优的，这个需要结合实际训练结果慢慢尝试。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> tree</span><br><span class="line"></span><br><span class="line">tree_clf = tree.DecisionTreeClassifier(</span><br><span class="line">    criterion=<span class="string">&quot;entropy&quot;</span>,</span><br><span class="line">    max_depth=<span class="number">10</span>,</span><br><span class="line">    min_samples_split=<span class="number">3</span>,</span><br><span class="line">    min_samples_leaf=<span class="number">2</span></span><br><span class="line">)  <span class="comment"># 实例化决策树分类器</span></span><br><span class="line"></span><br><span class="line">tree_clf.fit(train_paras, train_tags)     <span class="comment"># 这样就设置好了一个分类器</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 决策树预测</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 准确率</span></span><br><span class="line">acc_on_train = Accuracy(tree_clf.predict(train_paras), train_tags, <span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Accuracy of Naive Bayes working on training set is %.4f&quot;</span> % acc_on_train)</span><br><span class="line"></span><br><span class="line">acc_on_test = Accuracy(tree_clf.predict(test_paras), test_tags, <span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Accuracy of Naive Bayes working on testing set is %.4f&quot;</span> % acc_on_test)</span><br></pre></td></tr></table></figure>
+
+<pre><code>[[990.   8.   1.   0.]
+ [  0. 303.   1.   1.]
+ [  0.   0.  21.   1.]
+ [  0.   0.   0.  24.]]
+Accuracy of Naive Bayes working on training set is 0.9911
+[[220.  13.   2.   0.]
+ [  0.  60.  23.  14.]
+ [  0.   0.  21.   1.]
+ [  0.   0.   0.  24.]]
+Accuracy of Naive Bayes working on testing set is 0.8598
+</code></pre>
+<h3 id="2-3-寻找最佳的参数组合"><a href="#2-3-寻找最佳的参数组合" class="headerlink" title="2.3 寻找最佳的参数组合"></a>2.3 寻找最佳的参数组合</h3><p>上面的预测结果还不错，仅随意设置的参数就能超越上面朴素贝叶斯分类器的结果，但是只凭一次预测并不能知道决策树的最佳结果。为了寻找最合适的参数，可以在参数空间进行枚举，记录最佳的参数搭配。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">criterion = <span class="string">&quot;&quot;</span></span><br><span class="line">best_deep = <span class="number">0</span></span><br><span class="line">best_split = <span class="number">0</span></span><br><span class="line">best_leaf = <span class="number">0</span></span><br><span class="line">accuracy_tree = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> cri <span class="keyword">in</span> [<span class="string">&quot;entropy&quot;</span>, <span class="string">&quot;gini&quot;</span>]:</span><br><span class="line">    <span class="keyword">for</span> deep <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">15</span>, <span class="number">5</span>, -<span class="number">1</span>):</span><br><span class="line">        <span class="keyword">for</span> sp <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>, <span class="number">5</span>):</span><br><span class="line">            <span class="keyword">for</span> leaf <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, sp):</span><br><span class="line">                tree_clf.set_params(  <span class="comment"># 设置参数</span></span><br><span class="line">                    criterion = cri,</span><br><span class="line">                    max_depth=deep,</span><br><span class="line">                    min_samples_split=sp,</span><br><span class="line">                    min_samples_leaf=leaf</span><br><span class="line">                )</span><br><span class="line">                tree_clf.fit(train_paras, train_tags) <span class="comment"># 训练</span></span><br><span class="line">            </span><br><span class="line">                <span class="comment"># 测试</span></span><br><span class="line">                pred = tree_clf.predict(test_paras)</span><br><span class="line">                acc = Accuracy(pred, test_tags)</span><br><span class="line">                <span class="keyword">if</span> acc &gt;= accuracy_tree:</span><br><span class="line">                    accuracy_tree = acc</span><br><span class="line">                    criterion = cri</span><br><span class="line">                    best_deep = deep</span><br><span class="line">                    best_split = sp</span><br><span class="line">                    best_leaf = leaf</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(</span><br><span class="line">    <span class="string">&quot;Best accuracy is %.4f when\ncriterion is %s\nmax_depth = %d\nmin_samples_split = %d\nmin_samples_leaf = %d&quot;</span> % (</span><br><span class="line">        accuracy_tree,</span><br><span class="line">        criterion,</span><br><span class="line">        best_deep,</span><br><span class="line">        best_split,</span><br><span class="line">        best_leaf</span><br><span class="line">    )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Best accuracy is 0.8783 when
+criterion is gini
+max_depth = 11
+min_samples_split = 2
+min_samples_leaf = 1
+</code></pre>
+<p>决策树最终的分类结果比朴素贝叶斯分类器要好。</p>
+<h3 id="2-4-可视化决策树"><a href="#2-4-可视化决策树" class="headerlink" title="2.4 可视化决策树"></a>2.4 可视化决策树</h3><p>需要用到的第三方库graphviz。安装方法为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install python-graphviz</span><br></pre></td></tr></table></figure>
+<p>使用方法如下，最后会在当前目录下生成一个PDF文件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> os.name == <span class="string">&#x27;posix&#x27;</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;不支持&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>: </span><br><span class="line">    <span class="keyword">import</span> graphviz</span><br><span class="line">    </span><br><span class="line">    tree_clf.set_params(</span><br><span class="line">        criterion = criterion,</span><br><span class="line">        max_depth=best_deep,</span><br><span class="line">        min_samples_split=best_split,</span><br><span class="line">        min_samples_leaf=best_leaf</span><br><span class="line">    )</span><br><span class="line">    dot_data = tree.export_graphviz(tree_clf, out_file=<span class="literal">None</span>)</span><br><span class="line">    graph = graphviz.Source(dot_data)</span><br><span class="line">    graph.render(<span class="string">&quot;House&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;生成成功&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>生成成功
+</code></pre>
+<h2 id="3-SVM"><a href="#3-SVM" class="headerlink" title="3. SVM"></a>3. SVM</h2><h3 id="3-1-原理"><a href="#3-1-原理" class="headerlink" title="3.1 原理"></a>3.1 原理</h3><p>支持向量机的思想是在一个多维空间里寻找一个超平面，并且让离这个超平面最近的点到超平面的距离最大。</p>
+<p>给定的训练样本形如：<br>$$ D &#x3D; {(x_1,y_1),(x_2,y_2),\dots,(x_n,y_n)} $$<br>SVM寻找的最佳超平面可以用如下方程描述：<br>$$ \vec{w}^{T}x + \vec{b} &#x3D; 0 $$<br>$\vec{w}$表示法向量，$\vec{b}$表示超平面距离原点的距离。</p>
+<p>一般情况下SVM做的事二分类任务，因此 <strong>通过缩放</strong> ，可以让正样例距离超平面的距离和负样例相同，且都为1，并且正样例分布在超平面之上$\vec{w}^T+\vec{b} \ge 1$，负样例在超平面之下$\vec{w}^T+\vec{b} \le -1$。距离超平面最近的正负样例能让这个不等式取等号，这些样例代表的向量就称为 <strong>“支持向量”</strong> 。</p>
+<p>超平面$\vec{w}^T+\vec{b} &#x3D; 1$和超平面$\vec{w}^T+\vec{b} &#x3D; -1$之间的距离记作$\gamma$，SVM做得就是让这个$\gamma$最大化。$\gamma$的距离很好计算：<br>$$ \gamma &#x3D; \frac{2}{|\vec{w}|} $$<br>这个表达式说明求最大距离只和$\vec{w}$有关。求满足要求的$\vec{w}$和$\vec{b}$就是SVM的工作，求解方法是用拉格朗日方法。</p>
+<p>支持向量机的优点有很多：</p>
+<ul>
+<li>在高维空间有效；</li>
+<li>在尺寸数量大于样本数量的情况下仍然有效；</li>
+<li>只要提供不同的和函数，就能产生不同的支持向量机；</li>
+</ul>
+<p>决策树所做的事就是让所有的类别尽可能分开，但是SVM不仅让这些点分开，还尽可能让分类做得容错能力大，因此 __期望SVM的效果会好于决策树__。</p>
+<p>但是同样它也具有一些缺点：如果特征的数量远大于样本的数量，则容易过拟合，此时正则化项是至关重要的。</p>
+<h3 id="3-2-实现"><a href="#3-2-实现" class="headerlink" title="3.2 实现"></a>3.2 实现</h3><p>sklearn库提供了多种SVM，有SVC、NuSVC、LinearSVC等。不过决策树的参数很多，有如下这些：</p>
+<ul>
+<li>kernel : string, optional (default&#x3D;’rbf’)<ul>
+<li>SVM的核函数，有linear、poly、rbf、sigmoid、precomputed等。</li>
+</ul>
+</li>
+<li>degree : int, optional (default&#x3D;3)<ul>
+<li>如果选择poly类型的核函数，那么就能规定空间的维度，默认为3；其他和函数不需要这个参数。</li>
+</ul>
+</li>
+<li>gamma : float, optional (default&#x3D;’auto’)<ul>
+<li>这个参数是当核函数为rbf、poly或者sigmoid时使用的。它有两种选择：scale和auto。</li>
+</ul>
+</li>
+<li>coef0 : float, optional (default&#x3D;0.0)<ul>
+<li>核函数中的独立项。它只在’poly’和’sigmoid’中起作用。</li>
+</ul>
+</li>
+<li>decision_function_shape : ‘ovo’, ‘ovr’, default&#x3D;’ovr’<ul>
+<li>决策函数。ovr表示one-vs-rest，ovo表示one-vs-one。后者用于多分类。</li>
+</ul>
+</li>
+<li>C : float, optional (default&#x3D;1.0)<ul>
+<li>错误项的惩罚</li>
+</ul>
+</li>
+<li>class_weight : {dict, ‘balanced’}, optional<ul>
+<li>默认所有的维度都是同等重要的。可以给不同的维度设定不同的权重。</li>
+</ul>
+</li>
+</ul>
+<p>先来尝试一下随意设置的参数的效果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> svm</span><br><span class="line"></span><br><span class="line">SVM_clf = svm.SVC(</span><br><span class="line">    gamma=<span class="string">&#x27;auto&#x27;</span>,</span><br><span class="line">    decision_function_shape=<span class="string">&#x27;ovr&#x27;</span></span><br><span class="line">)</span><br><span class="line">SVM_clf.fit(train_paras, train_tags)</span><br><span class="line"></span><br><span class="line"><span class="comment"># SVM预测</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 准确率</span></span><br><span class="line">acc_on_train = Accuracy(SVM_clf.predict(train_paras), train_tags, <span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Accuracy of SVM working on training set is %.4f&quot;</span> % acc_on_train)</span><br><span class="line"></span><br><span class="line">acc_on_test = Accuracy(SVM_clf.predict(test_paras), test_tags, <span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Accuracy of SVM working on testing set is %.4f&quot;</span> % acc_on_test)</span><br></pre></td></tr></table></figure>
+
+<pre><code>[[975.   8.   0.   0.]
+ [ 15. 303.   4.   2.]
+ [  0.   0.  19.   0.]
+ [  0.   0.   0.  24.]]
+Accuracy of SVM working on training set is 0.9785
+[[217.   8.   1.   0.]
+ [  2.  62.  22.  13.]
+ [  1.   3.  22.   0.]
+ [  0.   0.   1.  26.]]
+Accuracy of SVM working on testing set is 0.8651
+</code></pre>
+<p>上述随意配置的SVM已经获得了较好的结果。</p>
+<h3 id="3-3-寻找最佳的参数组合"><a href="#3-3-寻找最佳的参数组合" class="headerlink" title="3.3 寻找最佳的参数组合"></a>3.3 寻找最佳的参数组合</h3><p>使用多边形核函数poly，尝试最佳的参数组合。这里改动空间比较大的选项是degree，并且可视化训练出来的SVM在训练集和测试集上的性能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">degrees = [i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">8</span>)]</span><br><span class="line">train_acc = []</span><br><span class="line">test_acc = []</span><br><span class="line"></span><br><span class="line">best_degree = <span class="number">0</span></span><br><span class="line">best_acc = <span class="number">0</span></span><br><span class="line">best_mtx = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> degree <span class="keyword">in</span> degrees:</span><br><span class="line">    <span class="comment"># 配置参数</span></span><br><span class="line">    SVM_clf.set_params(</span><br><span class="line">        kernel=<span class="string">&#x27;poly&#x27;</span>,</span><br><span class="line">        degree=degree,</span><br><span class="line">        gamma=<span class="string">&#x27;auto&#x27;</span>,</span><br><span class="line">        decision_function_shape=<span class="string">&#x27;ovo&#x27;</span></span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># 训练</span></span><br><span class="line">    SVM_clf.fit(train_paras, train_tags)</span><br><span class="line">    <span class="comment"># 测试结果</span></span><br><span class="line">    acc1 = Accuracy(SVM_clf.predict(train_paras), train_tags)</span><br><span class="line">    acc2 = Accuracy(SVM_clf.predict(test_paras), test_tags)</span><br><span class="line">    <span class="comment"># print(acc1, acc2)</span></span><br><span class="line">    train_acc.append(acc1)</span><br><span class="line">    test_acc.append(acc2)</span><br><span class="line">    <span class="keyword">if</span> acc2 &gt; best_acc:</span><br><span class="line">        best_degree = degree</span><br><span class="line">        best_acc = acc2</span><br><span class="line"></span><br><span class="line">plt.plot(degrees, train_acc, <span class="string">&#x27;c&#x27;</span>)</span><br><span class="line">plt.plot(degrees, test_acc, <span class="string">&#x27;r&#x27;</span>)</span><br><span class="line">plt.show()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Best accuracy is %.4f when degree is %d.&quot;</span> % (best_acc, best_degree))</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/output_17_0.png" alt="png"></p>
+<pre><code>Best accuracy is 0.8995 when degree is 2.
+</code></pre>
+<p>如上配置的SVM在训练集（青色线条）和测试集（红色线条）上的准确率变化如图所示，并最终得到的准确率为89.95%，是前几个中效果最好的。</p>
+<h2 id="4-人工神经网络"><a href="#4-人工神经网络" class="headerlink" title="4. 人工神经网络"></a>4. 人工神经网络</h2><h3 id="4-1-模型定义"><a href="#4-1-模型定义" class="headerlink" title="4.1 模型定义"></a>4.1 模型定义</h3><p>人工神经网络已经用了很多次了，这里使用PyTorch框架来实现一个全连接神经网络。并且这个数据集相对来说是比较简单的，每个样本仅有6个维度，因此不需要定义太多的隐含层，但是可以尝试使用线性和非线性两种激活函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"><span class="keyword">from</span> torch.autograd <span class="keyword">import</span> Variable</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义神经网络</span></span><br><span class="line"><span class="comment"># 三层全连接</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Net1</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_dim, hidden1, hidden2, out_dim</span>):</span><br><span class="line">        <span class="built_in">super</span>(Net1, self).__init__()</span><br><span class="line">        self.layers = nn.Sequential(</span><br><span class="line">            nn.Linear(in_dim, hidden1),</span><br><span class="line">            nn.Linear(hidden1, hidden2),</span><br><span class="line">            nn.Linear(hidden2, out_dim)</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.layers(x)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 三层全连接+ReLU激活</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Net2</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_dim, hidden1, hidden2, out_dim</span>):</span><br><span class="line">        <span class="built_in">super</span>(Net2, self).__init__()</span><br><span class="line">        self.layers = nn.Sequential(</span><br><span class="line">            nn.Linear(in_dim, hidden1),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            nn.Linear(hidden1, hidden2),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            nn.Linear(hidden2, out_dim)</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.layers(x)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 三层全连接+Sigmoid</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Net3</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_dim, hidden1, hidden2, out_dim</span>):</span><br><span class="line">        <span class="built_in">super</span>(Net3, self).__init__()</span><br><span class="line">        self.layers = nn.Sequential(</span><br><span class="line">            nn.Linear(in_dim, hidden1),</span><br><span class="line">            nn.Sigmoid(),</span><br><span class="line">            nn.Linear(hidden1, hidden2),</span><br><span class="line">            nn.Sigmoid(),</span><br><span class="line">            nn.Linear(hidden2, out_dim)</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.layers(x)</span><br></pre></td></tr></table></figure>
+
+<p>上面定义了三个神经网络结构：</p>
+<ul>
+<li>Net1: 三层线性全连接</li>
+<li>Net2: 三层全连接+ReLU激活函数</li>
+<li>Net3: 三层全连接+Sigmoid激活函数</li>
+</ul>
+<p>不过这些网络还处于定义阶段，没有被实例化，实例化的时候需要考虑输入数据的类型和形状。输入数据的类型和形状如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">paras: 6 * 4</span><br><span class="line">[[1 0 0 0]</span><br><span class="line"> [0 0 0 1]</span><br><span class="line"> [0 0 1 0]</span><br><span class="line"> [1 0 0 0]</span><br><span class="line"> [1 0 0 0]</span><br><span class="line"> [1 0 0 0]]</span><br><span class="line">tags: 1 * 4</span><br><span class="line">[1 0 0 0]</span><br></pre></td></tr></table></figure>
+
+<p>由于每个神经元可以输入一个数值，因此首先需要将<code>6*4</code>的tensor展平为<code>1*24</code>，因此输入层需要24个神经元，也就是<code>in_dim=24</code>。同样的输出包含四个维度，因此<code>out_dim=4</code>。中间层的输出没有太大的规定，但是不能包含太多的神经元——防止神经元将输入数据全部学习导致过拟合。</p>
+<h3 id="4-2-模型训练"><a href="#4-2-模型训练" class="headerlink" title="4.2 模型训练"></a>4.2 模型训练</h3><p>然后接下来就要开始训练了，输入输出的数据首先转化为可保存梯度的Variable类型。训练的时候将train_1hot_paras输入，将网络输出的结果和train_1hot_tags进行对比，得出的误差反传，将这样的步骤反复几次就能提高准确率。</p>
+<p>输入的时候一般会将样本组织为<code>batch * dim</code>的形式，通过增加tensor的维度可以同时输入多个样本一起训练，然后反传误差。这样做的好处不仅可以抵消单样本带来的误差，当计算发生在GPU上的时候还可以加速训练。</p>
+<p>由于使用one-hot编码，使用CrossEntropy损失函数，形式如下：<br>$$ \text{loss}(x, class) &#x3D; -\log\left(\frac{\exp(x[class])}{\sum_j \exp(x[j])}\right) &#x3D; -x[class] + \log\left(\sum_j \exp(x[j])\right) $$</p>
+<p>该损失函数的接受两个参数，第一个参数x是one-hot类型的模型输出向量，第二个参数class是标签中对该样本的分类。</p>
+<p>使用反向传播方式训练参数，参数的优化器使用Adam，这是一种自动调整学习率的优化器。为了看到模型训练过程中的性能变化，在每次训练完一个epoch之后同时检验模型在训练集和测试集上的准确率，最终绘制误差曲线图。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">Train_Test</span>(<span class="params">net, epoch:<span class="built_in">int</span>, batch_size:<span class="built_in">int</span>, lr:<span class="built_in">float</span></span>):</span><br><span class="line">    epochs = [i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(epoch)]</span><br><span class="line">    train_acc, test_acc = [], []</span><br><span class="line">    best_acc = <span class="number">0</span></span><br><span class="line">    </span><br><span class="line">    criterion = nn.CrossEntropyLoss()  <span class="comment"># Loss function</span></span><br><span class="line">    optimizer = optim.Adam(net.parameters(), lr=lr)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> epochs:</span><br><span class="line">        <span class="comment"># 训练</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(train_1hot_paras), batch_size):</span><br><span class="line">            optimizer.zero_grad()</span><br><span class="line">            inputs = Variable(torch.FloatTensor(train_1hot_paras[i: i+batch_size])).view(-<span class="number">1</span>, <span class="number">24</span>)</span><br><span class="line">            targets = Variable(torch.LongTensor(train_tags[i: i+batch_size]))</span><br><span class="line">            outputs = net(inputs)</span><br><span class="line">            loss = criterion(outputs, targets)</span><br><span class="line">            loss.backward()   <span class="comment"># 梯度反传</span></span><br><span class="line">            optimizer.step()  <span class="comment"># 学习</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 检验训练集</span></span><br><span class="line">        inputs = Variable(torch.FloatTensor(train_1hot_paras)).view(-<span class="number">1</span>, <span class="number">24</span>)</span><br><span class="line">        outputs = net(inputs)</span><br><span class="line">        predict = outputs.topk(<span class="number">1</span>)[<span class="number">1</span>].view(-<span class="number">1</span>)</span><br><span class="line">        acc = Accuracy(predict, train_tags)</span><br><span class="line">        train_acc.append(acc)</span><br><span class="line">        <span class="comment"># 检验测试集</span></span><br><span class="line">        inputs = Variable(torch.FloatTensor(test_1hot_paras)).view(-<span class="number">1</span>, <span class="number">24</span>)</span><br><span class="line">        outputs = net(inputs)  <span class="comment"># 需要将输出的one-hot分类转化为普通的分类</span></span><br><span class="line">        predict = outputs.topk(<span class="number">1</span>)[<span class="number">1</span>].view(-<span class="number">1</span>)</span><br><span class="line">        acc = Accuracy(predict, test_tags)</span><br><span class="line">        test_acc.append(acc)</span><br><span class="line">        best_acc = <span class="built_in">max</span>(acc, best_acc)</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Best accuracy on testing set is %.4f&quot;</span> % best_acc)</span><br><span class="line">    plt.plot(epochs, train_acc, <span class="string">&#x27;c&#x27;</span>)</span><br><span class="line">    plt.plot(epochs, test_acc, <span class="string">&#x27;r&#x27;</span>)</span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-1-线性模型训练"><a href="#4-2-1-线性模型训练" class="headerlink" title="4.2.1 线性模型训练"></a>4.2.1 线性模型训练</h4><p>线性全连接网络使用较小的epoch，并增加隐藏层的结点数量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net1 = Net1(in_dim=<span class="number">24</span>, hidden1=<span class="number">8</span>, hidden2=<span class="number">8</span>, out_dim=<span class="number">4</span>)</span><br><span class="line">Train_Test(net1, epoch=<span class="number">200</span>, batch_size=<span class="number">8</span>, lr=<span class="number">1e-2</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Best accuracy on testing set is 0.9286
+</code></pre>
+<p><img src="/output_23_1.png" alt="png"></p>
+<h4 id="4-2-2-ReLU激活模型训练"><a href="#4-2-2-ReLU激活模型训练" class="headerlink" title="4.2.2 ReLU激活模型训练"></a>4.2.2 ReLU激活模型训练</h4><p>使用ReLU激活的网络设置较少的隐藏层结点，并增加batch的大小，以避免过拟合。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net2 = Net2(in_dim=<span class="number">24</span>, hidden1=<span class="number">8</span>, hidden2=<span class="number">6</span>, out_dim=<span class="number">4</span>)</span><br><span class="line">Train_Test(net2, epoch=<span class="number">200</span>, batch_size=<span class="number">16</span>, lr=<span class="number">1e-2</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Best accuracy on testing set is 0.8942
+</code></pre>
+<p><img src="/output_25_1.png" alt="png"></p>
+<h4 id="4-2-3-Sigmoid激活模型训练"><a href="#4-2-3-Sigmoid激活模型训练" class="headerlink" title="4.2.3 Sigmoid激活模型训练"></a>4.2.3 Sigmoid激活模型训练</h4><p>使用Sigmoid激活的网络，同样设置较少的隐藏层结点，并增加batch的大小，以避免过拟合。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net3 = Net2(in_dim=<span class="number">24</span>, hidden1=<span class="number">6</span>, hidden2=<span class="number">5</span>, out_dim=<span class="number">4</span>)</span><br><span class="line">Train_Test(net3, epoch=<span class="number">200</span>, batch_size=<span class="number">16</span>, lr=<span class="number">1e-2</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Best accuracy on testing set is 0.9153
+</code></pre>
+<p><img src="/output_27_1.png" alt="png"></p>
+<p>神经网络的训练结果存在不确定性，并且其最终的性能不仅和模型结构有关，甚至和训练中使用的超参数有很大的关系。但是能够看出神经网络的最佳性能至少比前三种分类器的性能好。</p>
+<p>最后上述4中分类方法在训练集上的效果如下：</p>
+<table>
+<thead>
+<tr>
+<th>分类器</th>
+<th>准确率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>朴素贝叶斯</td>
+<td>82.54%</td>
+</tr>
+<tr>
+<td>决策树</td>
+<td>87.83%</td>
+</tr>
+<tr>
+<td>SVM</td>
+<td>89.95%</td>
+</tr>
+<tr>
+<td>人工神经网络</td>
+<td>89%-93%</td>
+</tr>
+</tbody></table>
+<h2 id="提高性能的方式"><a href="#提高性能的方式" class="headerlink" title="提高性能的方式"></a>提高性能的方式</h2><p>其实在很多分类任务中，不同参数的权重是不一样的，如果能提前知道这些参数各自的权重，那么性能上会有很大的提升。上面用到的4中分类方法很多函数都提供了权重参数，只不过没有用到。</p>
+<p>如果有一个分类任务需要获得更优秀的分类性能，那么不妨在使用分类任务前，对样本预先分析，比如查看各个样本不同参数的分布情况等。</p>
+<p>在使用神经网络的时候，样本的输入顺序是一直不变（偷懒），如果为了得到更好的分类结果，应该每一次都将训练数据集打乱。</p>
+<p>还有一种比较可行的方式就是同时使用多种分类器，当不同分类器输出结果后，综合各分类器的建议，然后选择合适的结果。实际上有一种分类算法： <strong>随机森林</strong> 的核心思想就是这样的。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PyTorch/" rel="tag"># PyTorch</a>
+              <a href="/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+              <a href="/tags/SVM/" rel="tag"># SVM</a>
+              <a href="/tags/Decision-Tree/" rel="tag"># Decision Tree</a>
+              <a href="/tags/Naive-Bayes/" rel="tag"># Naive Bayes</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/10/12/HTML%E5%92%8CCSS%E7%9A%84%E7%AC%94%E8%AE%B0/" rel="prev" title="HTML和CSS的笔记">
+                  <i class="fa fa-angle-left"></i> HTML和CSS的笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/01/25/PyTorch%E7%88%AC%E5%9D%91%E6%8C%87%E5%8D%97/" rel="next" title="PyTorch爬坑指南">
+                  PyTorch爬坑指南 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="接触了一个在Inference领域比较有影响力的模型——ESIM。同时薅了Colab羊毛。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="做推理的ESIM">
+<meta property="og:url" content="https://randool.github.io/2019/08/08/%E5%81%9A%E6%8E%A8%E7%90%86%E7%9A%84ESIM/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="接触了一个在Inference领域比较有影响力的模型——ESIM。同时薅了Colab羊毛。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://randool.github.io/output_15_0.png">
+<meta property="og:image" content="https://randool.github.io/output_24_0.png">
+<meta property="og:image" content="https://randool.github.io/output_29_1.png">
+<meta property="og:image" content="https://randool.github.io/output_29_3.png">
+<meta property="og:image" content="https://randool.github.io/output_29_5.png">
+<meta property="article:published_time" content="2019-08-08T02:36:42.000Z">
+<meta property="article:modified_time" content="2019-08-13T02:14:50.870Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="PyTorch">
+<meta property="article:tag" content="Deep Learning">
+<meta property="article:tag" content="NLP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://randool.github.io/output_15_0.png">
+
+
+<link rel="canonical" href="https://randool.github.io/2019/08/08/%E5%81%9A%E6%8E%A8%E7%90%86%E7%9A%84ESIM/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2019/08/08/%E5%81%9A%E6%8E%A8%E7%90%86%E7%9A%84ESIM/","path":"2019/08/08/做推理的ESIM/","title":"做推理的ESIM"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>做推理的ESIM | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ESIM%E6%A8%A1%E5%9E%8B%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">ESIM模型简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Input-Encoding"><span class="nav-number">1.1.</span> <span class="nav-text">Input Encoding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Local-Inference"><span class="nav-number">1.2.</span> <span class="nav-text">Local Inference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Inference-Composition"><span class="nav-number">1.3.</span> <span class="nav-text">Inference Composition</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E9%9C%80%E8%A6%81%E7%94%A8%E5%88%B0%E7%9A%84%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">导入需要用到的库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8torchtext%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE"><span class="nav-number">3.</span> <span class="nav-text">使用torchtext准备数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">通用参数配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ESIM%E6%A8%A1%E5%9E%8B%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">ESIM模型代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#nn-BatchNorm1d%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">5.1.</span> <span class="nav-text">nn.BatchNorm1d的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EEmbedding%E4%B9%8B%E5%90%8E%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81%E5%A2%9E%E5%8A%A0BatchNorm1d%E5%B1%82"><span class="nav-number">5.1.1.</span> <span class="nav-text">关于Embedding之后是否需要增加BatchNorm1d层</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nn-LSTM%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">5.2.</span> <span class="nav-text">nn.LSTM的使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E9%98%B6%E6%AE%B5"><span class="nav-number">6.</span> <span class="nav-text">训练阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#batch-label%E7%9A%84%E5%BD%A2%E7%8A%B6"><span class="nav-number">6.1.</span> <span class="nav-text">batch.label的形状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tensor%E5%92%8C%E6%A0%87%E9%87%8F%E7%9A%84%E9%99%A4%E6%B3%95"><span class="nav-number">6.2.</span> <span class="nav-text">tensor和标量的除法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%98%E5%88%B6Loss-Accuracy%E6%9B%B2%E7%BA%BF"><span class="nav-number">6.3.</span> <span class="nav-text">绘制Loss-Accuracy曲线</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%84%E6%B5%8B"><span class="nav-number">7.</span> <span class="nav-text">预测</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2019/08/08/%E5%81%9A%E6%8E%A8%E7%90%86%E7%9A%84ESIM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="做推理的ESIM | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          做推理的ESIM
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-08 10:36:42" itemprop="dateCreated datePublished" datetime="2019-08-08T10:36:42+08:00">2019-08-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2019-08-13 10:14:50" itemprop="dateModified" datetime="2019-08-13T10:14:50+08:00">2019-08-13</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>接触了一个在Inference领域比较有影响力的模型——ESIM。同时薅了Colab羊毛。</p>
+<span id="more"></span>
+
+<h1 id="ESIM模型简介"><a href="#ESIM模型简介" class="headerlink" title="ESIM模型简介"></a>ESIM模型简介</h1><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1609.06038">Enhanced LSTM for Natural Language Inference</a>这篇论文提出了一种计算两个句子相似度的模型。模型由3个部分组成：</p>
+<h2 id="Input-Encoding"><a href="#Input-Encoding" class="headerlink" title="Input Encoding"></a>Input Encoding</h2><p>首先将输入的两个句子，premise和hypothesis的词向量$a&#x3D;(a_1,…,a_{l_a})$和$b&#x3D;(b_1,…,b_{l_b})$经过一个BiLSTM的处理，得到新的词向量表示$(\bar{a_1}, \dots, \bar{a_{l_a}})$和$(\bar{b_1}, \dots, \bar{b_{l_b}})$。</p>
+<h2 id="Local-Inference"><a href="#Local-Inference" class="headerlink" title="Local Inference"></a>Local Inference</h2><p>论文中说到，计算两个词的相关程度最好的方法是计算词向量的内积，也就是$e_{ij}&#x3D;\bar{a_i}^T\bar{b_j}$。这样，计算两个句子的所有词对之间的相似度（attention），就可以获得一个矩阵</p>
+<p>$$(e_{ij})<em>{l_a \times l_b} &#x3D; (\bar{a_i}^T\bar{b_j})</em>{l_a \times l_b}$$</p>
+<p>接着是一个很有意思的思想：既然要判断两个句子相似度，那么就需要看看两者之间能否相互表示。也就是分别用premise和hypothesis中的词向量$\bar{a_i}$和$\bar{b_i}$表示对方的词向量。</p>
+<p>论文中的公式为：</p>
+<p>$$\widetilde{a_i} &#x3D; \sum_{j&#x3D;1}^{l_b}{\frac{exp(e_{ij})}{\sum_{k&#x3D;1}^{l_b}{exp(e_{ik})}}\bar{b_j}}$$<br>$$\widetilde{b_j} &#x3D; \sum_{i&#x3D;1}^{l_a}{\frac{exp(e_{ij})}{\sum_{k&#x3D;1}^{l_a}{exp(e_{kj})}}\bar{a_i}}$$</p>
+<p>翻译一下就是，因为模型不知道应该哪对$a_i$和$b_j$才是相近或相对，所以做了一个枚举的操作，将所有的情况都表示出来。之前计算的相似度矩阵就是就用来做加权。每个位置上的权重即当前权重矩阵行（对于计算$\widetilde{a_i}$来说，对于计算$\widetilde{b_j}$就是列）的Softmax值。</p>
+<p>论文为了强化推理（Enhancement of inference information），将之前得到的中间结果都堆叠起来。</p>
+<p>$$m_a &#x3D; [\bar{a};\widetilde{a};\bar{a}-\widetilde{a};\bar{a} \odot \widetilde{a}]$$<br>$$m_b &#x3D; [\bar{b};\widetilde{b};\bar{b}-\widetilde{b};\bar{b} \odot \widetilde{b}]$$</p>
+<h2 id="Inference-Composition"><a href="#Inference-Composition" class="headerlink" title="Inference Composition"></a>Inference Composition</h2><p>推理组合使用的词向量就是上一个部分所得的$m_a$和$m_b$，还是用到了BiLSTM来获取两组词向量的上下文信息。</p>
+<p>将所有的信息组合起来之后，一并送给全连接层，完成最后的糅合。</p>
+<h1 id="导入需要用到的库"><a href="#导入需要用到的库" class="headerlink" title="导入需要用到的库"></a>导入需要用到的库</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm_notebook <span class="keyword">as</span> tqdm</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> torchtext</span><br><span class="line"><span class="keyword">from</span> torchtext <span class="keyword">import</span> data, datasets</span><br><span class="line"><span class="keyword">from</span> torchtext.vocab <span class="keyword">import</span> GloVe</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> nltk</span><br><span class="line"><span class="keyword">from</span> nltk <span class="keyword">import</span> word_tokenize</span><br><span class="line"><span class="keyword">import</span> spacy</span><br><span class="line"><span class="keyword">from</span> keras_preprocessing.text <span class="keyword">import</span> Tokenizer</span><br><span class="line"></span><br><span class="line">device = torch.device(<span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(device)</span><br></pre></td></tr></table></figure>
+
+<pre><code>cuda
+</code></pre>
+<p>挂载Google Drive</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.colab <span class="keyword">import</span> drive</span><br><span class="line">drive.mount(<span class="string">&#x27;/content/drive&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Go to this URL in a browser: https://accounts.google.com/o/oauth2/xxxxxxxx
+
+Enter your authorization code:
+··········
+Mounted at /content/drive
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!nvidia-smi</span><br></pre></td></tr></table></figure>
+
+<pre><code>Fri Aug  9 04:45:35 2019       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 418.67       Driver Version: 410.79       CUDA Version: 10.0     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  Tesla K80           Off  | 00000000:00:04.0 Off |                    0 |
+| N/A   60C    P0    62W / 149W |   6368MiB / 11441MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
++-----------------------------------------------------------------------------+
+</code></pre>
+<h1 id="使用torchtext准备数据"><a href="#使用torchtext准备数据" class="headerlink" title="使用torchtext准备数据"></a>使用torchtext准备数据</h1><p>torchtext的使用方式参考了参考了：<a target="_blank" rel="noopener" href="https://github.com/pytorch/examples/blob/master/snli/train.py">https://github.com/pytorch/examples/blob/master/snli/train.py</a></p>
+<p>torchtext中的GloVe可以直接使用，但是由于其没有提供类似torchvision的直接读取源文件的功能，而只能读取缓存，所以最好：</p>
+<ol>
+<li>先将GloVe下载到本地</li>
+<li>在下载目录打开终端，然后在终端中先使用torchtext生成缓存</li>
+<li>以后使用GloVe的时候增加cache参数，这样torchtext就会从cache中读取而不是下载庞大的GloVe到本地了</li>
+</ol>
+<blockquote>
+<p>不过如果薅的是Colab羊毛，那就随便了(～￣▽￣)～</p>
+</blockquote>
+<p>torchtext还可以直接加载SNLI数据集，不过数据集的加载目录结构如下：</p>
+<ul>
+<li>root<ul>
+<li>snli_1.0<ul>
+<li>snli_1.0_train.jsonl</li>
+<li>snli_1.0_dev.jsonl</li>
+<li>snli_1.0_test.jsonl</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">TEXT = data.Field(batch_first=<span class="literal">True</span>, lower=<span class="literal">True</span>, tokenize=<span class="string">&quot;spacy&quot;</span>)</span><br><span class="line">LABEL = data.Field(sequential=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分离训练、验证、测试集</span></span><br><span class="line">tic = time.time()</span><br><span class="line">train, dev, test = datasets.SNLI.splits(TEXT, LABEL)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Cost: <span class="subst">&#123;(time.time() - tic) / <span class="number">60</span>:<span class="number">.2</span>f&#125;</span> min&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载GloVe预训练向量</span></span><br><span class="line">tic = time.time()</span><br><span class="line">glove_vectors = GloVe(name=<span class="string">&#x27;6B&#x27;</span>, dim=<span class="number">100</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Creat GloVe done. Cost: <span class="subst">&#123;(time.time() - tic) / <span class="number">60</span>:<span class="number">.2</span>f&#125;</span> min&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建词汇表</span></span><br><span class="line">tic = time.time()</span><br><span class="line">TEXT.build_vocab(train, dev, test, vectors=glove_vectors)</span><br><span class="line">LABEL.build_vocab(train)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Build vocab done. Cost: <span class="subst">&#123;(time.time() - tic) / <span class="number">60</span>:<span class="number">.2</span>f&#125;</span> min&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;TEXT.vocab.vectors.size(): <span class="subst">&#123;TEXT.vocab.vectors.size()&#125;</span>&quot;</span>)</span><br><span class="line">num_words = <span class="built_in">int</span>(TEXT.vocab.vectors.size()[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存分词和词向量的对应字典</span></span><br><span class="line"><span class="keyword">if</span> os.path.exists(<span class="string">&quot;/content/drive/My Drive/Colab Notebooks&quot;</span>):</span><br><span class="line">    glove_stoi_path = <span class="string">&quot;/content/drive/My Drive/Colab Notebooks/vocab_label_stoi.pkl&quot;</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    glove_stoi_path = <span class="string">&quot;./vocab_label_stoi.pkl&quot;</span></span><br><span class="line">pickle.dump([TEXT.vocab.stoi, LABEL.vocab.stoi], <span class="built_in">open</span>(glove_stoi_path, <span class="string">&quot;wb&quot;</span>))</span><br><span class="line"></span><br><span class="line">batch_sz = <span class="number">128</span></span><br><span class="line"></span><br><span class="line">train_iter, dev_iter, test_iter = data.BucketIterator.splits(</span><br><span class="line">    datasets=(train, dev, test),</span><br><span class="line">    batch_sizes=(batch_sz, batch_sz, batch_sz),</span><br><span class="line">    shuffle=<span class="literal">True</span>,</span><br><span class="line">    device=device</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Cost: 7.94 min
+Creat GloVe done. Cost: 0.00 min
+Build vocab done. Cost: 0.12 min
+TEXT.vocab.vectors.size(): torch.Size([34193, 100])
+</code></pre>
+<h1 id="通用参数配置"><a href="#通用参数配置" class="headerlink" title="通用参数配置"></a>通用参数配置</h1><p>炼丹的时候最好有一个全局配方，这样好调整。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Config</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># For data</span></span><br><span class="line">        self.batch_first = <span class="literal">True</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.batch_size = batch_sz</span><br><span class="line">        <span class="keyword">except</span> NameError:</span><br><span class="line">            self.batch_size = <span class="number">512</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># For Embedding</span></span><br><span class="line">        self.n_embed = <span class="built_in">len</span>(TEXT.vocab)</span><br><span class="line">        self.d_embed = TEXT.vocab.vectors.size()[-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># For Linear</span></span><br><span class="line">        self.linear_size = self.d_embed</span><br><span class="line"></span><br><span class="line">        <span class="comment"># For LSTM</span></span><br><span class="line">        self.hidden_size = <span class="number">300</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># For output</span></span><br><span class="line">        self.d_out = <span class="built_in">len</span>(LABEL.vocab)  <span class="comment"># 表示输出为几维</span></span><br><span class="line">        self.dropout = <span class="number">0.5</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># For training</span></span><br><span class="line">        self.save_path = <span class="string">r&quot;/content/drive/My Drive/Colab Notebooks&quot;</span> <span class="keyword">if</span> os.path.exists(</span><br><span class="line">            <span class="string">r&quot;/content/drive/My Drive/Colab Notebooks&quot;</span>) <span class="keyword">else</span> <span class="string">&quot;./&quot;</span></span><br><span class="line">        self.snapshot = os.path.join(self.save_path, <span class="string">&quot;ESIM.pt&quot;</span>)</span><br><span class="line"></span><br><span class="line">        self.device = device</span><br><span class="line">        self.epoch = <span class="number">64</span></span><br><span class="line">        self.scheduler_step = <span class="number">3</span></span><br><span class="line">        self.lr = <span class="number">0.0004</span></span><br><span class="line">        self.early_stop_ratio = <span class="number">0.985</span>  <span class="comment"># 可以提早结束训练过程</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">args = Config()</span><br></pre></td></tr></table></figure>
+
+<h1 id="ESIM模型代码实现"><a href="#ESIM模型代码实现" class="headerlink" title="ESIM模型代码实现"></a>ESIM模型代码实现</h1><p>代码参考了：<a target="_blank" rel="noopener" href="https://github.com/pengshuang/Text-Similarity/blob/master/models/ESIM.py">https://github.com/pengshuang/Text-Similarity/blob/master/models/ESIM.py</a></p>
+<h2 id="nn-BatchNorm1d的使用"><a href="#nn-BatchNorm1d的使用" class="headerlink" title="nn.BatchNorm1d的使用"></a>nn.BatchNorm1d的使用</h2><p>对数据的正则化可以消除不同维度数据分布不同的问题，几何上的理解就是将n维空间的一个“椭球体”正则化为一个“球体”，这样可以简化模型的训练难度，提高训练速度。</p>
+<p>但是如果将所有的输入数据全部正则化，会消耗大量的时间，Batch Normalization就是一种折衷的方法，它只对输入的batch_size个数据进行正则化。从概率上理解就是根据batch_size个样本的分布，估计所有样本的分布。</p>
+<p>PyTorch的<a target="_blank" rel="noopener" href="https://pytorch.org/docs/stable/nn.html?highlight=batchnorm1d#torch.nn.BatchNorm1d">nn.BatchNorm1d</a>听名字就知道是对一维数据的批正则化，所以这里有两个限制条件：</p>
+<ol>
+<li>训练（即打开了<code>model.train()</code>）的时候，提供的批大小至少为2；测试、使用的（<code>model.eval()</code>）时候没有batch大小的限制</li>
+<li>默认倒数第2维是“batch”</li>
+</ol>
+<p>而我之前的数据处理所得到的每一个批次的数据，经过词向量映射之后得到的形状为<code>batch * seq_len * embed_dim</code>，所以这里有3个维度。并且经过torchtext的<code>data.BucketIterator.splits</code>处理，每个batch的<code>seq_len</code>是动态的（和当前batch中最长句子的长度相同）。这样如果不加处理直接输入给<code>BatchNorm1d</code>，一般会看到如下的报错：</p>
+<blockquote>
+<p>RuntimeError: running_mean should contain xxx elements not yyy</p>
+</blockquote>
+<h3 id="关于Embedding之后是否需要增加BatchNorm1d层"><a href="#关于Embedding之后是否需要增加BatchNorm1d层" class="headerlink" title="关于Embedding之后是否需要增加BatchNorm1d层"></a>关于Embedding之后是否需要增加BatchNorm1d层</h3><p>参考代码实现非常漂亮，可以看出作者的代码功底。不过作者似乎不是使用预处理的词向量作为Embedding向量，而我是用的是预训练的词向量GloVe，并且也不会去训练Glove，所以是否有必要增加<code>nn.BatchNorm1d</code>？</p>
+<p>因为盲目增加网络的层数并不会有好的影响，所以最好的方式就是先看看GloVe词向量是不是每一维都是“正则化的”。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">glove = TEXT.vocab.vectors</span><br><span class="line"></span><br><span class="line">means, stds = glove.mean(dim=<span class="number">0</span>).numpy(), glove.std(dim=<span class="number">0</span>).numpy()</span><br><span class="line">dims = [i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(glove.shape[<span class="number">1</span>])]</span><br><span class="line"></span><br><span class="line">plt.scatter(dims, means)</span><br><span class="line">plt.scatter(dims, stds)</span><br><span class="line">plt.legend([<span class="string">&quot;mean&quot;</span>, <span class="string">&quot;std&quot;</span>])</span><br><span class="line">plt.xlabel(<span class="string">&quot;Dims&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;Features&quot;</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;mean(means)=<span class="subst">&#123;means.mean():<span class="number">.4</span>f&#125;</span>, std(means)=<span class="subst">&#123;means.std():<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;mean(stds)=<span class="subst">&#123;stds.mean():<span class="number">.4</span>f&#125;</span>, std(stds)=<span class="subst">&#123;stds.std():<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/output_15_0.png" alt="png"></p>
+<pre><code>mean(means)=0.0032, std(means)=0.0809
+mean(stds)=0.4361, std(stds)=0.0541
+</code></pre>
+<p>从图中可以看出每一维的分布还是比较稳定的，所以不打算在Embedding层后使用<code>nn.BatchNorm1d</code>。</p>
+<h2 id="nn-LSTM的使用"><a href="#nn-LSTM的使用" class="headerlink" title="nn.LSTM的使用"></a>nn.LSTM的使用</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nn.LSTM(</span><br><span class="line">   input_size, hidden_size, num_layers, bias=True, batch_first=False, dropout=0, bidirectional=False)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><code>nn.LSTM</code>的默认参数batch_first是<code>False</code>，这会让习惯了CV的数据格式的我十分不适应，所以最好还是设置一下<code>True</code>。</p>
+<p>以下是LSTM的输入&#x2F;输出格式。Inputs可以不带上<code>h_0</code>和<code>c_0</code>，这个时候LSTM会自动生成全0的<code>h_0</code>和<code>c_0</code>。</p>
+<ul>
+<li>Inputs: input, (h_0, c_0)</li>
+<li>Outputs: output, (h_n, c_n)</li>
+<li>input: (seq_len, batch, input_size)</li>
+<li>output: (seq_len, batch, num_directions * hidden_size)</li>
+<li>h &#x2F; c: (num_layers * num_directions, batch, hidden_size)</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ESIM</span>(nn.Module):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, args</span>):</span><br><span class="line">        <span class="built_in">super</span>(ESIM, self).__init__()</span><br><span class="line">        self.args = args</span><br><span class="line"></span><br><span class="line">        self.embedding = nn.Embedding(</span><br><span class="line">            args.n_embed, args.d_embed)  <span class="comment"># 参数的初始化可以放在之后</span></span><br><span class="line">        <span class="comment"># self.bn_embed = nn.BatchNorm1d(args.d_embed)</span></span><br><span class="line"></span><br><span class="line">        self.lstm1 = nn.LSTM(args.d_embed, args.hidden_size,</span><br><span class="line">                             num_layers=<span class="number">1</span>, batch_first=<span class="literal">True</span>, bidirectional=<span class="literal">True</span>)</span><br><span class="line">        self.lstm2 = nn.LSTM(args.hidden_size * <span class="number">8</span>, args.hidden_size,</span><br><span class="line">                             num_layers=<span class="number">1</span>, batch_first=<span class="literal">True</span>, bidirectional=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        self.fc = nn.Sequential(</span><br><span class="line">            nn.BatchNorm1d(args.hidden_size * <span class="number">8</span>),</span><br><span class="line">            nn.Linear(args.hidden_size * <span class="number">8</span>, args.linear_size),</span><br><span class="line">            nn.ELU(inplace=<span class="literal">True</span>),</span><br><span class="line">            nn.BatchNorm1d(args.linear_size),</span><br><span class="line">            nn.Dropout(args.dropout),</span><br><span class="line">            nn.Linear(args.linear_size, args.linear_size),</span><br><span class="line">            nn.ELU(inplace=<span class="literal">True</span>),</span><br><span class="line">            nn.BatchNorm1d(args.linear_size),</span><br><span class="line">            nn.Dropout(args.dropout),</span><br><span class="line">            nn.Linear(args.linear_size, args.d_out),</span><br><span class="line">            nn.Softmax(dim=-<span class="number">1</span>)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">submul</span>(<span class="params">self, x1, x2</span>):</span><br><span class="line">        mul = x1 * x2</span><br><span class="line">        sub = x1 - x2</span><br><span class="line">        <span class="keyword">return</span> torch.cat([sub, mul], -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">apply_multiple</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="comment"># input: batch_size * seq_len * (2 * hidden_size)</span></span><br><span class="line">        p1 = F.avg_pool1d(x.transpose(<span class="number">1</span>, <span class="number">2</span>), x.size(<span class="number">1</span>)).squeeze(-<span class="number">1</span>)</span><br><span class="line">        p2 = F.max_pool1d(x.transpose(<span class="number">1</span>, <span class="number">2</span>), x.size(<span class="number">1</span>)).squeeze(-<span class="number">1</span>)</span><br><span class="line">        <span class="comment"># output: batch_size * (4 * hidden_size)</span></span><br><span class="line">        <span class="keyword">return</span> torch.cat([p1, p2], <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">soft_attention_align</span>(<span class="params">self, x1, x2, mask1, mask2</span>):</span><br><span class="line">        <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">        x1: batch_size * seq_len * dim</span></span><br><span class="line"><span class="string">        x2: batch_size * seq_len * dim</span></span><br><span class="line"><span class="string">        &#x27;&#x27;&#x27;</span></span><br><span class="line">        <span class="comment"># attention: batch_size * seq_len * seq_len</span></span><br><span class="line">        attention = torch.matmul(x1, x2.transpose(<span class="number">1</span>, <span class="number">2</span>))</span><br><span class="line">        <span class="comment"># mask的作用：防止计算Softmax的时候出现异常值</span></span><br><span class="line">        mask1 = mask1.<span class="built_in">float</span>().masked_fill_(mask1, <span class="built_in">float</span>(<span class="string">&#x27;-inf&#x27;</span>))</span><br><span class="line">        mask2 = mask2.<span class="built_in">float</span>().masked_fill_(mask2, <span class="built_in">float</span>(<span class="string">&#x27;-inf&#x27;</span>))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># weight: batch_size * seq_len * seq_len</span></span><br><span class="line">        weight1 = F.softmax(attention + mask2.unsqueeze(<span class="number">1</span>), dim=-<span class="number">1</span>)</span><br><span class="line">        x1_align = torch.matmul(weight1, x2)</span><br><span class="line">        weight2 = F.softmax(attention.transpose(</span><br><span class="line">            <span class="number">1</span>, <span class="number">2</span>) + mask1.unsqueeze(<span class="number">1</span>), dim=-<span class="number">1</span>)</span><br><span class="line">        x2_align = torch.matmul(weight2, x1)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># x_align: batch_size * seq_len * hidden_size</span></span><br><span class="line">        <span class="keyword">return</span> x1_align, x2_align</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, sent1, sent2</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        sent1: batch * la</span></span><br><span class="line"><span class="string">        sent2: batch * lb</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        mask1, mask2 = sent1.eq(<span class="number">0</span>), sent2.eq(<span class="number">0</span>)</span><br><span class="line">        x1, x2 = self.embedding(sent1), self.embedding(sent2)</span><br><span class="line">        <span class="comment"># x1, x2 = self.bn_embed(x1), self.bn_embed(x2)</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># batch * [la | lb] * dim</span></span><br><span class="line">        o1, _ = self.lstm1(x1)</span><br><span class="line">        o2, _ = self.lstm1(x2)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Local Inference</span></span><br><span class="line">        <span class="comment"># batch * [la | lb] * hidden_size</span></span><br><span class="line">        q1_align, q2_align = self.soft_attention_align(o1, o2, mask1, mask2)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Inference Composition</span></span><br><span class="line">        <span class="comment"># batch_size * seq_len * (8 * hidden_size)</span></span><br><span class="line">        q1_combined = torch.cat([o1, q1_align, self.submul(o1, q1_align)], -<span class="number">1</span>)</span><br><span class="line">        q2_combined = torch.cat([o2, q2_align, self.submul(o2, q2_align)], -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># batch_size * seq_len * (2 * hidden_size)</span></span><br><span class="line">        q1_compose, _ = self.lstm2(q1_combined)</span><br><span class="line">        q2_compose, _ = self.lstm2(q2_combined)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Aggregate</span></span><br><span class="line">        q1_rep = self.apply_multiple(q1_compose)</span><br><span class="line">        q2_rep = self.apply_multiple(q2_compose)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Classifier</span></span><br><span class="line">        similarity = self.fc(torch.cat([q1_rep, q2_rep], -<span class="number">1</span>))</span><br><span class="line">        <span class="keyword">return</span> similarity</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">take_snapshot</span>(<span class="params">model, path</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;保存模型训练结果到Drive上，防止Colab重置后丢失&quot;&quot;&quot;</span></span><br><span class="line">    torch.save(model.state_dict(), path)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Snapshot has been saved to <span class="subst">&#123;path&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_snapshot</span>(<span class="params">model, path</span>):</span><br><span class="line">    model.load_state_dict(torch.load(path))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Load snapshot from <span class="subst">&#123;path&#125;</span> done.&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model = ESIM(args)</span><br><span class="line"><span class="comment"># if os.path.exists(args.snapshot):</span></span><br><span class="line"><span class="comment">#     load_snapshot(model, args.snapshot)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Embedding向量不训练</span></span><br><span class="line">model.embedding.weight.data.copy_(TEXT.vocab.vectors)</span><br><span class="line">model.embedding.weight.requires_grad = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">model.to(args.device)</span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>ESIM(
+  (embedding): Embedding(34193, 100)
+  (lstm1): LSTM(100, 300, batch_first=True, bidirectional=True)
+  (lstm2): LSTM(2400, 300, batch_first=True, bidirectional=True)
+  (fc): Sequential(
+    (0): BatchNorm1d(2400, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (1): Linear(in_features=2400, out_features=100, bias=True)
+    (2): ELU(alpha=1.0, inplace)
+    (3): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): Dropout(p=0.5)
+    (5): Linear(in_features=100, out_features=100, bias=True)
+    (6): ELU(alpha=1.0, inplace)
+    (7): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (8): Dropout(p=0.5)
+    (9): Linear(in_features=100, out_features=4, bias=True)
+    (10): Softmax()
+  )
+)
+</code></pre>
+<h1 id="训练阶段"><a href="#训练阶段" class="headerlink" title="训练阶段"></a>训练阶段</h1><p>这里有几个细节：</p>
+<h2 id="batch-label的形状"><a href="#batch-label的形状" class="headerlink" title="batch.label的形状"></a>batch.label的形状</h2><p><code>batch.label</code>是形状为(batch)的一维向量；而<code>Y_pred</code>是形状为$batch \times 4$的二维向量，使用<code>.topk(1).indices</code>提取最大值后仍然是二维向量。</p>
+<p>所以如果不拓展<code>batch.label</code>的维度，PyTorch会自动广播<code>batch.label</code>，最终得到的结果不再是$batch \times 1$，而是$batch \times batch$，那么最后计算出来的准确率会大到离谱。这是下面代码的含义：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(Y_pred.topk(<span class="number">1</span>).indices == batch.label.unsqueeze(<span class="number">1</span>))</span><br></pre></td></tr></table></figure>
+
+<h2 id="tensor和标量的除法"><a href="#tensor和标量的除法" class="headerlink" title="tensor和标量的除法"></a>tensor和标量的除法</h2><p>在Python3.6中，除法符号<code>/</code>的结果默认是浮点型的，但是PyTorch并不是这样，这也是另一个很容易忽视的细节。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(Y_pred.topk(<span class="number">1</span>).indices == batch.label.unsqueeze(<span class="number">1</span>))</span><br></pre></td></tr></table></figure>
+
+<p>上面代码结果可以看作是bool类型（实际上是<code>torch.uint8</code>）。调用<code>.sum()</code>求和之后的结果类型是<code>torch.LongTensor</code>。但是PyTorch中整数除法是不会得到浮点数的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 就像下面的代码会得到0一样</span></span><br><span class="line">In [<span class="number">2</span>]: torch.LongTensor([<span class="number">1</span>]) / torch.LongTensor([<span class="number">5</span>])</span><br><span class="line">Out[<span class="number">2</span>]: tensor([<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+<p>变量acc累加了每一个batch中计算正确的样本数量，由于自动类型转换，acc现在指向<code>torch.LongTensor</code>类型，所以最后计算准确率的时候一定要用<code>.item()</code>提取出整数值。如果忽视了这个细节，那么最后得到的准确率是0。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">training</span>(<span class="params">model, data_iter, loss_fn, optimizer</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;训练部分&quot;&quot;&quot;</span></span><br><span class="line">    model.train()</span><br><span class="line">    data_iter.init_epoch()</span><br><span class="line">    acc, cnt, avg_loss = <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> batch <span class="keyword">in</span> data_iter:</span><br><span class="line">        Y_pred = model(batch.premise, batch.hypothesis)</span><br><span class="line">        loss = loss_fn(Y_pred, batch.label)</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line">        avg_loss += loss.item() / <span class="built_in">len</span>(data_iter)</span><br><span class="line">        <span class="comment"># unsqueeze是因为label是一维向量，下同</span></span><br><span class="line">        acc += (Y_pred.topk(<span class="number">1</span>).indices == batch.label.unsqueeze(<span class="number">1</span>)).<span class="built_in">sum</span>()</span><br><span class="line">        cnt += <span class="built_in">len</span>(batch.premise)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> avg_loss, (acc.item() / cnt)  <span class="comment"># 如果不提取item，会导致accuracy为0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">validating</span>(<span class="params">model, data_iter, loss_fn</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;验证部分&quot;&quot;&quot;</span></span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    data_iter.init_epoch()</span><br><span class="line">    acc, cnt, avg_loss = <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> torch.set_grad_enabled(<span class="literal">False</span>):</span><br><span class="line">        <span class="keyword">for</span> batch <span class="keyword">in</span> data_iter:</span><br><span class="line">            Y_pred = model(batch.premise, batch.hypothesis)</span><br><span class="line"></span><br><span class="line">            avg_loss += loss_fn(Y_pred, batch.label).item() / <span class="built_in">len</span>(data_iter)</span><br><span class="line">            acc += (Y_pred.topk(<span class="number">1</span>).indices == batch.label.unsqueeze(<span class="number">1</span>)).<span class="built_in">sum</span>()</span><br><span class="line">            cnt += <span class="built_in">len</span>(batch.premise)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> avg_loss, (acc.item() / cnt)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train</span>(<span class="params">model, train_data, val_data</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;训练过程&quot;&quot;&quot;</span></span><br><span class="line">    optimizer = optim.Adam(model.parameters(), lr=args.lr)</span><br><span class="line">    loss_fn = nn.CrossEntropyLoss()</span><br><span class="line">    scheduler = optim.lr_scheduler.ReduceLROnPlateau(</span><br><span class="line">        optimizer, mode=<span class="string">&#x27;min&#x27;</span>, factor=<span class="number">0.5</span>, patience=args.scheduler_step, verbose=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    train_losses, val_losses, train_accs, val_accs = [], [], [], []</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Before train</span></span><br><span class="line">    tic = time.time()</span><br><span class="line">    train_loss, train_acc = validating(model, train_data, loss_fn)</span><br><span class="line">    val_loss, val_acc = validating(model, val_data, loss_fn)</span><br><span class="line">    train_losses.append(train_loss)</span><br><span class="line">    val_losses.append(val_loss)</span><br><span class="line">    train_accs.append(train_acc)</span><br><span class="line">    val_accs.append(val_acc)</span><br><span class="line">    min_val_loss = val_loss</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Epoch: 0/<span class="subst">&#123;args.epoch&#125;</span>\t&quot;</span></span><br><span class="line">          <span class="string">f&quot;Train loss: <span class="subst">&#123;train_loss:<span class="number">.4</span>f&#125;</span>\tacc: <span class="subst">&#123;train_acc:<span class="number">.4</span>f&#125;</span>\t&quot;</span></span><br><span class="line">          <span class="string">f&quot;Val loss: <span class="subst">&#123;val_loss:<span class="number">.4</span>f&#125;</span>\tacc: <span class="subst">&#123;val_acc:<span class="number">.4</span>f&#125;</span>\t&quot;</span></span><br><span class="line">          <span class="string">f&quot;Cost time: <span class="subst">&#123;(time.time()-tic):<span class="number">.2</span>f&#125;</span>s&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(args.epoch):</span><br><span class="line">            tic = time.time()</span><br><span class="line">            train_loss, train_acc = training(</span><br><span class="line">                model, train_data, loss_fn, optimizer)</span><br><span class="line">            val_loss, val_acc = validating(model, val_data, loss_fn)</span><br><span class="line">            train_losses.append(train_loss)</span><br><span class="line">            val_losses.append(val_loss)</span><br><span class="line">            train_accs.append(train_acc)</span><br><span class="line">            val_accs.append(val_acc)</span><br><span class="line">            scheduler.step(val_loss)</span><br><span class="line"></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;Epoch: <span class="subst">&#123;epoch + <span class="number">1</span>&#125;</span>/<span class="subst">&#123;args.epoch&#125;</span>\t&quot;</span></span><br><span class="line">                  <span class="string">f&quot;Train loss: <span class="subst">&#123;train_loss:<span class="number">.4</span>f&#125;</span>\tacc: <span class="subst">&#123;train_acc:<span class="number">.4</span>f&#125;</span>\t&quot;</span></span><br><span class="line">                  <span class="string">f&quot;Val loss: <span class="subst">&#123;val_loss:<span class="number">.4</span>f&#125;</span>\tacc: <span class="subst">&#123;val_acc:<span class="number">.4</span>f&#125;</span>\t&quot;</span></span><br><span class="line">                  <span class="string">f&quot;Cost time: <span class="subst">&#123;(time.time()-tic):<span class="number">.2</span>f&#125;</span>s&quot;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> val_loss &lt; min_val_loss:  <span class="comment"># 即时保存</span></span><br><span class="line">                min_val_loss = val_loss</span><br><span class="line">                take_snapshot(model, args.snapshot)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># Early-stop：</span></span><br><span class="line">            <span class="comment"># if len(val_losses) &gt;= 3 and (val_loss - min_val_loss) / min_val_loss &gt; args.early_stop_ratio:</span></span><br><span class="line">            <span class="comment">#   print(f&quot;Early stop with best loss: &#123;min_val_loss:.5f&#125;&quot;)</span></span><br><span class="line">            <span class="comment">#   break</span></span><br><span class="line">            <span class="comment"># args.early_stop_ratio *= args.early_stop_ratio</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Interrupted by user&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> train_losses, val_losses, train_accs, val_accs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">train_losses, val_losses, train_accs, val_accs = train(</span><br><span class="line">    model, train_iter, dev_iter)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Epoch: 0/64	Train loss: 1.3871	acc: 0.3335	Val loss: 1.3871	acc: 0.3331	Cost time: 364.32s
+Epoch: 1/64	Train loss: 1.0124	acc: 0.7275	Val loss: 0.9643	acc: 0.7760	Cost time: 998.41s
+Snapshot has been saved to /content/drive/My Drive/Colab Notebooks/ESIM.pt
+Epoch: 2/64	Train loss: 0.9476	acc: 0.7925	Val loss: 0.9785	acc: 0.7605	Cost time: 1003.32s
+Epoch: 3/64	Train loss: 0.9305	acc: 0.8100	Val loss: 0.9204	acc: 0.8217	Cost time: 999.49s
+Snapshot has been saved to /content/drive/My Drive/Colab Notebooks/ESIM.pt
+Epoch: 4/64	Train loss: 0.9183	acc: 0.8227	Val loss: 0.9154	acc: 0.8260	Cost time: 1000.97s
+Snapshot has been saved to /content/drive/My Drive/Colab Notebooks/ESIM.pt
+Epoch: 5/64	Train loss: 0.9084	acc: 0.8329	Val loss: 0.9251	acc: 0.8156	Cost time: 996.99s
+....
+Epoch: 21/64	Train loss: 0.8236	acc: 0.9198	Val loss: 0.8912	acc: 0.8514	Cost time: 992.48s
+Epoch: 22/64	Train loss: 0.8210	acc: 0.9224	Val loss: 0.8913	acc: 0.8514	Cost time: 996.35s
+Epoch    22: reducing learning rate of group 0 to 5.0000e-05.
+Epoch: 23/64	Train loss: 0.8195	acc: 0.9239	Val loss: 0.8940	acc: 0.8485	Cost time: 1000.48s
+Epoch: 24/64	Train loss: 0.8169	acc: 0.9266	Val loss: 0.8937	acc: 0.8490	Cost time: 1006.78s
+Interrupted by user
+</code></pre>
+<h2 id="绘制Loss-Accuracy曲线"><a href="#绘制Loss-Accuracy曲线" class="headerlink" title="绘制Loss-Accuracy曲线"></a>绘制Loss-Accuracy曲线</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">iters = [i + <span class="number">1</span> <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(train_losses))]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 防止KeyboardInterrupt的打断导致两组loss不等长</span></span><br><span class="line">min_len = <span class="built_in">min</span>(<span class="built_in">len</span>(train_losses), <span class="built_in">len</span>(val_losses))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制双纵坐标图</span></span><br><span class="line">fig, ax1 = plt.subplots()</span><br><span class="line">ax1.plot(iters, train_losses[: min_len], <span class="string">&#x27;-&#x27;</span>, label=<span class="string">&#x27;train loss&#x27;</span>)</span><br><span class="line">ax1.plot(iters, val_losses[: min_len], <span class="string">&#x27;-.&#x27;</span>, label=<span class="string">&#x27;val loss&#x27;</span>)</span><br><span class="line">ax1.set_xlabel(<span class="string">&quot;Epoch&quot;</span>)</span><br><span class="line">ax1.set_ylabel(<span class="string">&quot;Loss&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建子坐标轴</span></span><br><span class="line">ax2 = ax1.twinx()</span><br><span class="line">ax2.plot(iters, train_accs[: min_len], <span class="string">&#x27;:&#x27;</span>, label=<span class="string">&#x27;train acc&#x27;</span>)</span><br><span class="line">ax2.plot(iters, val_accs[: min_len], <span class="string">&#x27;--&#x27;</span>, label=<span class="string">&#x27;val acc&#x27;</span>)</span><br><span class="line">ax2.set_ylabel(<span class="string">&quot;Accuracy&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 为双纵坐标图添加图例</span></span><br><span class="line">handles1, labels1 = ax1.get_legend_handles_labels()</span><br><span class="line">handles2, labels2 = ax2.get_legend_handles_labels()</span><br><span class="line">plt.legend(handles1 + handles2, labels1 + labels2, loc=<span class="string">&#x27;center right&#x27;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/output_24_0.png" alt="png"></p>
+<h1 id="预测"><a href="#预测" class="headerlink" title="预测"></a>预测</h1><p>模型除了训练出结果以外，还需要能在实际中运用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">nlp = spacy.load(<span class="string">&quot;en&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重新加载之前训练结果最棒的模型参数</span></span><br><span class="line">load_snapshot(model, args.snapshot)</span><br><span class="line"><span class="comment"># 小规模数据还是cpu跑得快</span></span><br><span class="line">model.to(torch.device(<span class="string">&quot;cpu&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">r&quot;/content/drive/My Drive/Colab Notebooks/vocab_label_stoi.pkl&quot;</span>, <span class="string">&quot;rb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    vocab_stoi, label_stoi = pickle.load(f)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Load snapshot from /content/drive/My Drive/Colab Notebooks/ESIM.pt done.
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">sentence2tensor</span>(<span class="params">stoi, sent1: <span class="built_in">str</span>, sent2: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;将两个句子转化为张量&quot;&quot;&quot;</span></span><br><span class="line">    sent1 = [<span class="built_in">str</span>(token) <span class="keyword">for</span> token <span class="keyword">in</span> nlp(sent1.lower())]</span><br><span class="line">    sent2 = [<span class="built_in">str</span>(token) <span class="keyword">for</span> token <span class="keyword">in</span> nlp(sent2.lower())]</span><br><span class="line"></span><br><span class="line">    tokens1, tokens2 = [], []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> token <span class="keyword">in</span> sent1:</span><br><span class="line">        tokens1.append(stoi[token])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> token <span class="keyword">in</span> sent2:</span><br><span class="line">        tokens2.append(stoi[token])</span><br><span class="line"></span><br><span class="line">    delt_len = <span class="built_in">len</span>(tokens1) - <span class="built_in">len</span>(tokens2)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> delt_len &gt; <span class="number">0</span>:</span><br><span class="line">        tokens2.extend([<span class="number">1</span>] * delt_len)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        tokens1.extend([<span class="number">1</span>] * (-delt_len))</span><br><span class="line"></span><br><span class="line">    tensor1 = torch.LongTensor(tokens1).unsqueeze(<span class="number">0</span>)</span><br><span class="line">    tensor2 = torch.LongTensor(tokens2).unsqueeze(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> tensor1, tensor2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">use</span>(<span class="params">model, premise: <span class="built_in">str</span>, hypothsis: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;使用模型测试&quot;&quot;&quot;</span></span><br><span class="line">    label_itos = &#123;<span class="number">0</span>: <span class="string">&#x27;&lt;unk&gt;&#x27;</span>, <span class="number">1</span>: <span class="string">&#x27;entailment&#x27;</span>,</span><br><span class="line">                  <span class="number">2</span>: <span class="string">&#x27;contradiction&#x27;</span>, <span class="number">3</span>: <span class="string">&#x27;neutral&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    <span class="keyword">with</span> torch.set_grad_enabled(<span class="literal">False</span>):</span><br><span class="line">        tensor1, tensor2 = sentence2tensor(vocab_stoi, premise, hypothsis)</span><br><span class="line">        predict = model(tensor1, tensor2)</span><br><span class="line">        top1 = predict.topk(<span class="number">1</span>).indices.item()</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;The answer is &#x27;<span class="subst">&#123;label_itos[top1]&#125;</span>&#x27;&quot;</span>)</span><br><span class="line"></span><br><span class="line">    prob = predict.cpu().squeeze().numpy()</span><br><span class="line">    plt.bar([<span class="string">&quot;&lt;unk&gt;&quot;</span>, <span class="string">&quot;entailment&quot;</span>, <span class="string">&quot;contradiction&quot;</span>, <span class="string">&quot;neutral&quot;</span>], prob)</span><br><span class="line">    plt.ylabel(<span class="string">&quot;probability&quot;</span>)</span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>输入两个句子之后，打印最可能的推测结果，并用直方图显示每种推测的概率</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 蕴含</span></span><br><span class="line">use(model,</span><br><span class="line">    <span class="string">&quot;A statue at a museum that no seems to be looking at.&quot;</span>,</span><br><span class="line">    <span class="string">&quot;There is a statue that not many people seem to be interested in.&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对立</span></span><br><span class="line">use(model,</span><br><span class="line">    <span class="string">&quot;A land rover is being driven across a river.&quot;</span>,</span><br><span class="line">    <span class="string">&quot;A sedan is stuck in the middle of a river.&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 中立</span></span><br><span class="line">use(model,</span><br><span class="line">    <span class="string">&quot;A woman with a green headscarf, blue shirt and a very big grin.&quot;</span>,</span><br><span class="line">    <span class="string">&quot;The woman is young.&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>The answer is &#39;entailment&#39;
+</code></pre>
+<p><img src="/output_29_1.png" alt="png"></p>
+<pre><code>The answer is &#39;contradiction&#39;
+</code></pre>
+<p><img src="/output_29_3.png" alt="png"></p>
+<pre><code>The answer is &#39;neutral&#39;
+</code></pre>
+<p><img src="/output_29_5.png" alt="png"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PyTorch/" rel="tag"># PyTorch</a>
+              <a href="/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+              <a href="/tags/NLP/" rel="tag"># NLP</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/08/06/Windows%E4%B8%8B%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%8E%AF%E5%A2%83%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA/" rel="prev" title="Windows下深度学习环境快速搭建">
+                  <i class="fa fa-angle-left"></i> Windows下深度学习环境快速搭建
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/08/16/%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB/" rel="next" title="命名实体识别">
+                  命名实体识别 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

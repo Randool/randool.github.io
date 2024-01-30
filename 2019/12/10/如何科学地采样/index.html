@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="这是你的分布（滑稽   如何只采集1k个点，就描述出这个分布的特点呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何科学地采样">
+<meta property="og:url" content="https://randool.github.io/2019/12/10/%E5%A6%82%E4%BD%95%E7%A7%91%E5%AD%A6%E5%9C%B0%E9%87%87%E6%A0%B7/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="这是你的分布（滑稽   如何只采集1k个点，就描述出这个分布的特点呢？">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-10T11:24:38.000Z">
+<meta property="article:modified_time" content="2019-12-14T03:47:22.738Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="Math">
+<meta property="article:tag" content="Probability Theory">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://randool.github.io/2019/12/10/%E5%A6%82%E4%BD%95%E7%A7%91%E5%AD%A6%E5%9C%B0%E9%87%87%E6%A0%B7/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2019/12/10/%E5%A6%82%E4%BD%95%E7%A7%91%E5%AD%A6%E5%9C%B0%E9%87%87%E6%A0%B7/","path":"2019/12/10/如何科学地采样/","title":"如何科学地采样"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>如何科学地采样 | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E9%87%87%E6%A0%B7%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">为什么要采样？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E9%87%87%E6%A0%B7%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">怎么采样？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E9%87%87%E6%A0%B7"><span class="nav-number">2.1.</span> <span class="nav-text">概率分布采样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%92%E7%BB%9D%E9%87%87%E6%A0%B7"><span class="nav-number">2.2.</span> <span class="nav-text">拒绝采样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%E6%80%A7%E9%87%87%E6%A0%B7"><span class="nav-number">2.3.</span> <span class="nav-text">重要性采样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MCMC"><span class="nav-number">2.4.</span> <span class="nav-text">MCMC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#M-H%EF%BC%88Metropolis-Hastings%EF%BC%89"><span class="nav-number">2.4.1.</span> <span class="nav-text">M-H（Metropolis-Hastings）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gibbs"><span class="nav-number">2.4.2.</span> <span class="nav-text">Gibbs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2019/12/10/%E5%A6%82%E4%BD%95%E7%A7%91%E5%AD%A6%E5%9C%B0%E9%87%87%E6%A0%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="如何科学地采样 | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何科学地采样
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-10 19:24:38" itemprop="dateCreated datePublished" datetime="2019-12-10T19:24:38+08:00">2019-12-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2019-12-14 11:47:22" itemprop="dateModified" datetime="2019-12-14T11:47:22+08:00">2019-12-14</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>这是你的分布（滑稽</p>
+
+
+<p>如何只采集1k个点，就描述出这个分布的特点呢？</p>
+<span id="more"></span>
+
+<h1 id="为什么要采样？"><a href="#为什么要采样？" class="headerlink" title="为什么要采样？"></a>为什么要采样？</h1><p>最直接的目的是用离散的数据 <strong>近似</strong> 代替连续（或原先就是离散）的数据，比如说要计算一个很复杂的函数f的积分，假设找出这个函数原函数F是十分困难的，那么可以用近似的值代替真实的值。一个简单而有效的方式是在定义域内按每隔0.01的距离计算f的值，然后用小矩形面积——0.01*f(x)表示这段范围内函数的积分，最后整个函数的面积用众多小矩形的面积之和代替。计算函数积分确实是采样的一个重要应用。</p>
+<p>采样可以很大程度减轻计算难度，不过怎么采样还是有很深的学问的，采样的结果的分布要能近似真实分布。</p>
+<p>换句话说，概率密度大的地方要能多采集点，而概率密度小的地方少采集点。</p>
+
+
+<p>比方说上面这个例子里，同样采集1w个点，左边的采样效果就更符合真实分布。</p>
+<h1 id="怎么采样？"><a href="#怎么采样？" class="headerlink" title="怎么采样？"></a>怎么采样？</h1><h2 id="概率分布采样"><a href="#概率分布采样" class="headerlink" title="概率分布采样"></a>概率分布采样</h2><p>假设现在有一个分布，已知该分布的概率密度函数（pdf），且可以计算出它的分布函数（cdf）。然后用计算机生成一个均匀分布$Y \sim U(0,1)$，在Y上的采样结果通过cdf映射回X，就得到了该分布的均匀采样。采样的思想用下面的图形象地表示</p>
+
+
+<p>最后公式一下：<br>$$<br>Y \sim U(0,1) \<br>X &#x3D; cdf^{−1}(Y)<br>$$</p>
+<p>不过万一pdf太复杂以至于cdf无法计算呢？那么就无法用概率分布采样了。</p>
+<h2 id="拒绝采样"><a href="#拒绝采样" class="headerlink" title="拒绝采样"></a>拒绝采样</h2><blockquote>
+<p>请一个帮手</p>
+</blockquote>
+<p>拒绝采样通过引入一个已知pdf和cdf的分布，来迂回计算原先难以采样的分布，这个被引入的分布就称为“参考分布”，不妨记作$q(x)$，而待采样记作$p(x)$。拒绝采样还需要另一个系数$k$，并保证在需要采样的区间内，$\forall x, kq(x) \ge p(x)$。</p>
+<p>由于$q(x)$的cdf已知，所以可以很轻易得到$q(x)$的合理采样，假设得到的样本为$X&#x3D;{x_1,\dots,x_n}$。但此时属于$X$的点的分布并不符合$q(x)$的分布，那么接下来只需要遍历每个点$x_i$，同时每次扔一枚能产生0到1之间均匀分布随机数的“骰子”，将“骰子”得到的数u和接受率$\alpha &#x3D; q(x_i)&#x2F;p(x_i)$作比较，如果满足$u \le \alpha$就接受这个样本点，否则丢弃即可。</p>
+<p>拒接采样之所以合理，其物理含义也是很直观的，因为乘上系数$k$后，q(x)很大于等于p(x)，根据q(x)分布采集得到的样本点集$X$近似曲线q(x)下的面积，而接受率又是比较q(x)和p(x)面积的比，所以经过接受率筛选后剩下的点集就近似p(x)曲线下的面积了。</p>
+<p>不过拒接采样还是有很多限制的，比如q(x)一定要尽可能接近p(x)，否则采样的效率会很低。其次k的选取也是要恰到好处，在满足拒绝采样等式的要求下也要尽可能小。</p>
+<h2 id="重要性采样"><a href="#重要性采样" class="headerlink" title="重要性采样"></a>重要性采样</h2><blockquote>
+<p>也是请一个帮手</p>
+</blockquote>
+<p>重要性采样的用武之地是计算一个函数f关于分布p的期望，即$E(f(x)), x \sim p$。并且这个p不仅贼难采样，而且真实分布比较偏，换句话说，即使采集到了一些样本点，但是这些样本点大多对应于f取值较小的部位，就像下面这张图所示的</p>
+
+
+<p>为了解决这个问题，还是引入一个简单下手的参考分布q，并且希望通过q改善p“偏离群众”的问题。</p>
+<p>集体做法是这样的，上面说到要计算期望$E(f(x))$，详细写开来就是</p>
+<p>$$E(f(x))&#x3D;\int_x{f(x)p(x)dx}$$</p>
+<p>引入q后做一下置换变换</p>
+<p>$$E(f(x))&#x3D;\int_x{f(x)\frac{p(x)}{q(x)}q(x)dx}$$</p>
+<p>经过这么一个操作后，原来求f关于p的期望变成了求$f(x)\frac{p(x)}{q(x)}$关于q的期望了！因为q的采样容易，并且和上图中展示的一样，原本对f来说不容易采集到的却又十分重要的部分，受$q(x)$的影响变得十分容易得到了。而这样一来，所求的期望的偏差就不会因为数据稀疏偏差太远。</p>
+<blockquote>
+<p>话说重要性采样在一些论文中出现的频率还是很大的，确实是重要的一种采样</p>
+</blockquote>
+<h2 id="MCMC"><a href="#MCMC" class="headerlink" title="MCMC"></a>MCMC</h2><p>本文的核心角色出现了，MCMC全称markov-chain monte carlo，含义是在马尔可夫链上应用随机化的方法。马尔可夫链可以由一个转移矩阵描述，当给定一个初始状态，然后这个初始状态开始在转移矩阵的作用下随机切换状态。也就是说，MCMC将马尔可夫链视为工具，用随机化的手段模拟状态的转移。</p>
+<p>说到马尔可夫，有一个很重要的性质是不得不说的，那就是它的“平稳分布”。假如随意给定一个初始状态，然后开始状态转移，接着对每个状态出现次数的频率做统计。这个过程可以用矩阵乘法描述，假设初始状态为$A_0 \in R^{n \times 1}$，转移矩阵为$M \in R^{n \times n}$，那么每一次转移可以看作是这样一个变换</p>
+<p>$$<br>A_{t+1} &#x3D; MA_t<br>$$</p>
+<p>如果从初始状态开始计算的话，那么t时刻的状态可以表示为</p>
+<p>$$<br>A_t &#x3D; M^{t}A_0<br>$$</p>
+<p>而随着t的不断不断增大，分布也会近似趋于平稳，就像下面这张图表示的那样，纵使初始分布在空间的各个角落，随着迭代的继续，最终分布会趋向于稳定。</p>
+
+
+<p>也就是说我们的马尔科夫链模型的状态转移矩阵收敛到的稳定概率分布与我们的初始状态概率分布无关。</p>
+<p>只要马尔可夫链收敛到平稳分布π后，就存在一个被称为“细致平衡”的等式，</p>
+<p>$$<br>\pi(x)P(y|x) &#x3D; \pi(y)P(x|y)<br>$$</p>
+<p>等式中的$P(y│x)$就是马尔可夫转移矩阵中的元素，表示从x到y的转移概率。这个等式很好地描述了马尔可夫平稳的本质。</p>
+<p>说完了马尔可夫链模型的性质，下面要开始引入正题了，即MCMC是怎么把马尔可夫链模型和蒙特卡洛方法结合起来，并采集出和原分布一致的样本分布的。</p>
+<h3 id="M-H（Metropolis-Hastings）"><a href="#M-H（Metropolis-Hastings）" class="headerlink" title="M-H（Metropolis-Hastings）"></a>M-H（Metropolis-Hastings）</h3><p>M-H是MCMC的一种实现。回顾一下，上面这个细致平衡的等式是怎么的来的呢？第一步，也是最关键的是找到了一个满足马尔可夫性质的转移矩阵M，于是才有了之后的平稳分布，也就最终能达到细致平衡条件。</p>
+<p>然而，在“对原分布采样”这个需求下，我们只有平稳分布（也就是原分布本身），却没有满足该平稳分布的状态转移矩阵。所以，如何构造这样的一个矩阵呢？毕竟不是所有的矩阵都能推导出想要的平稳分布。</p>
+<p>M-H的做法十分大胆，它拿一个和目标转移矩阵一样大的随机马尔可夫转移矩阵Q作为转移矩阵的一部分。显然此时$\pi(x)Q(y|x) \neq \pi(y)Q(x|y)$。而后，为了让等式相等，引入类似拒绝采样里提到的接受率这样一个概念。令$\alpha(x,y) &#x3D; min⁡(1,\frac{\pi(x)Q(y|x)}{\pi(y)Q(x|y)})$，于是一个细致平衡就被构造出来了</p>
+<p>$$<br>\pi(x)Q(y|x)\alpha(x,y) &#x3D; \pi(y)Q(x|y)\alpha(y,x)<br>$$</p>
+<p>因为Q是随机的，也就是任意满足马尔可夫性质的转移矩阵都能work，那么简单起见，甚至可以把Q设置为对称矩阵，此时接受率可以简化为：$\alpha(x,y) &#x3D; min⁡(1, \pi(x) &#x2F; \pi(y))$。M-H算法的步骤如下：</p>
+<ol>
+<li>输入需要采样的平稳分布$\pi$，转移的次数n；</li>
+<li>随机构造一个马尔可夫转移矩阵Q；</li>
+<li>挑选一个初始状态$x_0$；</li>
+<li>for t &#x3D; 1 to n：<ol>
+<li>采样$x^∗ \sim Q(x|x_{t−1})$；</li>
+<li>从均匀分布中采样$u \sim U(0,1)$；</li>
+<li>if u &lt; $\alpha(x_{t−1},x^∗)$：接受转移，令$x_t &#x3D; x^∗$；</li>
+<li>else: 不转移，令$x_t &#x3D; x_{t−1}$；</li>
+</ol>
+</li>
+<li>返回采集到的一系列x；</li>
+</ol>
+<p>似乎很令人惊讶，大名鼎鼎的MCMC竟然用程序来实现简单得不能再简单，但是采样的效果确实十分优秀的，让我们看一下M-H算法对一个beta(5,12)分布的采样结果：</p>
+
+
+<p>代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> beta</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转移矩阵用正态分布</span></span><br><span class="line">N = <span class="number">5000</span></span><br><span class="line">xs = [i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(N)]</span><br><span class="line">xs[<span class="number">0</span>] = random.random()</span><br><span class="line">p = beta(<span class="number">5</span>, <span class="number">12</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, N):</span><br><span class="line">    x_star = random.uniform(<span class="number">0</span>,<span class="number">1</span>)    <span class="comment"># 从U[0,1]中采样</span></span><br><span class="line">    alpha = <span class="built_in">min</span>(<span class="number">1</span>, p.pdf(x_star) / p.pdf(xs[i-<span class="number">1</span>]))</span><br><span class="line">    u = random.uniform(<span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line">    xs[i] = x_star <span class="keyword">if</span> u &lt; alpha <span class="keyword">else</span> xs[i-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">plt.hist(xs, <span class="number">50</span>, density=<span class="number">1</span>)</span><br><span class="line">x = np.linspace(<span class="number">0</span>, <span class="number">1</span>, <span class="number">200</span>)</span><br><span class="line">plt.plot(x, [p.pdf(i) <span class="keyword">for</span> i <span class="keyword">in</span> x])</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Gibbs"><a href="#Gibbs" class="headerlink" title="Gibbs"></a>Gibbs</h3><p>Gibbs适用于更高维的分布的采样，并且用一句话概括它的思想就是：固定其他维度上的随机变量，那么剩下那一维上的随机变量仍然满足细致平衡。<br>首先还是需要寻找合适的细致平衡条件。假设现在要采集二维联合分布$\pi(x_1, x_2)$，该分布上有两个点$A(x_1^1), x_2^1)$和B(x_1^1, x_2^2)，可以看到它们的第一个维度是相同的，此时$\pi(x_1^1,x_2^1) \neq \pi(x_1^1, x_2^2)$。这个是显而易见的，那么如何让其相等呢？还是用构造的方式。因为$\pi(x_1, x_2) &#x3D; \pi(x_1)\pi(x_2|x_1)$，所以只要等式左右两边相互乘以“对方有而自己没有”的那一项，等式就成立了，即</p>
+<p>$$<br>\pi(x_1^1, x_2^1)\pi(x_2^2|x_1^1) &#x3D; \pi(x_1^1,x_2^2)\pi(x_2^1|x_1^1)<br>$$</p>
+<p>即</p>
+<p>$$<br>\pi(A)\pi(x_2^2|x_1^1) &#x3D; \pi(B)\pi(x_2^1|x_1^1)<br>$$</p>
+<p>因为点A和点B的关系是某一个维度相同，经过上面的构造得到等式的过程，我们可以发现，在二维空间里的两个点只要一个维度相同，那么这两个点的相互转化满足细致平衡。</p>
+
+
+<p>就比如A和B，A和C之间存在细致平衡转化关系，而B和C之间就不存在。</p>
+<p>那么Gibbs如何采样呢？以二维采样为例</p>
+<ol>
+<li>给定一个平稳分布$\pi(x_1,x_2)$，给定转移次数n；</li>
+<li>随机初始化一个点$X_0(x_1^0,x_2^0)$；</li>
+<li>for t &#x3D; 1 to n：<ol>
+<li>固定$x_1$，采样$x_2$，得到$x_2^{t+1} \sim \pi(x_2|x_1^t)$；</li>
+<li>固定$x_2$，采样$x_1$，得到$x_1^{t+1} \sim \pi(x_1|x_2^t)$；</li>
+<li>得到新采样点$X_{t+1}(x_1^{t+1}, x_2^{t+1})$；</li>
+</ol>
+</li>
+<li>返回采集到的一系列X；</li>
+</ol>
+<p>也是很简单的过程。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/37121528">马尔可夫链蒙特卡罗算法（MCMC）</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u011332699/article/details/74298555">重要性采样（Importance Sampling）</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Math/" rel="tag"># Math</a>
+              <a href="/tags/Probability-Theory/" rel="tag"># Probability Theory</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/10/02/%E3%80%90%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E3%80%91SNE/" rel="prev" title="【数据可视化】SNE">
+                  <i class="fa fa-angle-left"></i> 【数据可视化】SNE
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/01/02/%E4%B8%8D%E7%99%BE%E5%BA%A6%E7%94%BB%E5%87%BA%E5%A5%BD%E7%9C%8B%E7%9A%84%E5%9B%BE/" rel="next" title="不百度画出好看的图">
+                  不百度画出好看的图 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

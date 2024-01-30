@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="用PyTorch也有个把年头了，但是偶尔还是会出现各种各样的bug，当bug积累到一定数量就会引起质变——写成一个笔记来长记性……">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyTorch爬坑指南">
+<meta property="og:url" content="https://randool.github.io/2019/01/25/PyTorch%E7%88%AC%E5%9D%91%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="用PyTorch也有个把年头了，但是偶尔还是会出现各种各样的bug，当bug积累到一定数量就会引起质变——写成一个笔记来长记性……">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tse1-mm.cn.bing.net/th?id=OIP.F_0E3p93sRVRsa1RTHooBwHaHa&w=208&h=209&c=8&rs=1&qlt=90&dpr=1.25&pid=3.1&rm=2">
+<meta property="article:published_time" content="2019-01-25T03:43:09.000Z">
+<meta property="article:modified_time" content="2019-12-29T05:52:32.007Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="PyTorch">
+<meta property="article:tag" content="Deep Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tse1-mm.cn.bing.net/th?id=OIP.F_0E3p93sRVRsa1RTHooBwHaHa&w=208&h=209&c=8&rs=1&qlt=90&dpr=1.25&pid=3.1&rm=2">
+
+
+<link rel="canonical" href="https://randool.github.io/2019/01/25/PyTorch%E7%88%AC%E5%9D%91%E6%8C%87%E5%8D%97/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2019/01/25/PyTorch%E7%88%AC%E5%9D%91%E6%8C%87%E5%8D%97/","path":"2019/01/25/PyTorch爬坑指南/","title":"PyTorch爬坑指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>PyTorch爬坑指南 | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Tensor%E7%9A%84%E8%BD%AC%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">Tensor的转置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nn-Linear%E7%9A%84%E5%9D%91%E4%BA%BA%E4%B9%8B%E5%A4%84"><span class="nav-number">2.</span> <span class="nav-text">nn.Linear的坑人之处</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%87%E7%BB%B4%E5%92%8C%E9%99%8D%E7%BB%B4"><span class="nav-number">3.</span> <span class="nav-text">升维和降维</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tensor%E7%9A%84contiguous"><span class="nav-number">4.</span> <span class="nav-text">Tensor的contiguous</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tensor-expand%E5%87%BD%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">tensor.expand函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Loss-Functions%E7%9A%84%E5%8F%82%E6%95%B0%E6%A0%BC%E5%BC%8F%E5%88%B0%E5%BA%95%E6%98%AF%E5%95%A5%E5%95%8A"><span class="nav-number">6.</span> <span class="nav-text">Loss Functions的参数格式到底是啥啊</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BCELoss"><span class="nav-number">6.1.</span> <span class="nav-text">BCELoss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CrossEntropyLoss"><span class="nav-number">6.2.</span> <span class="nav-text">CrossEntropyLoss</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BD%91%E7%BB%9C%E4%B8%80%E5%AE%9A%E8%A6%81%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9D%83%E5%80%BC"><span class="nav-number">7.</span> <span class="nav-text">自定义网络一定要初始化权值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CUDA%E7%9A%84%E4%B8%80%E4%BA%9B%E5%9D%91"><span class="nav-number">8.</span> <span class="nav-text">CUDA的一些坑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E7%BD%91%E7%BB%9C%E4%B8%8D%E4%BC%9A%E8%87%AA%E5%8A%A8%E8%BD%ACcuda%EF%BC%9F%EF%BC%9F"><span class="nav-number">8.1.</span> <span class="nav-text">自定义的网络不会自动转cuda？？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CUDA%E6%95%B0%E6%8D%AE%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5%E8%BD%ACnumpy%E6%95%B0%E6%8D%AE"><span class="nav-number">8.2.</span> <span class="nav-text">CUDA数据不能直接转numpy数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%88%B1%E5%9B%A0%E6%96%AF%E5%9D%A6%E7%AE%80%E8%AE%B0%E6%B3%95"><span class="nav-number">9.</span> <span class="nav-text">爱因斯坦简记法</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2019/01/25/PyTorch%E7%88%AC%E5%9D%91%E6%8C%87%E5%8D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="PyTorch爬坑指南 | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PyTorch爬坑指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-01-25 11:43:09" itemprop="dateCreated datePublished" datetime="2019-01-25T11:43:09+08:00">2019-01-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2019-12-29 13:52:32" itemprop="dateModified" datetime="2019-12-29T13:52:32+08:00">2019-12-29</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>用PyTorch也有个把年头了，但是偶尔还是会出现各种各样的bug，当bug积累到一定数量就会引起质变——写成一个笔记来长记性……</p>
+<span id="more"></span>
+
+<h1 id="Tensor的转置"><a href="#Tensor的转置" class="headerlink" title="Tensor的转置"></a>Tensor的转置</h1><p>tensor的转置有很多方式，比如<code>.transpose</code>、<code>.transpose_</code>是最常用的（带下划线的是在原tensor上做改变），但是这个转置方式有个限制就是仅能对两个维度进行操作，是个“根正苗红”的转置函数。</p>
+<p>有时候需要将更多的维度进行交换，这个时候就可以用<code>.permuate</code>函数，该函数接受一个维度列表，然后根据列表中的维度的排列顺序更新tensor的维度排列。</p>
+<h1 id="nn-Linear的坑人之处"><a href="#nn-Linear的坑人之处" class="headerlink" title="nn.Linear的坑人之处"></a><code>nn.Linear</code>的坑人之处</h1><p>全连接层常用的<code>nn.Linear</code>实际上就是将weight和输入的inputs做一个矩阵乘法，然后加上bias（如果有的话）。所以当我们想在模型中添加一个纯矩阵运算的时候，往往会想到用不带bias的<code>nn.Linear</code>。然而谁知道这最简单的模块也会存在坑……</p>
+<p>假设我们有一个输入形状为<code>batch×32</code>的输入矩阵，然后想通过矩阵运算将其变成形状为<code>batch×16</code>的输出，那么就会就会这么做：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">inputs = torch.rand(batch, <span class="number">32</span>)</span><br><span class="line">matrix = nn.Linear(<span class="number">32</span>, <span class="number">16</span>, bias=<span class="literal">False</span>)</span><br><span class="line">outputs = matrix(inputs)</span><br><span class="line"><span class="comment"># outputs.shape == torch.Size([batch, 16])</span></span><br></pre></td></tr></table></figure>
+
+<p>我们一直这么使用，这样的实现方式也是十分自然的。可是当我们现在手上有一个具有特殊性质的张量<code>pretrained</code>，并希望用这个张量填充matrix，我们会想当然地这么做：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 反例！</span></span><br><span class="line"><span class="comment"># pretrained.shape == torch.Size([32, 16])</span></span><br><span class="line">matrix.weight.data = pretrained</span><br><span class="line">outputs = matrix(inputs)</span><br></pre></td></tr></table></figure>
+
+<p>不出意外，PyTorch会抛出一个<code>RuntimeError</code>，并说运算过程中两个做乘法的矩阵不满足矩阵乘法的要求。</p>
+<p>经过仔细的debug，我终于发现了问题的所在。让我们看一下在PyTorch源码中，<code>nn.Linear</code>是怎么初始化的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Linear</span>(<span class="title class_ inherited__">Module</span>):</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_features, out_features, bias=<span class="literal">True</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(Linear, self).__init__()</span><br><span class="line">        self.in_features = in_features</span><br><span class="line">        self.out_features = out_features</span><br><span class="line">        self.weight = Parameter(torch.Tensor(out_features, in_features))</span><br><span class="line">        <span class="keyword">if</span> bias:</span><br><span class="line">            self.bias = Parameter(torch.Tensor(out_features))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.register_parameter(<span class="string">&#x27;bias&#x27;</span>, <span class="literal">None</span>)</span><br><span class="line">        self.reset_parameters()</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，<code>self.weight</code>的形状是我们之前预期形状的转置！╮(╯▽╰)╭所以正确的填充方法应该是这样的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 正例√</span></span><br><span class="line"><span class="comment"># pretrained.shape == torch.Size([32, 16])</span></span><br><span class="line">matrix.weight.data = pretrained.transpose(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line">outputs = matrix(inputs)</span><br></pre></td></tr></table></figure>
+
+<h1 id="升维和降维"><a href="#升维和降维" class="headerlink" title="升维和降维"></a>升维和降维</h1><p>升维<code>.unsqueeze</code>是在指定的维度上插入一维，但是数据实际上没有发生变化。比如下面得示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: a</span><br><span class="line">Out[<span class="number">1</span>]:</span><br><span class="line">tensor([[[-<span class="number">0.7908</span>, -<span class="number">1.4576</span>, -<span class="number">0.3251</span>],</span><br><span class="line">         [-<span class="number">1.2053</span>,  <span class="number">0.3667</span>,  <span class="number">0.9423</span>],</span><br><span class="line">         [ <span class="number">0.0517</span>,  <span class="number">0.6051</span>, -<span class="number">0.1360</span>],</span><br><span class="line">         [ <span class="number">0.8666</span>, -<span class="number">1.4679</span>, -<span class="number">0.4511</span>]]])</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: a.shape</span><br><span class="line">Out[<span class="number">2</span>]: torch.Size([<span class="number">1</span>, <span class="number">4</span>, <span class="number">3</span>])</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: a.unsqueeze(<span class="number">2</span>).shape</span><br><span class="line">Out[<span class="number">3</span>]: torch.Size([<span class="number">1</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">3</span>])</span><br></pre></td></tr></table></figure>
+
+<p>降维<code>.squeeze</code>是升维得逆操作，会消除所有维度为1的维度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: a.shape</span><br><span class="line">Out[<span class="number">1</span>]: torch.Size([<span class="number">1</span>, <span class="number">4</span>, <span class="number">3</span>])</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: a.squeeze().shape</span><br><span class="line">Out[<span class="number">2</span>]: torch.Size([<span class="number">4</span>, <span class="number">3</span>])</span><br></pre></td></tr></table></figure>
+
+<h1 id="Tensor的contiguous"><a href="#Tensor的contiguous" class="headerlink" title="Tensor的contiguous"></a>Tensor的contiguous</h1><p>一个Tensor执行转置操作后，实际上数据并没有发生任何变化，只是读取数据的顺序变化了。这是一种节约空间和运算的方法。</p>
+<p>不过转置之后的数据如果需要进行<code>.view</code>等操作的话，由于数据在逻辑上并不连续，因此需要手动调用<code>contiguous</code>让数据恢复连续存储的模样。</p>
+<h1 id="tensor-expand函数"><a href="#tensor-expand函数" class="headerlink" title="tensor.expand函数"></a><code>tensor.expand</code>函数</h1><p>PyTorch有和Numpy一样的广播方式，可以将一个较小维度的数据广播为高维数据，其中有一个叫<code>expand</code>的函数就能实现这个功能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: a = torch.arange(<span class="number">0</span>, <span class="number">4</span>).view(<span class="number">1</span>, -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: a</span><br><span class="line">Out[<span class="number">2</span>]: tensor([[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]])</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: a.expand(<span class="number">5</span>, -<span class="number">1</span>)</span><br><span class="line">Out[<span class="number">3</span>]: </span><br><span class="line">tensor([[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]])</span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: b = torch.arange(<span class="number">0</span>, <span class="number">4</span>).view(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: b</span><br><span class="line">Out[<span class="number">5</span>]: </span><br><span class="line">tensor([[<span class="number">0</span>], [<span class="number">1</span>], [<span class="number">2</span>], [<span class="number">3</span>]])</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: b.expand(-<span class="number">1</span>, <span class="number">5</span>)</span><br><span class="line">Out[<span class="number">6</span>]: </span><br><span class="line">tensor([[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">        [<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>],</span><br><span class="line">        [<span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>],</span><br><span class="line">        [<span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>]])</span><br><span class="line"></span><br><span class="line">In [<span class="number">7</span>]: c = torch.arange(<span class="number">0</span>, <span class="number">4</span>).view(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">8</span>]: c</span><br><span class="line">Out[<span class="number">8</span>]: </span><br><span class="line">tensor([[<span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">        [<span class="number">2</span>, <span class="number">3</span>]])</span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: c.expand(<span class="number">2</span>, -<span class="number">1</span>, -<span class="number">1</span>)</span><br><span class="line">Out[<span class="number">9</span>]: </span><br><span class="line">tensor([[[<span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">         [<span class="number">2</span>, <span class="number">3</span>]],</span><br><span class="line"></span><br><span class="line">        [[<span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">         [<span class="number">2</span>, <span class="number">3</span>]]])</span><br></pre></td></tr></table></figure>
+
+<p>只不过这个函数存在一些需要注意的点。</p>
+<ol start="0">
+<li><code>-1</code>表示原来的数据宽度</li>
+<li>如果需要在某一个已存在的维度上进行扩展，那么该维度的tensor宽度只能是1。换句话说，数据宽度为1的tensor可以扩展为任意维度。</li>
+<li>如果需要将原来的tensor扩展到更高维，那么新拓展的维度一定需要放在前面（高维），如果需要改变排序方式，可以用类似<code>.permute</code>的其他函数。</li>
+<li>__扩展之后的数据只是一种“视图”，而不分配新的空间__。如果原来的tensor改变，那么扩展后的tensoer也会发生变化。就像下面这个例子。所以，必要时可以用<code>.copy</code>。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">10</span>]: a</span><br><span class="line">Out[<span class="number">10</span>]: tensor([[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]])</span><br><span class="line"></span><br><span class="line">In [<span class="number">11</span>]: a_view = a.expand(<span class="number">4</span>, -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">12</span>]: a_view</span><br><span class="line">Out[<span class="number">12</span>]: </span><br><span class="line">tensor([[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]])</span><br><span class="line"></span><br><span class="line">In [<span class="number">13</span>]: a *= <span class="number">10</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">14</span>]: a_view</span><br><span class="line">Out[<span class="number">14</span>]: </span><br><span class="line">tensor([[ <span class="number">0</span>, <span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>],</span><br><span class="line">        [ <span class="number">0</span>, <span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>],</span><br><span class="line">        [ <span class="number">0</span>, <span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>],</span><br><span class="line">        [ <span class="number">0</span>, <span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]])</span><br></pre></td></tr></table></figure>
+
+<h1 id="Loss-Functions的参数格式到底是啥啊"><a href="#Loss-Functions的参数格式到底是啥啊" class="headerlink" title="Loss Functions的参数格式到底是啥啊"></a>Loss Functions的参数格式到底是啥啊</h1><p>这个是早期经常会遇到的情况，咋一会要<code>FloatTensor</code>，一会就要<code>LongTensor</code>了？要解决这个问题，还是需要深入了解不同的loss function到底在做啥。</p>
+<h2 id="BCELoss"><a href="#BCELoss" class="headerlink" title="BCELoss"></a>BCELoss</h2><p>二分类的交叉熵，计算公式如下：</p>
+<p>$$ \sum_{i}{-y_ilog\hat{y_i}-(1-y_i)log(1-\hat{y_i})} $$</p>
+<p>这样就不难看出 $ y_i $ 和 $ \hat{y_i} $ 都需要是<code>FloatTensor</code>了。如果是不同的tensor进行运算会出错：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Expected <span class="built_in">object</span> of <span class="built_in">type</span> torch.FloatTensor but found <span class="built_in">type</span> torch.LongTensor</span><br></pre></td></tr></table></figure>
+
+<h2 id="CrossEntropyLoss"><a href="#CrossEntropyLoss" class="headerlink" title="CrossEntropyLoss"></a>CrossEntropyLoss</h2><p>上面的<code>BCELoss</code>是计算二分类情况下的损失函数，那么当遇到多分类问题的时候，也想用交叉熵来计算的话，就需要用到<code>CrossEntropyLoss</code>了。</p>
+<blockquote>
+<p>不论是二分类还是多分类，都可以用最简单的L2损失来计算，但是如果使用<code>Sigmoid</code>作为激活函数的话容易导致梯度消失，导致效果不好</p>
+</blockquote>
+<p><code>CrossEntropyLoss</code>输入参数的形状一直让我很头疼。比如最简单的例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: inputs = torch.randn(<span class="number">3</span>, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: targets = torch.randint(<span class="number">0</span>, <span class="number">5</span>, (<span class="number">3</span>, ))</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: nn.CrossEntropyLoss()(inputs, targets)</span><br><span class="line">Out[<span class="number">3</span>]: tensor(<span class="number">1.4814</span>)</span><br></pre></td></tr></table></figure>
+
+<p>一切安好。这很容易让我们想到，只要<code>batch</code>那一维度对应上就没有太大的问题了。于是对应到高维操作，假设有一个任务，输入张量<code>inputs</code>的形状是<code>(seq_len, batch, dim)</code>，目标张量<code>targets</code>的形状是<code>(seq_len, batch)</code>，尝试一下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">4</span>]: seq_len, batch, dim = <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: inputs = torch.randn(seq_len, batch, dim)</span><br><span class="line"></span><br><span class="line">In [<span class="number">6</span>]: targets = torch.randint(<span class="number">0</span>, dim, (seq_len, batch))</span><br><span class="line"></span><br><span class="line">In [<span class="number">7</span>]: nn.CrossEntropyLoss()(inputs, targets)</span><br><span class="line">---------------------------------------------------------------------------</span><br><span class="line">ValueError  Traceback (most recent call last)</span><br><span class="line">&lt;ipython-<span class="built_in">input</span>-<span class="number">46</span>-37b720a7a2f6&gt; <span class="keyword">in</span> &lt;module&gt;()</span><br><span class="line">----&gt; <span class="number">1</span> nn.CrossEntropyLoss()(inputs, targets)</span><br><span class="line">    ...</span><br><span class="line">ValueError: Expected target size (<span class="number">3</span>, <span class="number">5</span>), got torch.Size([<span class="number">3</span>, <span class="number">4</span>])</span><br></pre></td></tr></table></figure>
+
+<p>居然报错了……</p>
+<p><img src="https://tse1-mm.cn.bing.net/th?id=OIP.F_0E3p93sRVRsa1RTHooBwHaHa&w=208&h=209&c=8&rs=1&qlt=90&dpr=1.25&pid=3.1&rm=2" alt="??"></p>
+<p>实际上之前偷懒的解决方式都是用<code>view</code>把<code>inputs</code>碾平到2维……暂且不考虑<code>CrossEntropyLoss</code>的内部操作，碾平的操作本身就很不优雅。于是参考高阶处理方式。</p>
+<p>官方文档给出的API说明是这样的：输入参数有<code>Input</code>和<code>Target</code>，前者的形状可以是$(minibatch,C,d_1,d_2,\dots,d_k)$，后者的形状是$(minibatch,d_1,d_2,\dots,d_k)$，其中$C$表示需要模型分类的类别数。</p>
+<p>根据API的定义，之前的任务应该这样实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># inputs = torch.randn(seq_len, batch, dim)</span></span><br><span class="line"><span class="comment"># targets = torch.randint(0, dim, (seq_len, batch))</span></span><br><span class="line">In [<span class="number">8</span>]: nn.CrossEntropyLoss()(inputs.permute(<span class="number">1</span>, <span class="number">2</span>, <span class="number">0</span>), targets.permute(<span class="number">1</span>, <span class="number">0</span>))</span><br><span class="line">Out[<span class="number">8</span>]: tensor(<span class="number">2.0654</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="自定义网络一定要初始化权值"><a href="#自定义网络一定要初始化权值" class="headerlink" title="自定义网络一定要初始化权值"></a>自定义网络一定要初始化权值</h1><blockquote>
+<p>权值不初始化会出事的……</p>
+</blockquote>
+<p>有时候会遇到一些结构清奇的网络，各种参数纠缠在一起，因此torch自带的函数可能不够用，那就需要自定义网络结构了。一般会从最底层的矩阵开始构建，就像tensorflow一样。比如定义一个不带偏置项的全连接层可以用<code>nn.Linear(xxx, xxx, bias=False)</code>。但特殊情况下甚至连全连接层内部的细节都要自己定义，这个时候就需要参考torch的源码了，比如全连接层的部分源码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Linear</span>(<span class="title class_ inherited__">Module</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_features, out_features, bias=<span class="literal">True</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(Linear, self).__init__()</span><br><span class="line">        self.in_features = in_features</span><br><span class="line">        self.out_features = out_features</span><br><span class="line">        self.weight = Parameter(torch.Tensor(out_features, in_features))</span><br><span class="line">        <span class="keyword">if</span> bias:</span><br><span class="line">            self.bias = Parameter(torch.Tensor(out_features))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.register_parameter(<span class="string">&#x27;bias&#x27;</span>, <span class="literal">None</span>)</span><br><span class="line">        self.reset_parameters()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">reset_parameters</span>(<span class="params">self</span>):</span><br><span class="line">        stdv = <span class="number">1.</span> / math.sqrt(self.weight.size(<span class="number">1</span>))</span><br><span class="line">        self.weight.data.uniform_(-stdv, stdv)</span><br><span class="line">        <span class="keyword">if</span> self.bias <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            self.bias.data.uniform_(-stdv, stdv)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, <span class="built_in">input</span></span>):</span><br><span class="line">        <span class="keyword">return</span> F.linear(<span class="built_in">input</span>, self.weight, self.bias)</span><br></pre></td></tr></table></figure>
+<p>在这个例子中已经能学到很多了，这里重点参考<code>Parameters</code>的使用（out_feature在前）和权值初始化函数<code>reset_parameters</code>的内部细节。</p>
+<p>之前一次机器学习的作业，相同的模型，PyTorch版始终达不到Tensorflow版的准确率，大概就是权值初始化两者存在差异吧。</p>
+<h1 id="CUDA的一些坑"><a href="#CUDA的一些坑" class="headerlink" title="CUDA的一些坑"></a>CUDA的一些坑</h1><h2 id="自定义的网络不会自动转cuda？？"><a href="#自定义的网络不会自动转cuda？？" class="headerlink" title="自定义的网络不会自动转cuda？？"></a>自定义的网络不会自动转cuda？？</h2><p>之前有用过自己先定义了一个简单的底层网络，方便上层网络的构建。这样定义出来的网络在CPU上运行的好好的，但是当我把模型迁移到GPU上时却发现模型出现了类型不符的错误：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Expected object of type torch.FloatTensor but found type torch.cuda.FloatTensor for argument</span><br></pre></td></tr></table></figure>
+<p>后来在调试的时候发现对上层网络调用<code>.cuda</code>后，下层网络却还是处于<code>device(type=&#39;cpu&#39;)</code>！虽然解决这个问题最简单的方法就是把底层网络的定义放到上层网络中，但是这样不利于代码的维护，并且在不同网络中共享模块也会变得很复杂。</p>
+<p>PyTorch在CPU和GPU数据上的迁移的确没有tensorflow来的方便……</p>
+<p>在GitHub上看到很多类似的问题的解决方法，其中有一个点子很不错：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> torch.cuda.available():</span><br><span class="line">    <span class="keyword">import</span> torch.cuda <span class="keyword">as</span> t</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">import</span> torch <span class="keyword">as</span> t</span><br></pre></td></tr></table></figure>
+<p>如果一开始写代码的时候就考虑到自动CUDA的话，这的确是个好办法，如果已经写了臃肿的代码再改写还是会很繁琐。</p>
+<p>最终我选择的方案还是重写<code>.cuda</code>函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">cuda</span>(<span class="params">self, device=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="string">r&quot;&quot;&quot;Moves all model parameters and buffers to the GPU...&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> self._apply(<span class="keyword">lambda</span> t: t.cuda(device))</span><br></pre></td></tr></table></figure>
+<p>在<code>.cuda</code>函数中对子模块也调用<code>.cuda</code>就可以了。</p>
+<h2 id="CUDA数据不能直接转numpy数据"><a href="#CUDA数据不能直接转numpy数据" class="headerlink" title="CUDA数据不能直接转numpy数据"></a>CUDA数据不能直接转numpy数据</h2><p>如果一个数据已经迁移到GPU上了，那么如果要将运算结果转为符合numpy特性的数据就不是这么直接的了，一般会报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TypeError: can&#x27;t convert CUDA tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first.</span><br></pre></td></tr></table></figure>
+<p>解决方案报错信息已经给了。当然还可以将之后需要numpy来帮忙的运算改成PyTorch支持的运算，这样速度还更快呢，毕竟条条大路通罗马。</p>
+<h1 id="爱因斯坦简记法"><a href="#爱因斯坦简记法" class="headerlink" title="爱因斯坦简记法"></a>爱因斯坦简记法</h1><p>偶然间看到一个十分有趣的矩阵、向量、标量的计算方法：<code>torch.einsum</code>。这是由爱因斯坦提出的简记法。</p>
+<p>假设有矩阵：$A_{i \times j}$、$B_{i \times j}$、$C_{j \times k}$。</p>
+<p>矩阵乘法可以表示为<code>torch.einsum(&quot;ij, jk -&gt; ik&quot;, A, C)</code>；</p>
+<p>逐点乘法可以表示为<code>torch.einsum(&quot;ij, ij -&gt; ij&quot;, A, B)</code>；</p>
+<p>矩阵转置可表示为<code>torch.einsum(&quot;ij -&gt; ji&quot;, A)</code>；</p>
+<p>如果矩阵是方阵的话，提取对角线元素可以用<code>torch.einsum(&#39;ii -&gt; i&#39;, sq)</code>；获得方阵的迹可以用<code>torch.einsum(&#39;ii -&gt;&#39;, sq)</code>；</p>
+<p>矩阵降维可以用：<code>torch.einsum(&#39;ij -&gt; i&#39;, sq)</code>或者<code>torch.einsum(&#39;ij -&gt; j&#39;, sq)</code>；更高维也是如此；</p>
+<p>其实Numpy也有这样的函数：<code>np.einsum</code>，并且似乎比PyTorch的计算速度快很多。下面是测试代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: %timeit _ = torch.einsum(<span class="string">&#x27;ij, jk -&gt; ik&#x27;</span>, aten, bten)</span><br><span class="line"><span class="number">70.5</span> µs ± <span class="number">2.4</span> µs per loop (mean ± std. dev. of <span class="number">7</span> runs, <span class="number">10000</span> loops each)</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: %timeit _ = torch.einsum(<span class="string">&#x27;ij, jk -&gt; ik&#x27;</span>, a, b)</span><br><span class="line"><span class="number">66.7</span> µs ± <span class="number">2.04</span> µs per loop (mean ± std. dev. of <span class="number">7</span> runs, <span class="number">10000</span> loops each)</span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: %timeit _ = np.einsum(<span class="string">&#x27;ij, jk -&gt; ik&#x27;</span>, a, b)</span><br><span class="line"><span class="number">11.3</span> µs ± <span class="number">501</span> ns per loop (mean ± std. dev. of <span class="number">7</span> runs, <span class="number">100000</span> loops each)</span><br><span class="line"></span><br><span class="line">In [<span class="number">4</span>]: %timeit _ = torch.matmul(a, b)</span><br><span class="line"><span class="number">6.58</span> µs ± <span class="number">388</span> ns per loop (mean ± std. dev. of <span class="number">7</span> runs, <span class="number">100000</span> loops each)</span><br><span class="line"></span><br><span class="line">In [<span class="number">5</span>]: %timeit _ = np.matmul(a, b)</span><br><span class="line"><span class="number">22.6</span> µs ± <span class="number">1.1</span> µs per loop (mean ± std. dev. of <span class="number">7</span> runs, <span class="number">10000</span> loops each)</span><br></pre></td></tr></table></figure>
+
+<p>虽然使用einsum十分简洁，但是从速度上考虑，还是老老实实用最初级的API吧……</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PyTorch/" rel="tag"># PyTorch</a>
+              <a href="/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/12/12/%E5%9B%9B%E7%A7%8D%E5%88%86%E7%B1%BB%E5%99%A8/" rel="prev" title="四种分类器">
+                  <i class="fa fa-angle-left"></i> 四种分类器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/04/04/AI-can't-be-an-artist/" rel="next" title="AI can't be an artist">
+                  AI can't be an artist <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

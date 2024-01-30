@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha256-yIDrPSXHZdOZhAqiBP7CKzIwMQmRCJ8UeB8Jo17YC4o=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"randool.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="遇到了t分布。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【数据可视化】SNE">
+<meta property="og:url" content="https://randool.github.io/2019/10/02/%E3%80%90%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E3%80%91SNE/index.html">
+<meta property="og:site_name" content="More is different.">
+<meta property="og:description" content="遇到了t分布。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-02T11:13:13.000Z">
+<meta property="article:modified_time" content="2019-10-08T03:23:32.603Z">
+<meta property="article:author" content="Randool">
+<meta property="article:tag" content="Math">
+<meta property="article:tag" content="Numpy">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://randool.github.io/2019/10/02/%E3%80%90%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E3%80%91SNE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://randool.github.io/2019/10/02/%E3%80%90%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E3%80%91SNE/","path":"2019/10/02/【数据可视化】SNE/","title":"【数据可视化】SNE"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>【数据可视化】SNE | More is different.</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">More is different.</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SNE"><span class="nav-number">1.</span> <span class="nav-text">SNE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#t-SNE"><span class="nav-number">2.</span> <span class="nav-text">t-SNE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%8D%E5%90%91%E9%87%8F%E9%99%8D%E7%BB%B4%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">词向量降维可视化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">3.1.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Randool"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Randool</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Randool" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Randool" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dlf43@qq.com" title="E-Mail → mailto:dlf43@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://zrawberry.com/" title="http:&#x2F;&#x2F;zrawberry.com&#x2F;" rel="noopener" target="_blank">草莓君</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://www.aeonni.com/" title="https:&#x2F;&#x2F;www.aeonni.com&#x2F;" rel="noopener" target="_blank">Aeonni</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://me.csdn.net/Smile_coderrr/" title="http:&#x2F;&#x2F;me.csdn.net&#x2F;Smile_coderrr&#x2F;" rel="noopener" target="_blank">Smile_coderrr</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://nan01ab.github.io/archive?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;nan01ab.github.io&#x2F;archive?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">nan01ab头条大佬</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://randool.github.io/2019/10/02/%E3%80%90%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E3%80%91SNE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Randool">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="More is different.">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="【数据可视化】SNE | More is different.">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【数据可视化】SNE
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-10-02 19:13:13" itemprop="dateCreated datePublished" datetime="2019-10-02T19:13:13+08:00">2019-10-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2019-10-08 11:23:32" itemprop="dateModified" datetime="2019-10-08T11:23:32+08:00">2019-10-08</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>遇到了t分布。</p>
+</blockquote>
+<span id="more"></span>
+
+<p>这学期正巧选了一门数据可视化的课程，不过似乎老师并没有打算讲数学原理方面的东西，而纯粹是以工程的角度秀自己之前的成果……因此也不期望从课上学到什么。但还是在老师的PPT上看到了一些酷炫的数据可视化的图片。一直好奇一些论文中漂亮的散点图是怎么绘制的，比如像下面这种将Fashion MNSIT种的10种衣物一齐展示在一张图上，并且物以类聚，简洁明了。</p>
+
+
+<p>之前猜测这种图可能是用到了PCA或者Kmeans这些方式，比如先用某个“黑盒子”提取出几种特征，然后再使用PCA筛选最终展示效果规定的维度（比如上面这个例子就是2维），如果使用神经网络的话，似乎直接用全连接层控制输出的维度就好了。不过关于这种猜测并没有真正实践（狗头）。后来在看CS224N的时候，Christopher Manning老师正好提到了t-SNE，于是就开始了这趟递归学习……</p>
+<h1 id="SNE"><a href="#SNE" class="headerlink" title="SNE"></a>SNE</h1><p>SNE的全称是stochastic neighbor embedding，而且是Hinton提出的。看到“stochastic”和“embedding”的第一感觉就是这个算法一定是某种迭代优化的算法，而不是一种直接映射的方式。</p>
+<p>算法的目的是将高维数据分布的特点迁移到低维数据上，如果两个点在高维空间靠近的话，那么在映射到低维空间时，这两个点的距离也应当是靠近的。</p>
+<p>先是如何衡量高维上的靠近。最简单的是算出每一对点的距离，不过Hinton并没有这么做，而是使用另一种衡量方式。假设高维上有两个点$x_i$和点$x_j$，定义点i靠近点j的程度为</p>
+<p>$$<br>p_{j|i} &#x3D; \frac{exp(-\left|x_i-x_j\right|^2&#x2F;2\sigma_i^2)}{\sum_{k \neq i}{exp(-\left|x_i-x_k\right|^2&#x2F;2\sigma_i^2)}}<br>$$</p>
+<p>$\sigma_i$表示以$x_i$为中心的高斯分布的方差。<br>从这个式子可以看出这个式子定义的靠近是概率意义上的，并且这种所谓的靠近并不对称，因为$p_{j|i} \neq p_{i|j}$，就好像KL散度的非对称性一样。实际上之后的损失函数的确用到了KL散度。</p>
+<p>然后，高维点集X要被映射到低维上要进行可视化了，假设映射关系为$x_i \rightarrow y_i$。并且定义新点集距离分布为</p>
+<p>$$<br>q_{j|i} &#x3D; \frac{exp(-\left|y_i-y_j\right|^2)}{\sum_{k \neq i}{exp(-\left|y_i-y_k\right|^2)}}<br>$$</p>
+<p>因为这里的分布是将要计算的，因此可以自定义分布的方差，简单起见就为$1&#x2F;\sqrt{2}$好了，这样式子就不出现$\sigma$了。</p>
+<p>将视角切换到点$x_i$上，点$x_i$到其他点的距离分布最终转化为了概率分布，不妨假设其为$P_i$；同理，低维空间的点$y_i$也拥有一个分布$Q_i$。如何衡量两个分布的相似程度？KL散度出现了。</p>
+<p>定义损失函数为</p>
+<p>$$<br>C &#x3D; \sum_{i}KL(P_i|Q_i) &#x3D; \sum_{i}{\sum_{j}{p_{j|i}\log{\frac{p_{j|i}}{q_{j|i}}}}}<br>$$</p>
+<h1 id="t-SNE"><a href="#t-SNE" class="headerlink" title="t-SNE"></a>t-SNE</h1><p>t-SNE是对SNE的改进。首先是 __对称问题__。因为KL散度是非对称的，KL(P|Q)一般不等于KL(Q|P)，为了做到对称，简单的方法就是两者兼顾，即</p>
+<p>$$<br>p_{ij} &#x3D; \frac{p_{j|i} + p_{i|j}}{2n}<br>$$</p>
+<p>n表示点的数量。这是高维空间的概率，低维空间的改进是考虑全局距离</p>
+<p>$$<br>q_{ij} &#x3D; \frac{exp(-\left|y_i-y_j\right|^2)}{\sum_{k \neq l}{exp(-\left|y_k-y_l\right|^2)}}<br>$$</p>
+<p>和SNE的$q_{j|i}$对比一下，可以发现分母计算了每一对点的距离。</p>
+<p>损失函数变为</p>
+<p>$$<br>C &#x3D; KL(P|Q) &#x3D; \sum_{i}{\sum_{j}{p_{ij}\log{\frac{p_{ij}}{q_{ij}}}}}<br>$$</p>
+<p>其次是 <strong>数据拥挤</strong> 的问题。考虑在n维空间上随机撒点，那么这些点距离原点的距离分布的问题。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> numpy.linalg <span class="keyword">import</span> norm</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">30</span>, <span class="number">4</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, dim <span class="keyword">in</span> <span class="built_in">enumerate</span>((<span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>)):</span><br><span class="line">    <span class="comment"># 在dim维空间随机撒点</span></span><br><span class="line">    pts = [np.random.rand(dim) <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1000</span>)]</span><br><span class="line">    dst = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="keyword">lambda</span> x: norm(x), pts))</span><br><span class="line">    <span class="comment"># 绘图</span></span><br><span class="line">    ax = plt.subplot(<span class="number">1</span>, <span class="number">6</span>, i + <span class="number">1</span>)</span><br><span class="line">    ax.set_xlabel(<span class="string">&#x27;distance&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">        ax.set_ylabel(<span class="string">&#x27;count&#x27;</span>)</span><br><span class="line">    ax.hist(dst, bins=np.linspace(<span class="number">0</span>, np.sqrt(dim), <span class="number">32</span>))</span><br><span class="line">    ax.set_title(<span class="string">&#x27;m=&#123;0&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">str</span>(dim)), loc=<span class="string">&#x27;left&#x27;</span>)</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>可以看出，随机点离原点的距离变化随着维度升高，是趋向于敏感的，高维空间点的分布更加集中。这会给直接降维带来麻烦，若不加处理直接将高维空间距离分布映射到低维空间，那么点会聚成一团；即使使用正则化“拉伸”这些点的距离，效果也不会很明显。</p>
+<blockquote>
+<p>需要注意的是，点是随机撒的，那么无论是高维空间还是低维空间，空间中点的分布都是大致均匀的，并不存在挤成一团的问题。计算距离也算是一种降维处理，这里就能体现出简单降维处理存在的拥挤问题。</p>
+</blockquote>
+<p>比较理想的处理方式是使用一种映射方式，让高维距离分布拥有低维距离分布“矮胖”的特点，这就用到了t-分布。</p>
+
+
+<p>t-分布的自由度越低，曲线越矮。如果把高维空间的分布视为正态分布，将要映射的分布视为自由度为1的t-分布，就可以缓解数据拥挤的问题！这样，高维数据距离公式不需要变动，只需要将低维距离公式改变，让其满足t-分布的特点即可。</p>
+<blockquote>
+<p>t-分布这种“矮胖”的身材还能很好的消除 <strong>小样本</strong> 中存在离群点的缺点。</p>
+</blockquote>
+<p>$q_{ij}$的公式贴在下面。之所以使用自由度为1的t-分布，是因为这种形式符合“平方反比定律”，能够在低维空间中很好地表示巨多的点对之间的关系（作者说的:)）。</p>
+<p>$$<br>q_{ij} &#x3D; \frac{(1 + \left|y_i-y_j \right|^2)^{-1}}{\sum_{k \neq l}{(1 + \left|y_k-y_l \right|^2)^{-1}}}<br>$$</p>
+<p>衡量两个距离分布相似性还是使用KL散度。计算可以直接使用梯度计算</p>
+<p>$$<br>\frac{\partial C}{\partial y_i} &#x3D; 4 \sum_{j}{(p_{ij} - q_{ij})(y_i - y_j)(1 + \left|y_i - y_j\right|^2)^{-1}}<br>$$</p>
+<p>最后说说t-SNE算法的缺点吧，其实缺点已经很明显了……和训练词向量一样，当数据量很大的时候，会算得很慢，并且每次训练的结果都是不一样的。为了解决速度的问题，有很多人尝试使用“树”结构来加速（比如kd-tree？），还有人使用“负采样”来加速，说到底也是想用小样本估计总体样本，虽然精度可能会出现偏差，不过反正训练出来的结果是给人看的，又何必在意一两个点的偏移呢？</p>
+<h1 id="词向量降维可视化"><a href="#词向量降维可视化" class="headerlink" title="词向量降维可视化"></a>词向量降维可视化</h1><p>既然本篇是在学习CS224N的过程中深挖的产物，那么实验环节用词向量降维是再合适不过的了。通常使用的词向量动辄上百维，非常不适合碳基生物的理解，如果需要查看训练之后词向量表达意思的能力，至少需要将其降维到3维空间。</p>
+<p>以GLOVE为例，<code>glove.6B.50d</code>为高维数据，然后要将其投射到3维平面。该数据集有40w条预训练的词向量，每条词向量拥有50个维度。为了能比较清楚地看出词和词之间的关系，使用2维空间可视化这些向量（3维能显示更多的信息，但是显示效果容易受视角的影响）。</p>
+<p>训练代码附在后面，训练结果如下：</p>
+
+
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> copy</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取GLOVE预训练词向量</span></span><br><span class="line">filename = <span class="string">r&quot;D:\data\trained_net\glove.6B.50d.txt&quot;</span></span><br><span class="line">glove = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(filename, encoding=<span class="string">&quot;utf8&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">        line = line.split()</span><br><span class="line">        glove[line[<span class="number">0</span>]] = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="keyword">lambda</span> w: <span class="built_in">float</span>(w), line[<span class="number">1</span>:]))</span><br><span class="line"></span><br><span class="line"><span class="comment"># ！注意words自己从百度上找，我是用的是四级高频词汇，一共700个！</span></span><br><span class="line">words = [...]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 筛选存在GLOVE的词</span></span><br><span class="line">selected_vecs = &#123;word: glove[word] <span class="keyword">for</span> word <span class="keyword">in</span> words <span class="keyword">if</span> word <span class="keyword">in</span> glove.keys()&#125;</span><br><span class="line">selected_words = <span class="built_in">list</span>(selected_vecs.keys())</span><br><span class="line">sigma = [np.var(selected_vecs[w]) <span class="keyword">for</span> w <span class="keyword">in</span> selected_words]</span><br><span class="line">n = <span class="built_in">len</span>(selected_vecs)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 距离矩阵</span></span><br><span class="line">_p = np.zeros((n, n))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">vec_distance</span>(<span class="params">word1, word2</span>):</span><br><span class="line">    <span class="comment"># 计算两个词向量差的距离</span></span><br><span class="line">    vec1 = np.array(selected_vecs[word1])</span><br><span class="line">    vec2 = np.array(selected_vecs[word2])</span><br><span class="line">    vec = vec1 - vec2</span><br><span class="line">    <span class="keyword">return</span> np.dot(vec, vec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算高维向量分布矩阵</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> tqdm(<span class="built_in">range</span>(n)):</span><br><span class="line">    dominator = <span class="number">0.0</span>  <span class="comment"># 计算分母</span></span><br><span class="line">    <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        <span class="keyword">if</span> i == k:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        d = vec_distance(selected_words[i], selected_words[k])</span><br><span class="line">        dominator += np.exp(-d / (<span class="number">2</span> * sigma[i]**<span class="number">2</span>))</span><br><span class="line">    <span class="comment"># 计算p矩阵的项</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        <span class="keyword">if</span> i == j:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        d = vec_distance(selected_words[i], selected_words[j])</span><br><span class="line">        _p[i][j] = np.exp(-d / (<span class="number">2</span> * sigma[i]**<span class="number">2</span>)) / dominator</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">p = (_p.T + _p[j][i]) / (<span class="number">2</span> * n)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练低维空间距离</span></span><br><span class="line">EPOCH = <span class="number">100</span></span><br><span class="line">DIM = <span class="number">2</span></span><br><span class="line">lr = <span class="number">1e3</span></span><br><span class="line">pre_kl = []</span><br><span class="line">window = <span class="number">5</span></span><br><span class="line"></span><br><span class="line">y = np.random.randn(n, DIM)  <span class="comment"># 默认是服从N(0,1)分布</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">KL</span>(<span class="params">P, Q, epsilon=<span class="number">1e-10</span></span>):</span><br><span class="line">    _P = P + epsilon</span><br><span class="line">    <span class="keyword">return</span> (_P * np.log2(_P / (Q + epsilon))).<span class="built_in">sum</span>()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(EPOCH):</span><br><span class="line">    <span class="comment"># 计算分母</span></span><br><span class="line">    dy = y.reshape(n, <span class="number">1</span>, DIM) - y.reshape(<span class="number">1</span>, n, DIM)  <span class="comment"># n * n * 3</span></span><br><span class="line">    dominator = (dy**<span class="number">2</span>).<span class="built_in">sum</span>(axis=<span class="number">2</span>) + <span class="number">1</span>         <span class="comment"># n * n * 1</span></span><br><span class="line">    dominator = <span class="number">1</span> / dominator                   <span class="comment"># n * n * 1</span></span><br><span class="line">    dominator_sum = dominator.<span class="built_in">sum</span>()</span><br><span class="line">    <span class="comment"># 低维距离矩阵</span></span><br><span class="line">    q = dominator / dominator_sum</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算loss</span></span><br><span class="line">    kl = KL(p, q)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;epoch <span class="subst">&#123;epoch + <span class="number">1</span>&#125;</span>/<span class="subst">&#123;EPOCH&#125;</span>\tKL = <span class="subst">&#123;kl:<span class="number">.6</span>f&#125;</span>\tLR = <span class="subst">&#123;lr&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="comment"># 动态调整学习率</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(pre_kl) &gt; <span class="number">0</span>:</span><br><span class="line">        kl_mean = <span class="built_in">sum</span>(pre_kl) / <span class="built_in">len</span>(pre_kl)</span><br><span class="line">        <span class="keyword">if</span> kl_mean &gt; kl:</span><br><span class="line">            lr *= <span class="number">1.2</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            lr *= <span class="number">0.5</span></span><br><span class="line">    pre_kl.append(kl)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(pre_kl) &gt; window:</span><br><span class="line">        pre_kl.pop(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    d_pq = p - q</span><br><span class="line">    <span class="comment"># 计算梯度</span></span><br><span class="line">    grad = np.zeros((n, DIM))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        _grad = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">            _grad += d_pq[i][j] * dy[i][j] * dominator[i][j]</span><br><span class="line">        grad[i] = _grad * <span class="number">4</span></span><br><span class="line">    <span class="comment"># 更新低维向量</span></span><br><span class="line">    y = y - grad * lr</span><br><span class="line"></span><br><span class="line">y -= y.mean(axis=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 词向量展示</span></span><br><span class="line">SHOW = <span class="number">150</span>  <span class="comment"># 为了防止太过密集，选取部分词向量展示</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> DIM == <span class="number">3</span>:</span><br><span class="line">    <span class="keyword">from</span> mpl_toolkits.mplot3d <span class="keyword">import</span> Axes3D <span class="comment"># 需要有Axes3D才能绘画</span></span><br><span class="line">    </span><br><span class="line">    fig = plt.figure()</span><br><span class="line">    ax = fig.gca(projection=<span class="string">&#x27;3d&#x27;</span>)</span><br><span class="line">    </span><br><span class="line">    ax.scatter(y[:SHOW, <span class="number">0</span>], y[:SHOW, <span class="number">1</span>], y[:SHOW, <span class="number">2</span>], s=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(SHOW):</span><br><span class="line">        word = selected_words[i]</span><br><span class="line">        ax.text(y[i, <span class="number">0</span>], y[i, <span class="number">1</span>], y[i, <span class="number">2</span>], word, fontsize=<span class="number">10</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    plt.scatter(y[:SHOW, <span class="number">0</span>], y[:SHOW, <span class="number">1</span>], s=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(SHOW):</span><br><span class="line">        word = selected_words[i]</span><br><span class="line">        plt.text(y[i, <span class="number">0</span>], y[i, <span class="number">1</span>], word, fontsize=<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a target="_blank" rel="noopener" href="http://bindog.github.io/blog/2016/06/04/from-sne-to-tsne-to-largevis/#0x02-%E4%BB%8Esne%E8%AF%B4%E8%B5%B7">从SNE到t-SNE再到LargeVis</a></li>
+<li><a target="_blank" rel="noopener" href="http://siplab.tudelft.nl/sites/default/files/vandermaaten08a.pdf">Van der Maaten L, Hinton G. Visualizing data using t-SNE[J]. Journal of Machine Learning Research, 2008, 9(2579-2605): 85.</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/30753175">t分布的理解</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Math/" rel="tag"># Math</a>
+              <a href="/tags/Numpy/" rel="tag"># Numpy</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/08/16/%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB/" rel="prev" title="命名实体识别">
+                  <i class="fa fa-angle-left"></i> 命名实体识别
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/10/%E5%A6%82%E4%BD%95%E7%A7%91%E5%AD%A6%E5%9C%B0%E9%87%87%E6%A0%B7/" rel="next" title="如何科学地采样">
+                  如何科学地采样 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Randool</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
